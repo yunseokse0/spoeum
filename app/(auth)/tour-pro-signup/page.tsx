@@ -362,7 +362,7 @@ export default function TourProSignupPage() {
           <div className="space-y-6">
             {showCareerCard && playerInfo && (
               <PlayerCareerCard 
-                playerInfo={playerInfo}
+                player={playerInfo}
                 className="border-golf-sky-200 shadow-lg"
               />
             )}
@@ -409,7 +409,11 @@ export default function TourProSignupPage() {
             <div className="text-center">
               <p className="text-golf-dark-600">
                 이미 계정이 있으신가요?{' '}
-                <Button variant="link" className="text-golf-green-600 hover:text-golf-green-700">
+                <Button 
+                  variant="ghost" 
+                  className="text-golf-green-600 hover:text-golf-green-700 p-0 h-auto"
+                  onClick={() => router.push('/login')}
+                >
                   로그인하기
                 </Button>
               </p>

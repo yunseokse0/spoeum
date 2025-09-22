@@ -199,28 +199,28 @@ export function GolfMatchingTable({ className }: GolfMatchingTableProps) {
             {/* 필터 */}
             <div className="flex space-x-2">
               <Button
-                variant={filter === 'all' ? 'default' : 'outline'}
+                variant={filter === 'all' ? 'primary' : 'outline'}
                 onClick={() => setFilter('all')}
                 className={filter === 'all' ? 'bg-golf-green-600 hover:bg-golf-green-700' : 'border-golf-green-300'}
               >
                 전체
               </Button>
               <Button
-                variant={filter === 'open' ? 'default' : 'outline'}
+                variant={filter === 'open' ? 'primary' : 'outline'}
                 onClick={() => setFilter('open')}
                 className={filter === 'open' ? 'bg-golf-green-600 hover:bg-golf-green-700' : 'border-golf-green-300'}
               >
                 모집중
               </Button>
               <Button
-                variant={filter === 'pending' ? 'default' : 'outline'}
+                variant={filter === 'pending' ? 'primary' : 'outline'}
                 onClick={() => setFilter('pending')}
                 className={filter === 'pending' ? 'bg-golf-sky-600 hover:bg-golf-sky-700' : 'border-golf-sky-300'}
               >
                 검토중
               </Button>
               <Button
-                variant={filter === 'closed' ? 'default' : 'outline'}
+                variant={filter === 'closed' ? 'primary' : 'outline'}
                 onClick={() => setFilter('closed')}
                 className={filter === 'closed' ? 'bg-golf-dark-600 hover:bg-golf-dark-700' : 'border-golf-dark-300'}
               >

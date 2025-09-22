@@ -1,0 +1,486 @@
+/* 스포이음 골프 테마 스타일 시스템 */
+
+/* 골프 브랜드 컬러 팔레트 */
+:root {
+  /* 메인 컬러 */
+  --golf-green-50: #f0f9f0;
+  --golf-green-100: #dcf2dc;
+  --golf-green-200: #b8e5b8;
+  --golf-green-300: #94d894;
+  --golf-green-400: #70cb70;
+  --golf-green-500: #4cbe4c;
+  --golf-green-600: #2E7D32;
+  --golf-green-700: #256329;
+  --golf-green-800: #1c4a20;
+  --golf-green-900: #133117;
+
+  /* 포인트 컬러 */
+  --golf-sky-50: #f0f9ff;
+  --golf-sky-100: #e0f2fe;
+  --golf-sky-200: #bae6fd;
+  --golf-sky-300: #7dd3fc;
+  --golf-sky-400: #38bdf8;
+  --golf-sky-500: #4FC3F7;
+  --golf-sky-600: #0284c7;
+  --golf-sky-700: #0369a1;
+  --golf-sky-800: #075985;
+  --golf-sky-900: #0c4a6e;
+
+  /* 보조 컬러 */
+  --golf-sand-50: #fefcf7;
+  --golf-sand-100: #fdf7ed;
+  --golf-sand-200: #faeddb;
+  --golf-sand-300: #f7e3c9;
+  --golf-sand-400: #f4d9b7;
+  --golf-sand-500: #F2C078;
+  --golf-sand-600: #e6a85a;
+  --golf-sand-700: #d9903c;
+  --golf-sand-800: #cc781e;
+  --golf-sand-900: #bf6000;
+
+  /* 다크 컬러 */
+  --golf-dark-50: #f8fafc;
+  --golf-dark-100: #f1f5f9;
+  --golf-dark-200: #e2e8f0;
+  --golf-dark-300: #cbd5e1;
+  --golf-dark-400: #94a3b8;
+  --golf-dark-500: #64748b;
+  --golf-dark-600: #475569;
+  --golf-dark-700: #334155;
+  --golf-dark-800: #1e293b;
+  --golf-dark-900: #0f172a;
+
+  /* 그라데이션 */
+  --golf-gradient-primary: linear-gradient(135deg, var(--golf-green-600) 0%, var(--golf-green-700) 100%);
+  --golf-gradient-secondary: linear-gradient(135deg, var(--golf-sky-500) 0%, var(--golf-sky-600) 100%);
+  --golf-gradient-accent: linear-gradient(135deg, var(--golf-sand-500) 0%, var(--golf-sand-600) 100%);
+  --golf-gradient-background: linear-gradient(135deg, var(--golf-green-50) 0%, #ffffff 50%, var(--golf-sky-50) 100%);
+}
+
+/* 다크 모드 */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --golf-dark-50: #0f172a;
+    --golf-dark-100: #1e293b;
+    --golf-dark-200: #334155;
+    --golf-dark-300: #475569;
+    --golf-dark-400: #64748b;
+    --golf-dark-500: #94a3b8;
+    --golf-dark-600: #cbd5e1;
+    --golf-dark-700: #e2e8f0;
+    --golf-dark-800: #f1f5f9;
+    --golf-dark-900: #f8fafc;
+  }
+}
+
+/* 골프 테마 버튼 스타일 */
+.btn-golf-primary {
+  @apply bg-golf-green-600 hover:bg-golf-green-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 shadow-lg hover:shadow-xl;
+}
+
+.btn-golf-secondary {
+  @apply bg-golf-sky-600 hover:bg-golf-sky-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 shadow-lg hover:shadow-xl;
+}
+
+.btn-golf-accent {
+  @apply bg-golf-sand-600 hover:bg-golf-sand-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 shadow-lg hover:shadow-xl;
+}
+
+.btn-golf-outline {
+  @apply border-2 border-golf-green-600 text-golf-green-600 hover:bg-golf-green-600 hover:text-white font-medium py-2 px-4 rounded-lg transition-all duration-200;
+}
+
+.btn-golf-ghost {
+  @apply text-golf-green-600 hover:bg-golf-green-100 hover:text-golf-green-700 font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+}
+
+/* 골프 테마 카드 스타일 */
+.card-golf {
+  @apply bg-white/95 backdrop-blur-sm border border-golf-green-200 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300;
+}
+
+.card-golf-dark {
+  @apply bg-golf-dark-800/95 backdrop-blur-sm border border-golf-dark-700 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300;
+}
+
+/* 골프 테마 배지 스타일 */
+.badge-golf-success {
+  @apply bg-green-100 text-green-800 border border-green-200 px-2 py-1 rounded-full text-xs font-medium;
+}
+
+.badge-golf-warning {
+  @apply bg-orange-100 text-orange-800 border border-orange-200 px-2 py-1 rounded-full text-xs font-medium;
+}
+
+.badge-golf-info {
+  @apply bg-blue-100 text-blue-800 border border-blue-200 px-2 py-1 rounded-full text-xs font-medium;
+}
+
+.badge-golf-error {
+  @apply bg-red-100 text-red-800 border border-red-200 px-2 py-1 rounded-full text-xs font-medium;
+}
+
+/* 골프 테마 입력 필드 스타일 */
+.input-golf {
+  @apply border border-golf-green-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-golf-green-500 focus:border-golf-green-500 transition-colors duration-200;
+}
+
+.input-golf-error {
+  @apply border-red-300 focus:ring-red-500 focus:border-red-500;
+}
+
+/* 골프 테마 그라데이션 배경 */
+.bg-golf-gradient {
+  background: var(--golf-gradient-background);
+}
+
+.bg-golf-gradient-primary {
+  background: var(--golf-gradient-primary);
+}
+
+.bg-golf-gradient-secondary {
+  background: var(--golf-gradient-secondary);
+}
+
+.bg-golf-gradient-accent {
+  background: var(--golf-gradient-accent);
+}
+
+/* 골프 테마 그림자 */
+.shadow-golf {
+  box-shadow: 0 4px 6px -1px rgba(46, 125, 50, 0.1), 0 2px 4px -1px rgba(46, 125, 50, 0.06);
+}
+
+.shadow-golf-lg {
+  box-shadow: 0 10px 15px -3px rgba(46, 125, 50, 0.1), 0 4px 6px -2px rgba(46, 125, 50, 0.05);
+}
+
+.shadow-golf-xl {
+  box-shadow: 0 20px 25px -5px rgba(46, 125, 50, 0.1), 0 10px 10px -5px rgba(46, 125, 50, 0.04);
+}
+
+/* 골프 테마 애니메이션 */
+@keyframes golf-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes golf-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes golf-bounce-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-golf-fade-in {
+  animation: golf-fade-in 0.6s ease-out;
+}
+
+.animate-golf-slide-in {
+  animation: golf-slide-in 0.6s ease-out;
+}
+
+.animate-golf-bounce-in {
+  animation: golf-bounce-in 0.6s ease-out;
+}
+
+/* 골프 테마 호버 효과 */
+.hover-golf-lift {
+  @apply transition-transform duration-200 hover:-translate-y-1;
+}
+
+.hover-golf-scale {
+  @apply transition-transform duration-200 hover:scale-105;
+}
+
+.hover-golf-glow {
+  @apply transition-shadow duration-300 hover:shadow-golf-xl;
+}
+
+/* 골프 테마 텍스트 스타일 */
+.text-golf-display {
+  @apply font-display font-bold;
+}
+
+.text-golf-body {
+  @apply font-sans;
+}
+
+.text-golf-muted {
+  @apply text-golf-dark-500;
+}
+
+.text-golf-primary {
+  @apply text-golf-green-600;
+}
+
+.text-golf-secondary {
+  @apply text-golf-sky-600;
+}
+
+.text-golf-accent {
+  @apply text-golf-sand-600;
+}
+
+/* 골프 테마 스코어보드 스타일 */
+.scoreboard-golf {
+  @apply bg-gradient-to-r from-golf-dark-800 to-golf-dark-900 text-white rounded-xl p-6 shadow-2xl;
+}
+
+.scoreboard-golf-header {
+  @apply border-b border-golf-dark-600 pb-4 mb-4;
+}
+
+.scoreboard-golf-row {
+  @apply flex items-center justify-between py-3 border-b border-golf-dark-700 last:border-b-0;
+}
+
+.scoreboard-golf-cell {
+  @apply text-center flex-1;
+}
+
+.scoreboard-golf-cell-header {
+  @apply font-display font-bold text-golf-sky-400 uppercase tracking-wide;
+}
+
+.scoreboard-golf-cell-value {
+  @apply font-display font-bold text-xl;
+}
+
+/* 골프 테마 모달 스타일 */
+.modal-golf {
+  @apply bg-white/95 backdrop-blur-sm border border-golf-green-200 rounded-xl shadow-2xl;
+}
+
+.modal-golf-header {
+  @apply bg-gradient-to-r from-golf-green-500 to-golf-green-600 text-white rounded-t-xl p-6;
+}
+
+.modal-golf-body {
+  @apply p-6;
+}
+
+.modal-golf-footer {
+  @apply border-t border-golf-green-200 p-6 rounded-b-xl bg-golf-green-50;
+}
+
+/* 골프 테마 로딩 스피너 */
+.spinner-golf {
+  @apply border-4 border-golf-green-200 border-t-golf-green-600 rounded-full animate-spin;
+}
+
+/* 골프 테마 프로그레스 바 */
+.progress-golf {
+  @apply w-full bg-golf-green-200 rounded-full h-2;
+}
+
+.progress-golf-fill {
+  @apply bg-gradient-to-r from-golf-green-500 to-golf-green-600 h-2 rounded-full transition-all duration-500;
+}
+
+/* 골프 테마 아이콘 스타일 */
+.icon-golf-primary {
+  @apply text-golf-green-600;
+}
+
+.icon-golf-secondary {
+  @apply text-golf-sky-600;
+}
+
+.icon-golf-accent {
+  @apply text-golf-sand-600;
+}
+
+.icon-golf-success {
+  @apply text-green-500;
+}
+
+.icon-golf-warning {
+  @apply text-orange-500;
+}
+
+.icon-golf-error {
+  @apply text-red-500;
+}
+
+/* 골프 테마 테이블 스타일 */
+.table-golf {
+  @apply w-full border-collapse bg-white rounded-xl overflow-hidden shadow-lg;
+}
+
+.table-golf-header {
+  @apply bg-gradient-to-r from-golf-green-500 to-golf-green-600 text-white;
+}
+
+.table-golf-header th {
+  @apply px-6 py-4 text-left text-sm font-display font-bold uppercase tracking-wide;
+}
+
+.table-golf-body tr {
+  @apply border-b border-golf-green-100 hover:bg-golf-green-50 transition-colors duration-200;
+}
+
+.table-golf-body td {
+  @apply px-6 py-4 text-sm text-golf-dark-700;
+}
+
+/* 골프 테마 폼 스타일 */
+.form-golf {
+  @apply space-y-6;
+}
+
+.form-golf-group {
+  @apply space-y-2;
+}
+
+.form-golf-label {
+  @apply block text-sm font-medium text-golf-dark-700;
+}
+
+.form-golf-input {
+  @apply input-golf w-full;
+}
+
+.form-golf-textarea {
+  @apply input-golf w-full resize-none;
+}
+
+.form-golf-select {
+  @apply input-golf w-full;
+}
+
+.form-golf-error {
+  @apply text-red-500 text-xs mt-1;
+}
+
+.form-golf-help {
+  @apply text-golf-dark-500 text-xs mt-1;
+}
+
+/* 골프 테마 네비게이션 스타일 */
+.nav-golf {
+  @apply bg-white/95 backdrop-blur-sm border-b border-golf-green-200 shadow-lg;
+}
+
+.nav-golf-item {
+  @apply text-golf-dark-600 hover:text-golf-green-600 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200;
+}
+
+.nav-golf-item-active {
+  @apply text-golf-green-600 bg-golf-green-50;
+}
+
+/* 골프 테마 사이드바 스타일 */
+.sidebar-golf {
+  @apply bg-white/95 backdrop-blur-sm border-r border-golf-green-200 shadow-lg;
+}
+
+.sidebar-golf-item {
+  @apply flex items-center px-4 py-3 text-golf-dark-600 hover:text-golf-green-600 hover:bg-golf-green-50 rounded-lg mx-2 transition-colors duration-200;
+}
+
+.sidebar-golf-item-active {
+  @apply text-golf-green-600 bg-golf-green-50;
+}
+
+.sidebar-golf-icon {
+  @apply w-5 h-5 mr-3;
+}
+
+.sidebar-golf-text {
+  @apply font-medium;
+}
+
+/* 골프 테마 토스트 스타일 */
+.toast-golf {
+  @apply bg-white border border-golf-green-200 rounded-lg shadow-xl p-4;
+}
+
+.toast-golf-success {
+  @apply border-green-200 bg-green-50;
+}
+
+.toast-golf-error {
+  @apply border-red-200 bg-red-50;
+}
+
+.toast-golf-warning {
+  @apply border-orange-200 bg-orange-50;
+}
+
+.toast-golf-info {
+  @apply border-blue-200 bg-blue-50;
+}
+
+/* 골프 테마 드롭다운 스타일 */
+.dropdown-golf {
+  @apply bg-white border border-golf-green-200 rounded-lg shadow-xl overflow-hidden;
+}
+
+.dropdown-golf-item {
+  @apply px-4 py-3 text-golf-dark-700 hover:bg-golf-green-50 hover:text-golf-green-600 transition-colors duration-200 cursor-pointer;
+}
+
+.dropdown-golf-item-selected {
+  @apply bg-golf-green-50 text-golf-green-600;
+}
+
+/* 골프 테마 툴팁 스타일 */
+.tooltip-golf {
+  @apply bg-golf-dark-800 text-white text-sm px-3 py-2 rounded-lg shadow-lg;
+}
+
+.tooltip-golf-arrow {
+  @apply border-4 border-transparent border-t-golf-dark-800;
+}
+
+/* 반응형 유틸리티 */
+@media (max-width: 640px) {
+  .mobile-golf-padding {
+    @apply px-4;
+  }
+  
+  .mobile-golf-text {
+    @apply text-sm;
+  }
+  
+  .mobile-golf-button {
+    @apply py-3 px-6 text-base;
+  }
+}
+
+/* 프린트 스타일 */
+@media print {
+  .print-golf-hide {
+    display: none !important;
+  }
+  
+  .print-golf-show {
+    display: block !important;
+  }
+}

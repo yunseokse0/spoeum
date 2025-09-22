@@ -84,9 +84,6 @@ export default function SignupPage() {
         case 'caddy':
           router.push('/profile/setup');
           break;
-        case 'tour_pro':
-          router.push('/profile/setup');
-          break;
         case 'amateur':
           router.push('/dashboard');
           break;

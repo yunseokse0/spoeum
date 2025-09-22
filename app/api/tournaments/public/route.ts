@@ -69,7 +69,7 @@ const mockTournaments: Tournament[] = [
     endDate: new Date('2024-05-12'),
     registrationStartDate: new Date('2024-03-01'),
     registrationEndDate: new Date('2024-05-01'),
-    type: 'klpga',
+    type: 'pga',
     category: 'women',
     entryFee: 2000000,
     prizePool: 800000000,
