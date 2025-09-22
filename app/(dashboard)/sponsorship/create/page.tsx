@@ -217,7 +217,7 @@ export default function CreateSponsorshipProposalPage() {
               {selectedExposureItems.length > 0 && (
                 <div className="mt-4 flex flex-wrap gap-2">
                   {selectedExposureItems.map((item) => (
-                    <Badge key={item} variant="primary" className="flex items-center space-x-1">
+                    <Badge key={item} variant="blue" className="flex items-center space-x-1">
                       <span>{getExposureItemLabel(item)}</span>
                       <button
                         type="button"
@@ -310,7 +310,7 @@ export default function CreateSponsorshipProposalPage() {
                                     {tournament.location} • {formatDate(tournament.startDate)}
                                   </p>
                                 </div>
-                                <Badge variant="primary">
+                                <Badge variant="blue">
                                   {tournament.type.toUpperCase()}
                                 </Badge>
                               </div>

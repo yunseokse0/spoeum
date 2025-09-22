@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/auth';
 import { ApiResponse, User } from '@/types';
 
+export const dynamic = 'force-dynamic';
+
 // 임시 사용자 데이터 (실제 구현 시 데이터베이스에서 조회)
 const mockUsers: User[] = [
   {
@@ -9,8 +11,11 @@ const mockUsers: User[] = [
     email: 'test@example.com',
     name: '테스트 사용자',
     phone: '010-1234-5678',
-    userType: 'caddy',
+    userType: 'caddy' as const,
+    role: 'user' as const,
     isVerified: true,
+    isActive: true,
+    status: 'active' as const,
     createdAt: new Date(),
     updatedAt: new Date(),
   },
@@ -19,8 +24,11 @@ const mockUsers: User[] = [
     email: 'pro@example.com',
     name: '김투어프로',
     phone: '010-2345-6789',
-    userType: 'tour_pro',
+    userType: 'tour_pro' as const,
+    role: 'user' as const,
     isVerified: true,
+    isActive: true,
+    status: 'active' as const,
     createdAt: new Date(),
     updatedAt: new Date(),
   },

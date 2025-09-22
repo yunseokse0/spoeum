@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import Header from '@/components/layout/Header';
 import BottomNavigation from '@/components/layout/BottomNavigation';
 import { Card, CardBody, CardHeader } from '@/components/ui/Card';
@@ -45,14 +46,14 @@ export default function CreateMatchingRequestPage() {
     watch,
     formState: { errors },
   } = useForm<ExtendedMatchingRequestFormData>({
-    resolver: zodResolver({
-      title: { required: true },
-      description: { required: true },
-      location: { required: true },
-      date: { required: true },
-      budget: { required: true, min: 0 },
-      targetType: { required: true },
-    }),
+    resolver: zodResolver(z.object({
+      title: z.string().min(1, '제목을 입력해주세요.'),
+      description: z.string().min(1, '설명을 입력해주세요.'),
+      location: z.string().min(1, '위치를 입력해주세요.'),
+      date: z.string().min(1, '날짜를 선택해주세요.'),
+      budget: z.number().min(0, '예산은 0 이상이어야 합니다.'),
+      targetType: z.enum(['caddy', 'tour_pro', 'amateur']),
+    })),
     defaultValues: {
       targetType: 'caddy',
     },
@@ -233,7 +234,7 @@ export default function CreateMatchingRequestPage() {
                                 {tournament.location} • {formatDate(tournament.startDate)}
                               </p>
                             </div>
-                            <Badge variant="primary">
+                            <Badge variant="blue">
                               {tournament.type.toUpperCase()}
                             </Badge>
                           </div>

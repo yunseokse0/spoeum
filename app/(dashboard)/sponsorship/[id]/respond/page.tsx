@@ -218,7 +218,7 @@ export default function SponsorshipRespondPage() {
           <CardBody className="space-y-4">
             <div className="flex flex-wrap gap-2">
               {proposal.exposureItems.map((item, index) => (
-                <Badge key={index} variant="primary">
+                <Badge key={index} variant="blue">
                   {getExposureItemLabel(item)}
                 </Badge>
               ))}

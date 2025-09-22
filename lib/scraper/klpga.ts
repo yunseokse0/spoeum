@@ -103,13 +103,13 @@ export class KLPGAscraper extends BaseScraper {
       const career = [];
 
       for (const item of careerItems) {
-        const year = await item.$eval('.career-year', el => parseInt(el.textContent?.trim() || '0'));
-        const title = await item.$eval('.career-title', el => el.textContent?.trim() || '');
-        const result = await item.$eval('.career-result', el => el.textContent?.trim() || '');
+        const year = await item.$eval('.career-year', (el: Element) => parseInt(el.textContent?.trim() || '0'));
+        const title = await item.$eval('.career-title', (el: Element) => el.textContent?.trim() || '');
+        const result = await item.$eval('.career-result', (el: Element) => el.textContent?.trim() || '');
         
         let prize = 0;
         try {
-          const prizeText = await item.$eval('.career-prize', el => el.textContent?.trim() || '');
+          const prizeText = await item.$eval('.career-prize', (el: Element) => el.textContent?.trim() || '');
           prize = this.parseCurrency(prizeText);
         } catch {
           // 상금 정보가 없는 경우
@@ -136,8 +136,8 @@ export class KLPGAscraper extends BaseScraper {
       const ranking: any = {};
 
       for (const item of rankingItems) {
-        const year = await item.$eval('.ranking-year', el => el.textContent?.trim() || '');
-        const rank = await item.$eval('.ranking-position', el => this.parseNumber(el.textContent?.trim() || '0'));
+        const year = await item.$eval('.ranking-year', (el: Element) => el.textContent?.trim() || '');
+        const rank = await item.$eval('.ranking-position', (el: Element) => this.parseNumber(el.textContent?.trim() || '0'));
         
         ranking[year] = rank;
       }

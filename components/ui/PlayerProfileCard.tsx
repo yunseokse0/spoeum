@@ -75,7 +75,7 @@ export function PlayerProfileCard({ player, onPropose, className }: PlayerProfil
               <h3 className="text-xl font-bold text-gray-900 dark:text-white">
                 {player.name}
               </h3>
-              <Badge variant="primary" className="text-xs">
+              <Badge variant="blue" className="text-xs">
                 투어프로
               </Badge>
             </div>

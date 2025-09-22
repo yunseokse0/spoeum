@@ -56,7 +56,7 @@ export class BaseScraper {
         }
       });
 
-      return cheerio.load(response.data);
+      return cheerio.load(response.data) as any;
     } catch (error) {
       console.error('Axios scraping error:', error);
       throw new Error(`Failed to scrape with axios: ${error}`);

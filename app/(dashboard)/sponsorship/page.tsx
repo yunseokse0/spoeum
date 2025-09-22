@@ -113,15 +113,15 @@ export default function SponsorshipPage() {
       case 'accepted':
         return 'success';
       case 'rejected':
-        return 'error';
+        return 'destructive';
       case 'counter_proposed':
-        return 'primary';
+        return 'blue';
       case 'active':
         return 'success';
       case 'completed':
         return 'secondary';
       case 'cancelled':
-        return 'error';
+        return 'destructive';
       default:
         return 'secondary';
     }

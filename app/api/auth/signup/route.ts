@@ -57,7 +57,10 @@ export async function POST(request: NextRequest) {
       name,
       phone,
       userType,
+      role: 'user' as const,
       isVerified: false,
+      isActive: true,
+      status: 'pending' as const,
       createdAt: new Date(),
       updatedAt: new Date(),
     };

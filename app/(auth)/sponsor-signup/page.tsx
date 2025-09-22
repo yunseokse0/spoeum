@@ -71,7 +71,10 @@ export default function SponsorSignupPage() {
         name: data.name,
         phone: data.phone,
         userType: 'sponsor' as const,
+        role: 'user' as const,
         isVerified: false,
+        isActive: true,
+        status: 'pending' as const,
         createdAt: new Date(),
         updatedAt: new Date(),
       };

@@ -33,7 +33,7 @@ export function TournamentCard({
   const getTypeColor = (type: string) => {
     switch (type) {
       case 'pga':
-        return 'primary';
+        return 'blue';
       case 'kpga':
         return 'success';
       case 'amateur':
@@ -41,7 +41,7 @@ export function TournamentCard({
       case 'corporate':
         return 'secondary';
       case 'charity':
-        return 'error';
+        return 'destructive';
       default:
         return 'secondary';
     }
@@ -109,7 +109,7 @@ export function TournamentCard({
     } else if (isTournamentActive()) {
       return <Badge variant="success">진행중</Badge>;
     } else if (isTournamentUpcoming()) {
-      return <Badge variant="primary">예정</Badge>;
+      return <Badge variant="blue">예정</Badge>;
     } else {
       return <Badge variant="secondary">대기</Badge>;
     }
@@ -119,7 +119,7 @@ export function TournamentCard({
     if (isRegistrationOpen()) {
       return <Badge variant="success">접수중</Badge>;
     } else if (tournament.registrationEndDate < new Date()) {
-      return <Badge variant="error">접수마감</Badge>;
+      return <Badge variant="destructive">접수마감</Badge>;
     } else {
       return <Badge variant="warning">접수예정</Badge>;
     }

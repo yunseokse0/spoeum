@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/auth';
 import { ApiResponse, PaginatedResponse, Tournament, TournamentFilter } from '@/types';
 
+export const dynamic = 'force-dynamic';
+
 // 임시 대회 데이터 (실제 구현 시 데이터베이스에서 조회)
 const mockTournaments: Tournament[] = [
   {
@@ -144,7 +146,7 @@ const mockTournaments: Tournament[] = [
 // GET - 대회 목록 조회
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
+    const searchParams = request.nextUrl.searchParams;
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '20');
     const type = searchParams.get('type');

@@ -86,7 +86,7 @@ export class GolfCourseScraper {
       await this.page.goto(source.url, { waitUntil: 'domcontentloaded' });
       
       // 페이지 로딩 대기
-      await this.page.waitForTimeout(3000);
+      await new Promise(resolve => setTimeout(resolve, 3000));
       
       // 동적 컨텐츠 로딩 대기
       try {
@@ -145,7 +145,7 @@ export class GolfCourseScraper {
         allCourses.push(...courses);
         
         // 소스 간 요청 지연
-        await this.page?.waitForTimeout(2000);
+        await new Promise(resolve => setTimeout(resolve, 2000));
       } catch (error) {
         console.error(`소스 ${source.name} 처리 오류:`, error);
       }

@@ -92,7 +92,10 @@ export default function CaddySignupPage() {
         name: data.name,
         phone: data.phone,
         userType: 'caddy' as const,
+        role: 'user' as const,
         isVerified: false,
+        isActive: true,
+        status: 'pending' as const,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
@@ -141,28 +144,36 @@ export default function CaddySignupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
+    <div className="min-h-screen bg-gradient-to-br from-golf-green-50 via-white to-golf-sand-50 dark:from-golf-dark-900 dark:via-golf-dark-800 dark:to-golf-dark-900 relative overflow-hidden">
+      {/* 골프장 배경 텍스처 */}
+      <div className="absolute inset-0 opacity-5">
+        <div className="absolute top-10 left-10 w-32 h-32 bg-golf-green-500 rounded-full"></div>
+        <div className="absolute top-32 right-20 w-24 h-24 bg-golf-sky-500 rounded-full"></div>
+        <div className="absolute bottom-20 left-1/4 w-40 h-40 bg-golf-sand-500 rounded-full"></div>
+        <div className="absolute bottom-40 right-1/3 w-28 h-28 bg-golf-green-400 rounded-full"></div>
+      </div>
+      
+      <div className="container mx-auto px-4 py-8 max-w-4xl relative z-10">
         {/* 헤더 */}
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-gradient-to-br from-green-600 to-green-800 rounded-2xl mx-auto mb-4 flex items-center justify-center">
-            <GraduationCap className="w-8 h-8 text-white" />
+          <div className="w-20 h-20 bg-gradient-to-br from-golf-sand-600 to-golf-sand-800 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg">
+            <div className="text-3xl">🏌️</div>
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+          <h1 className="text-4xl font-bold font-display text-golf-dark-700 mb-2">
             캐디 회원가입
           </h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            전문적인 골프 캐디로 활동하세요
+          <p className="text-golf-dark-600 text-lg">
+            전문적인 골프 캐디로 투어프로와 함께 성장하세요
           </p>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* 기본 정보 */}
-          <Card className="border-blue-200 dark:border-blue-800">
-            <CardHeader className="bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20">
+          <Card className="border-golf-green-200 shadow-lg bg-white/90 backdrop-blur-sm">
+            <CardHeader className="bg-gradient-to-r from-golf-green-500 to-golf-green-600 text-white rounded-t-lg">
               <div className="flex items-center space-x-2">
-                <User className="w-5 h-5 text-blue-600" />
-                <h2 className="text-lg font-semibold text-blue-900 dark:text-blue-100">
+                <div className="text-xl">👤</div>
+                <h2 className="text-lg font-semibold font-display">
                   기본 정보
                 </h2>
               </div>

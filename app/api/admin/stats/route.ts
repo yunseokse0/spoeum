@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { AdminStats } from '@/types';
 
+export const dynamic = 'force-dynamic';
+
 // Mock 관리자 통계 데이터
 const mockAdminStats: AdminStats = {
   totalUsers: 1250,

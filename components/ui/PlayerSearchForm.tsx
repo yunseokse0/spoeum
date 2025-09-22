@@ -195,7 +195,7 @@ export function PlayerSearchForm({
                   <h5 className="text-xl font-bold text-gray-900 dark:text-white">
                     {playerInfo.name}
                   </h5>
-                  <Badge variant="primary">{playerInfo.association}</Badge>
+                  <Badge variant="blue">{playerInfo.association}</Badge>
                 </div>
                 <div className="flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-400">
                   <div className="flex items-center space-x-1">

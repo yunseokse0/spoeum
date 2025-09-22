@@ -13,8 +13,7 @@ import {
   Settings,
   Users,
   Calendar,
-  Trophy,
-  Users
+  Trophy
 } from 'lucide-react';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useNotificationStore } from '@/store/useNotificationStore';

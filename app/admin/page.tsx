@@ -142,7 +142,7 @@ export default function AdminPage() {
   const getUserTypeColor = (userType: string) => {
     switch (userType) {
       case 'caddy':
-        return 'primary';
+        return 'blue';
       case 'tour_pro':
         return 'success';
       case 'amateur':
@@ -161,7 +161,7 @@ export default function AdminPage() {
       case 'pending':
         return 'warning';
       case 'suspended':
-        return 'error';
+        return 'destructive';
       case 'completed':
         return 'success';
       default:

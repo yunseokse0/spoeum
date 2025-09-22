@@ -125,7 +125,7 @@ export default function PaymentsPage() {
       case 'pending':
         return 'warning';
       case 'failed':
-        return 'error';
+        return 'destructive';
       case 'refunded':
         return 'secondary';
       default:

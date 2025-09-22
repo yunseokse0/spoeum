@@ -330,7 +330,7 @@ export function GolfCourseSelector({
                   `}
                 >
                   {index === 0 && (
-                    <Badge variant="primary" className="text-xs">
+                    <Badge variant="blue" className="text-xs">
                       주소속
                     </Badge>
                   )}

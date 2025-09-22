@@ -100,7 +100,7 @@ export function ContractCancellationModal({
         penaltyPercent
       };
 
-      const response = await api.cancelContract(request);
+      const response = await api.cancelContract(contract.id, finalReason);
 
       if (response.success) {
         toast.success('계약 파기 요청이 완료되었습니다.');
@@ -236,12 +236,12 @@ export function ContractCancellationModal({
               </div>
               
               {reason === '기타 (직접 입력)' && (
-                <Input
+                <textarea
                   placeholder="파기 사유를 자세히 입력해주세요"
                   value={customReason}
                   onChange={(e) => setCustomReason(e.target.value)}
-                  multiline
                   rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white"
                 />
               )}
             </div>

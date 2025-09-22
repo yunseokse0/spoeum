@@ -57,7 +57,7 @@ export const fetchUserStats = createAsyncThunk(
   'user/fetchUserStats',
   async (userId: string, { rejectWithValue }) => {
     try {
-      const response = await api.getUserStats(userId);
+      const response = await api.get(`/users/${userId}/stats`);
       
       if (response.success && response.data) {
         return response.data;

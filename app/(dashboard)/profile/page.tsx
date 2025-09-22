@@ -26,7 +26,9 @@ import {
   TrendingUp,
   Clock,
   CheckCircle,
-  XCircle
+  XCircle,
+  Users,
+  DollarSign
 } from 'lucide-react';
 import { formatDate, formatCurrency } from '@/lib/utils';
 import { useAuthStore } from '@/store/useAuthStore';
@@ -64,7 +66,7 @@ export default function ProfilePage() {
   const getUserTypeColor = (userType: UserType) => {
     switch (userType) {
       case 'caddy':
-        return 'primary';
+        return 'blue';
       case 'tour_pro':
         return 'success';
       case 'amateur':

@@ -115,7 +115,7 @@ export default function MatchingPage() {
       case 'completed':
         return 'secondary';
       case 'cancelled':
-        return 'error';
+        return 'destructive';
       default:
         return 'secondary';
     }

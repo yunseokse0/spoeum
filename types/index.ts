@@ -108,6 +108,7 @@ export interface GolfCourseSearchResponse {
   success: boolean;
   data?: GolfCourse[];
   error?: string;
+  autoSynced?: boolean;
 }
 
 // 캐디 골프장 소속 정보
@@ -135,6 +136,66 @@ export interface GolfCourseApprovalRequest {
   rejectionReason?: string;
 }
 
+// 성별 타입
+export type Gender = 'male' | 'female';
+
+// 회원 상태 타입
+export type MemberStatus = 'active' | 'inactive' | 'pending' | 'suspended';
+
+// 투어프로 정보
+export interface TourProInfo {
+  association: GolfAssociation;
+  memberNumber?: string;
+  gender: Gender; // KLPGA=female, KPGA=male
+  career?: PlayerCareer[];
+  ranking?: Record<string, number>;
+  totalPrize?: number;
+}
+
+// 아마추어 정보
+export interface AmateurInfo {
+  gender?: Gender;
+  handicap?: number;
+  preferredRegions?: string[];
+}
+
+// 캐디 정보
+export interface CaddyInfo {
+  gender: Gender;
+  mainClub?: string;
+  additionalClubs?: string[];
+  freelancer: boolean;
+  licenseNumber?: string;
+  career?: number;
+  specializations?: string[];
+  rating?: number;
+  totalContracts?: number;
+  hourlyRate?: number;
+  availableRegions?: string[];
+}
+
+// 스폰서 정보
+export interface SponsorInfo {
+  companyName: string;
+  businessLicense: string;
+  representative: string;
+  address: string;
+  website?: string;
+  industry: string;
+  companySize: 'small' | 'medium' | 'large' | 'enterprise';
+  budget?: number;
+  businessLicenseVerified: boolean;
+}
+
+// 에이전시 정보
+export interface AgencyInfo {
+  businessLicense: string;
+  companyName: string;
+  address: string;
+  representative: string;
+  businessLicenseVerified: boolean;
+}
+
 export interface User {
   id: string;
   email: string;
@@ -148,6 +209,25 @@ export interface User {
   lastLoginAt?: Date;
   createdAt: Date;
   updatedAt: Date;
+  
+  // 확장 정보 (userType에 따라 선택적)
+  gender?: Gender;
+  status: MemberStatus;
+  
+  // 투어프로 정보
+  tourProInfo?: TourProInfo;
+  
+  // 아마추어 정보
+  amateurInfo?: AmateurInfo;
+  
+  // 캐디 정보
+  caddyInfo?: CaddyInfo;
+  
+  // 스폰서 정보
+  sponsorInfo?: SponsorInfo;
+  
+  // 에이전시 정보
+  agencyInfo?: AgencyInfo;
 }
 
 // 관리자 로그인 데이터
@@ -504,6 +584,12 @@ export interface ApiResponse<T = any> {
   data?: T;
   message?: string;
   error?: string;
+  pagination?: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
 }
 
 export interface PaginatedResponse<T> extends ApiResponse<T[]> {

@@ -1,0 +1,334 @@
+[
+  {
+    "id": "player_001",
+    "name": "김투어프로",
+    "association": "KLPGA",
+    "memberNumber": "KLPGA12345",
+    "gender": "female",
+    "birth": "1995-03-15",
+    "career": [
+      {
+        "year": 2023,
+        "title": "KLPGA 투어 우승",
+        "result": "1위",
+        "prize": 50000000,
+        "ranking": 5
+      },
+      {
+        "year": 2022,
+        "title": "한국 여자 오픈",
+        "result": "2위",
+        "prize": 30000000,
+        "ranking": 12
+      },
+      {
+        "year": 2021,
+        "title": "KLPGA 선수권",
+        "result": "3위",
+        "prize": 20000000,
+        "ranking": 18
+      }
+    ],
+    "ranking": {
+      "2023": 5,
+      "2022": 12,
+      "2021": 18
+    },
+    "totalPrize": 100000000,
+    "profileImage": "/images/players/kim-tour-pro.jpg",
+    "isActive": true
+  },
+  {
+    "id": "player_002",
+    "name": "이골퍼",
+    "association": "KPGA",
+    "memberNumber": "KPGA98765",
+    "gender": "male",
+    "birth": "1992-07-22",
+    "career": [
+      {
+        "year": 2023,
+        "title": "KPGA 투어 우승",
+        "result": "1위",
+        "prize": 80000000,
+        "ranking": 3
+      },
+      {
+        "year": 2022,
+        "title": "코리안 투어",
+        "result": "4위",
+        "prize": 25000000,
+        "ranking": 8
+      }
+    ],
+    "ranking": {
+      "2023": 3,
+      "2022": 8
+    },
+    "totalPrize": 105000000,
+    "profileImage": "/images/players/lee-golfer.jpg",
+    "isActive": true
+  },
+  {
+    "id": "player_003",
+    "name": "박프로",
+    "association": "KLPGA",
+    "memberNumber": "KLPGA54321",
+    "gender": "female",
+    "birth": "1998-11-08",
+    "career": [
+      {
+        "year": 2023,
+        "title": "KLPGA 신인왕",
+        "result": "신인상",
+        "prize": 15000000,
+        "ranking": 25
+      }
+    ],
+    "ranking": {
+      "2023": 25
+    },
+    "totalPrize": 15000000,
+    "profileImage": "/images/players/park-pro.jpg",
+    "isActive": true
+  },
+  {
+    "id": "player_004",
+    "name": "최마스터",
+    "association": "KPGA",
+    "memberNumber": "KPGA11111",
+    "gender": "male",
+    "birth": "1990-05-12",
+    "career": [
+      {
+        "year": 2023,
+        "title": "KPGA 선수권",
+        "result": "2위",
+        "prize": 40000000,
+        "ranking": 2
+      },
+      {
+        "year": 2022,
+        "title": "대회 우승",
+        "result": "1위",
+        "prize": 60000000,
+        "ranking": 1
+      },
+      {
+        "year": 2021,
+        "title": "투어 우승",
+        "result": "1위",
+        "prize": 70000000,
+        "ranking": 3
+      }
+    ],
+    "ranking": {
+      "2023": 2,
+      "2022": 1,
+      "2021": 3
+    },
+    "totalPrize": 170000000,
+    "profileImage": "/images/players/choi-master.jpg",
+    "isActive": true
+  },
+  {
+    "id": "player_005",
+    "name": "정에이스",
+    "association": "KLPGA",
+    "memberNumber": "KLPGA99999",
+    "gender": "female",
+    "birth": "1996-09-30",
+    "career": [],
+    "ranking": {},
+    "totalPrize": 0,
+    "profileImage": "/images/players/jung-ace.jpg",
+    "isActive": false
+  },
+  {
+    "id": "player_006",
+    "name": "윤챔피언",
+    "association": "KPGA",
+    "memberNumber": "KPGA22222",
+    "gender": "male",
+    "birth": "1988-12-03",
+    "career": [
+      {
+        "year": 2023,
+        "title": "KPGA 챔피언십",
+        "result": "1위",
+        "prize": 90000000,
+        "ranking": 1
+      },
+      {
+        "year": 2022,
+        "title": "투어 최종전",
+        "result": "2위",
+        "prize": 55000000,
+        "ranking": 4
+      },
+      {
+        "year": 2021,
+        "title": "메이저 대회",
+        "result": "1위",
+        "prize": 120000000,
+        "ranking": 2
+      }
+    ],
+    "ranking": {
+      "2023": 1,
+      "2022": 4,
+      "2021": 2
+    },
+    "totalPrize": 265000000,
+    "profileImage": "/images/players/yoon-champion.jpg",
+    "isActive": true
+  },
+  {
+    "id": "player_007",
+    "name": "한슈퍼",
+    "association": "KLPGA",
+    "memberNumber": "KLPGA77777",
+    "gender": "female",
+    "birth": "1993-04-18",
+    "career": [
+      {
+        "year": 2023,
+        "title": "KLPGA 그랜드슬램",
+        "result": "1위",
+        "prize": 75000000,
+        "ranking": 4
+      },
+      {
+        "year": 2022,
+        "title": "여자 오픈",
+        "result": "3위",
+        "prize": 35000000,
+        "ranking": 7
+      },
+      {
+        "year": 2021,
+        "title": "투어 우승",
+        "result": "1위",
+        "prize": 65000000,
+        "ranking": 5
+      }
+    ],
+    "ranking": {
+      "2023": 4,
+      "2022": 7,
+      "2021": 5
+    },
+    "totalPrize": 175000000,
+    "profileImage": "/images/players/han-super.jpg",
+    "isActive": true
+  },
+  {
+    "id": "player_008",
+    "name": "강레전드",
+    "association": "KPGA",
+    "memberNumber": "KPGA33333",
+    "gender": "male",
+    "birth": "1985-08-25",
+    "career": [
+      {
+        "year": 2023,
+        "title": "KPGA 레전드 투어",
+        "result": "1위",
+        "prize": 110000000,
+        "ranking": 6
+      },
+      {
+        "year": 2022,
+        "title": "시니어 챔피언십",
+        "result": "2위",
+        "prize": 70000000,
+        "ranking": 9
+      },
+      {
+        "year": 2021,
+        "title": "마스터즈",
+        "result": "4위",
+        "prize": 45000000,
+        "ranking": 12
+      }
+    ],
+    "ranking": {
+      "2023": 6,
+      "2022": 9,
+      "2021": 12
+    },
+    "totalPrize": 225000000,
+    "profileImage": "/images/players/kang-legend.jpg",
+    "isActive": true
+  },
+  {
+    "id": "player_009",
+    "name": "송프린세스",
+    "association": "KLPGA",
+    "memberNumber": "KLPGA55555",
+    "gender": "female",
+    "birth": "1997-01-14",
+    "career": [
+      {
+        "year": 2023,
+        "title": "KLPGA 프린세스 컵",
+        "result": "1위",
+        "prize": 85000000,
+        "ranking": 8
+      },
+      {
+        "year": 2022,
+        "title": "신인왕 후보",
+        "result": "5위",
+        "prize": 20000000,
+        "ranking": 15
+      }
+    ],
+    "ranking": {
+      "2023": 8,
+      "2022": 15
+    },
+    "totalPrize": 105000000,
+    "profileImage": "/images/players/song-princess.jpg",
+    "isActive": true
+  },
+  {
+    "id": "player_010",
+    "name": "임스타",
+    "association": "KPGA",
+    "memberNumber": "KPGA44444",
+    "gender": "male",
+    "birth": "1994-06-07",
+    "career": [
+      {
+        "year": 2023,
+        "title": "KPGA 스타 투어",
+        "result": "3위",
+        "prize": 60000000,
+        "ranking": 7
+      },
+      {
+        "year": 2022,
+        "title": "올스타전",
+        "result": "1위",
+        "prize": 80000000,
+        "ranking": 6
+      },
+      {
+        "year": 2021,
+        "title": "투어 데뷔",
+        "result": "10위",
+        "prize": 25000000,
+        "ranking": 20
+      }
+    ],
+    "ranking": {
+      "2023": 7,
+      "2022": 6,
+      "2021": 20
+    },
+    "totalPrize": 165000000,
+    "profileImage": "/images/players/lim-star.jpg",
+    "isActive": true
+  }
+]

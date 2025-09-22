@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import Header from '@/components/layout/Header';
@@ -25,7 +25,7 @@ import { SponsorshipProposalForm, ExposureItem, Tournament } from '@/types';
 import api from '@/lib/api';
 import toast from 'react-hot-toast';
 
-export default function SponsorshipProposePage() {
+function SponsorshipProposeContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { userType, isAuthenticated } = useAuthStore();
@@ -273,5 +273,13 @@ export default function SponsorshipProposePage() {
       {/* 하단 네비게이션 */}
       <BottomNavigation />
     </div>
+  );
+}
+
+export default function SponsorshipProposePage() {
+  return (
+    <Suspense fallback={<div>로딩 중...</div>}>
+      <SponsorshipProposeContent />
+    </Suspense>
   );
 }

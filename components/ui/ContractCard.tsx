@@ -78,9 +78,9 @@ export function ContractCard({
       case 'active':
         return 'success';
       case 'completed':
-        return 'primary';
+        return 'blue';
       case 'cancelled':
-        return 'error';
+        return 'destructive';
       default:
         return 'secondary';
     }
@@ -106,7 +106,7 @@ export function ContractCard({
       case 'pending':
         return 'warning';
       case 'refunded':
-        return 'error';
+        return 'destructive';
       default:
         return 'secondary';
     }

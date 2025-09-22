@@ -130,7 +130,7 @@ export default function ContractsPage() {
       case 'completed':
         return 'secondary';
       case 'cancelled':
-        return 'error';
+        return 'destructive';
       default:
         return 'secondary';
     }
@@ -165,7 +165,7 @@ export default function ContractsPage() {
   const getTypeColor = (type: string) => {
     switch (type) {
       case 'tournament':
-        return 'primary';
+        return 'blue';
       case 'annual':
         return 'success';
       default:
@@ -198,36 +198,39 @@ export default function ContractsPage() {
     .reduce((sum, c) => sum + c.baseRate, 0);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20">
+    <div className="min-h-screen bg-gradient-to-br from-golf-green-50 via-white to-golf-sky-50 dark:from-golf-dark-900 dark:via-golf-dark-800 dark:to-golf-dark-900 pb-20">
       {/* 헤더 */}
       <Header 
-        title="계약 관리" 
+        title="계약 스코어보드" 
         showSearchButton={true}
         showNotificationButton={true}
       />
 
       {/* 메인 콘텐츠 */}
       <main className="px-4 py-6 space-y-4">
-        {/* 통계 카드 */}
+        {/* 골프 스코어보드 스타일 통계 */}
         <div className="grid grid-cols-3 gap-3">
-          <Card className="p-3">
+          <Card className="p-3 bg-white/80 backdrop-blur-sm border-golf-green-200 shadow-lg">
             <div className="text-center">
-              <p className="text-2xl font-bold text-primary-600">{activeContracts}</p>
-              <p className="text-xs text-gray-600 dark:text-gray-400">진행중</p>
+              <div className="text-2xl mb-1">🟢</div>
+              <p className="text-2xl font-display font-bold text-golf-green-600">{activeContracts}</p>
+              <p className="text-xs text-golf-green-600 font-medium">진행중</p>
             </div>
           </Card>
-          <Card className="p-3">
+          <Card className="p-3 bg-white/80 backdrop-blur-sm border-golf-sky-200 shadow-lg">
             <div className="text-center">
-              <p className="text-2xl font-bold text-success-600">{completedContracts}</p>
-              <p className="text-xs text-gray-600 dark:text-gray-400">완료</p>
+              <div className="text-2xl mb-1">🏆</div>
+              <p className="text-2xl font-display font-bold text-golf-sky-600">{completedContracts}</p>
+              <p className="text-xs text-golf-sky-600 font-medium">완료</p>
             </div>
           </Card>
-          <Card className="p-3">
+          <Card className="p-3 bg-white/80 backdrop-blur-sm border-golf-sand-200 shadow-lg">
             <div className="text-center">
-              <p className="text-lg font-bold text-warning-600">
+              <div className="text-2xl mb-1">💰</div>
+              <p className="text-lg font-display font-bold text-golf-sand-600">
                 {formatCurrency(totalEarnings).replace('₩', '')}원
               </p>
-              <p className="text-xs text-gray-600 dark:text-gray-400">총 수익</p>
+              <p className="text-xs text-golf-sand-600 font-medium">총 수익</p>
             </div>
           </Card>
         </div>
@@ -299,38 +302,56 @@ export default function ContractsPage() {
           새로운 계약 생성
         </Button>
 
-        {/* 계약 목록 */}
+        {/* 골프 스코어보드 스타일 계약 목록 */}
         <div className="space-y-4">
           {filteredContracts.length === 0 ? (
-            <Card>
+            <Card className="bg-white/90 backdrop-blur-sm shadow-lg border-golf-green-100">
               <CardBody className="text-center py-12">
-                <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                <div className="text-6xl mb-4">📋</div>
+                <h3 className="text-lg font-medium text-golf-dark-700 mb-2">
                   계약이 없습니다
                 </h3>
-                <p className="text-gray-600 dark:text-gray-400">
+                <p className="text-golf-dark-600">
                   {searchQuery ? '검색 결과가 없습니다.' : '아직 등록된 계약이 없습니다.'}
                 </p>
               </CardBody>
             </Card>
           ) : (
-            filteredContracts.map((contract) => (
-              <Card key={contract.id} className="cursor-pointer hover:shadow-md transition-shadow">
+            filteredContracts.map((contract, index) => (
+              <Card key={contract.id} className="cursor-pointer hover:shadow-lg transition-all duration-300 bg-white/90 backdrop-blur-sm border-golf-green-100 shadow-md">
                 <CardBody>
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1">
-                      <div className="flex items-center space-x-2 mb-1">
-                        <Badge variant={getTypeColor(contract.type)}>
+                      <div className="flex items-center space-x-3 mb-2">
+                        <div className="w-8 h-8 bg-golf-green-100 rounded-full flex items-center justify-center text-golf-green-600 font-display font-bold text-sm">
+                          {index + 1}
+                        </div>
+                        <Badge 
+                          variant={getTypeColor(contract.type)}
+                          className={`${
+                            contract.type === 'tournament' ? 'bg-golf-green-100 text-golf-green-700' :
+                            contract.type === 'annual' ? 'bg-golf-sky-100 text-golf-sky-700' :
+                            'bg-golf-sand-100 text-golf-sand-700'
+                          }`}
+                        >
                           {getTypeLabel(contract.type)}
                         </Badge>
-                        <Badge variant={getStatusColor(contract.status)}>
+                        <Badge 
+                          variant={getStatusColor(contract.status)}
+                          className={`${
+                            contract.status === 'active' ? 'bg-golf-green-100 text-golf-green-700' :
+                            contract.status === 'completed' ? 'bg-golf-sky-100 text-golf-sky-700' :
+                            contract.status === 'cancelled' ? 'bg-red-100 text-red-700' :
+                            'bg-golf-sand-100 text-golf-sand-700'
+                          }`}
+                        >
                           {getStatusLabel(contract.status)}
                         </Badge>
                         {isContractUpcoming(contract) && (
                           <Badge variant="warning">시작 예정</Badge>
                         )}
                         {isContractExpired(contract) && (
-                          <Badge variant="error">만료됨</Badge>
+                          <Badge variant="destructive">만료됨</Badge>
                         )}
                       </div>
                       <h3 className="font-semibold text-gray-900 dark:text-white text-lg mb-1">

@@ -60,7 +60,10 @@ export default function SignupPage() {
         name: data.name,
         phone: data.phone,
         userType: data.userType,
+        role: 'user' as const,
         isVerified: false,
+        isActive: true,
+        status: 'pending' as const,
         createdAt: new Date(),
         updatedAt: new Date(),
       };

@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { User, AdminActivityLog } from '@/types';
 
+export const dynamic = 'force-dynamic';
+
 // Mock 회원 데이터
 const mockUsers: User[] = [
   {
@@ -15,7 +17,8 @@ const mockUsers: User[] = [
     isActive: true,
     lastLoginAt: new Date('2024-01-15T10:30:00Z'),
     createdAt: new Date('2024-01-01'),
-    updatedAt: new Date('2024-01-15')
+    updatedAt: new Date('2024-01-15'),
+    status: 'active'
   },
   {
     id: 'user_002',
@@ -29,7 +32,8 @@ const mockUsers: User[] = [
     isActive: true,
     lastLoginAt: new Date('2024-01-14T15:20:00Z'),
     createdAt: new Date('2024-01-02'),
-    updatedAt: new Date('2024-01-14')
+    updatedAt: new Date('2024-01-14'),
+    status: 'active'
   },
   {
     id: 'user_003',
@@ -43,7 +47,8 @@ const mockUsers: User[] = [
     isActive: false,
     lastLoginAt: new Date('2024-01-10T09:15:00Z'),
     createdAt: new Date('2024-01-03'),
-    updatedAt: new Date('2024-01-10')
+    updatedAt: new Date('2024-01-10'),
+    status: 'pending'
   }
 ];
 

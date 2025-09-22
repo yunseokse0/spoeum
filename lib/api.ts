@@ -48,6 +48,27 @@ apiClient.interceptors.response.use(
 
 // API 클래스
 class ApiClient {
+  // 일반 HTTP 메서드
+  async get(url: string, config?: AxiosRequestConfig): Promise<any> {
+    const response = await apiClient.get(url, config);
+    return response.data;
+  }
+
+  async post(url: string, data?: any, config?: AxiosRequestConfig): Promise<any> {
+    const response = await apiClient.post(url, data, config);
+    return response.data;
+  }
+
+  async put(url: string, data?: any, config?: AxiosRequestConfig): Promise<any> {
+    const response = await apiClient.put(url, data, config);
+    return response.data;
+  }
+
+  async delete(url: string, config?: AxiosRequestConfig): Promise<any> {
+    const response = await apiClient.delete(url, config);
+    return response.data;
+  }
+
   // 인증 관련 API
   async login(email: string, password: string): Promise<ApiResponse<{ token: string; user: any }>> {
     const response = await apiClient.post('/auth/login', { email, password });
@@ -354,22 +375,9 @@ class ApiClient {
   }
 
   // 계약 파기
-  async cancelContract(request: ContractCancellationRequest): Promise<ContractCancellationResponse> {
-    const { data } = await apiClient.post('/contracts/cancel', request);
-    return data;
-  }
 
   // 계약 조회
-  async getContract(contractId: string): Promise<ApiResponse<Contract>> {
-    const { data } = await apiClient.get(`/contracts/cancel?id=${contractId}`);
-    return data;
-  }
 
-  // 전체 계약 목록 조회
-  async getContracts(): Promise<ApiResponse<Contract[]>> {
-    const { data } = await apiClient.get('/contracts/cancel');
-    return data;
-  }
 }
 
 // API 클라이언트 인스턴스 생성 및 내보내기

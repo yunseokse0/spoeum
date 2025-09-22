@@ -17,8 +17,13 @@ import {
   Clock,
   MapPin,
   Star,
-  Users,
-  Trophy
+  Trophy,
+  FileText,
+  UserCheck,
+  Flag,
+  Target,
+  Award,
+  Zap
 } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import { UserType } from '@/types';
@@ -180,151 +185,176 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20">
+    <div className="min-h-screen bg-gradient-to-br from-golf-green-50 via-white to-golf-sky-50 dark:from-golf-dark-900 dark:via-golf-dark-800 dark:to-golf-dark-900 pb-20">
       {/* 헤더 */}
       <Header 
-        title="대시보드" 
+        title="스포이음" 
         showNotificationButton={true}
         showMenuButton={true}
       />
 
       {/* 메인 콘텐츠 */}
       <main className="px-4 py-6 space-y-6">
-        {/* 환영 메시지 */}
-        <div className="card">
-          <div className="card-body">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-              안녕하세요, {user?.name}님! 👋
-            </h2>
-            <p className="text-gray-600 dark:text-gray-400">
-              {getUserTypeLabel(userType!)} 계정으로 로그인하셨습니다.
-            </p>
+        {/* 골프장 배너 */}
+        <div className="relative rounded-2xl overflow-hidden bg-gradient-to-r from-golf-green-500 to-golf-green-600 text-white">
+          <div className="absolute inset-0 bg-black/20"></div>
+          <div className="relative p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-bold mb-1">
+                  안녕하세요, {user?.name}님! ⛳
+                </h2>
+                <p className="text-golf-green-100">
+                  {getUserTypeLabel(userType!)}로 골프의 세계로 오신 것을 환영합니다
+                </p>
+              </div>
+              <div className="text-4xl">🏌️‍♂️</div>
+            </div>
+          </div>
+          {/* 골프장 일러스트 배경 */}
+          <div className="absolute bottom-0 right-0 w-32 h-32 opacity-10">
+            <div className="w-full h-full bg-white rounded-full"></div>
           </div>
         </div>
 
-        {/* 통계 카드 */}
+        {/* 골프 스코어보드 스타일 통계 카드 */}
         <div className="grid grid-cols-2 gap-4">
-          <Card className="p-4">
+          <Card className="p-4 bg-white/80 backdrop-blur-sm border-golf-green-200 shadow-lg">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">총 계약</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                <p className="text-sm text-golf-green-600 font-medium">⛳ 이번주 대회</p>
+                <p className="text-2xl font-display font-bold text-golf-green-700">
                   {mockStats.totalContracts}
                 </p>
               </div>
-              <div className="p-3 bg-primary-100 dark:bg-primary-900 rounded-full">
-                <FileText className="h-6 w-6 text-primary-600 dark:text-primary-400" />
+              <div className="p-3 bg-golf-green-100 rounded-full">
+                <Flag className="h-6 w-6 text-golf-green-600" />
               </div>
             </div>
           </Card>
 
-          <Card className="p-4">
+          <Card className="p-4 bg-white/80 backdrop-blur-sm border-golf-sky-200 shadow-lg">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">이번 달 수익</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                <p className="text-sm text-golf-sky-600 font-medium">📑 내 계약 현황</p>
+                <p className="text-2xl font-display font-bold text-golf-sky-700">
                   {formatCurrency(mockStats.monthlyEarnings).replace('₩', '')}원
                 </p>
               </div>
-              <div className="p-3 bg-success-100 dark:bg-success-900 rounded-full">
-                <DollarSign className="h-6 w-6 text-success-600 dark:text-success-400" />
+              <div className="p-3 bg-golf-sky-100 rounded-full">
+                <Target className="h-6 w-6 text-golf-sky-600" />
               </div>
             </div>
           </Card>
 
-          <Card className="p-4">
+          <Card className="p-4 bg-white/80 backdrop-blur-sm border-golf-sand-200 shadow-lg">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">평균 평점</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                <p className="text-sm text-golf-sand-600 font-medium">🏌️ 매칭 요청</p>
+                <p className="text-2xl font-display font-bold text-golf-sand-700">
                   {mockStats.averageRating}
                 </p>
               </div>
-              <div className="p-3 bg-warning-100 dark:bg-warning-900 rounded-full">
-                <Star className="h-6 w-6 text-warning-600 dark:text-warning-400" />
+              <div className="p-3 bg-golf-sand-100 rounded-full">
+                <Award className="h-6 w-6 text-golf-sand-600" />
               </div>
             </div>
           </Card>
 
-          <Card className="p-4">
+          <Card className="p-4 bg-white/80 backdrop-blur-sm border-golf-green-200 shadow-lg">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">대기 요청</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                <p className="text-sm text-golf-green-600 font-medium">⚡ 대기 요청</p>
+                <p className="text-2xl font-display font-bold text-golf-green-700">
                   {mockStats.pendingRequests}
                 </p>
               </div>
-              <div className="p-3 bg-secondary-100 dark:bg-secondary-900 rounded-full">
-                <Clock className="h-6 w-6 text-secondary-600 dark:text-secondary-400" />
+              <div className="p-3 bg-golf-green-100 rounded-full">
+                <Zap className="h-6 w-6 text-golf-green-600" />
               </div>
             </div>
           </Card>
         </div>
 
-        {/* 빠른 액션 */}
-        <Card>
-          <div className="card-header">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-              빠른 액션
+        {/* 골프 액션 버튼 */}
+        <Card className="bg-white/90 backdrop-blur-sm shadow-lg border-golf-green-100">
+          <div className="card-header bg-gradient-to-r from-golf-green-500 to-golf-green-600 text-white rounded-t-lg">
+            <h3 className="text-lg font-semibold flex items-center">
+              🏌️‍♂️ 골프 액션
             </h3>
           </div>
-          <div className="card-body">
+          <div className="card-body p-4">
             <div className="grid grid-cols-2 gap-3">
               <Button
-                variant="outline"
-                className="h-20 flex flex-col items-center justify-center"
+                className="h-20 flex flex-col items-center justify-center bg-gradient-to-br from-golf-green-500 to-golf-green-600 hover:from-golf-green-600 hover:to-golf-green-700 text-white border-0 shadow-lg"
                 onClick={() => router.push('/matching/create')}
               >
-                <Plus className="h-6 w-6 mb-2" />
-                <span className="text-sm">매칭 요청</span>
+                <div className="text-2xl mb-1">⛳</div>
+                <span className="text-sm font-medium">매칭 요청</span>
               </Button>
               
               <Button
-                variant="outline"
-                className="h-20 flex flex-col items-center justify-center"
+                className="h-20 flex flex-col items-center justify-center bg-gradient-to-br from-golf-sky-500 to-golf-sky-600 hover:from-golf-sky-600 hover:to-golf-sky-700 text-white border-0 shadow-lg"
                 onClick={() => router.push('/matching')}
               >
-                <Users className="h-6 w-6 mb-2" />
-                <span className="text-sm">매칭 찾기</span>
+                <div className="text-2xl mb-1">🔍</div>
+                <span className="text-sm font-medium">매칭 찾기</span>
               </Button>
             </div>
           </div>
         </Card>
 
-        {/* 최근 계약 */}
-        <Card>
-          <div className="card-header flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-              최근 계약
+        {/* 골프 스코어보드 스타일 계약 */}
+        <Card className="bg-white/90 backdrop-blur-sm shadow-lg border-golf-green-100">
+          <div className="card-header bg-gradient-to-r from-golf-sky-500 to-golf-sky-600 text-white rounded-t-lg flex items-center justify-between">
+            <h3 className="text-lg font-semibold flex items-center">
+              📑 내 계약 스코어보드
             </h3>
-            <Button variant="ghost" size="sm" onClick={() => router.push('/contracts')}>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => router.push('/contracts')}
+              className="text-white hover:bg-white/20"
+            >
               전체보기
             </Button>
           </div>
           <div className="card-body p-0">
-            <div className="divide-y divide-gray-200 dark:divide-gray-700">
-              {mockRecentContracts.map((contract) => (
-                <div key={contract.id} className="p-4 hover:bg-gray-50 dark:hover:bg-gray-800">
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-medium text-gray-900 dark:text-white">
-                      {contract.title}
-                    </h4>
-                    <Badge variant={getStatusColor(contract.status)}>
+            <div className="divide-y divide-golf-green-100">
+              {mockRecentContracts.map((contract, index) => (
+                <div key={contract.id} className="p-4 hover:bg-golf-green-50 transition-colors">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-8 h-8 bg-golf-green-100 rounded-full flex items-center justify-center text-golf-green-600 font-display font-bold text-sm">
+                        {index + 1}
+                      </div>
+                      <h4 className="font-medium text-golf-dark-700">
+                        {contract.title}
+                      </h4>
+                    </div>
+                    <Badge 
+                      variant={getStatusColor(contract.status)}
+                      className={`${
+                        contract.status === 'active' ? 'bg-golf-green-100 text-golf-green-700' :
+                        contract.status === 'pending' ? 'bg-golf-sand-100 text-golf-sand-700' :
+                        'bg-golf-sky-100 text-golf-sky-700'
+                      }`}
+                    >
                       {getStatusLabel(contract.status)}
                     </Badge>
                   </div>
-                  <div className="space-y-1 text-sm text-gray-600 dark:text-gray-400">
-                    <div className="flex items-center">
-                      <Calendar className="h-4 w-4 mr-2" />
-                      {formatDate(contract.date)}
+                  <div className="grid grid-cols-3 gap-4 text-sm">
+                    <div className="flex items-center text-golf-dark-600">
+                      <Calendar className="h-4 w-4 mr-2 text-golf-green-500" />
+                      <span className="font-medium">{formatDate(contract.date)}</span>
                     </div>
-                    <div className="flex items-center">
-                      <MapPin className="h-4 w-4 mr-2" />
-                      {contract.location}
+                    <div className="flex items-center text-golf-dark-600">
+                      <MapPin className="h-4 w-4 mr-2 text-golf-sky-500" />
+                      <span className="font-medium">{contract.location}</span>
                     </div>
-                    <div className="flex items-center">
-                      <DollarSign className="h-4 w-4 mr-2" />
-                      {formatCurrency(contract.amount)}
+                    <div className="flex items-center text-golf-dark-600">
+                      <DollarSign className="h-4 w-4 mr-2 text-golf-sand-500" />
+                      <span className="font-display font-bold">{formatCurrency(contract.amount)}</span>
                     </div>
                   </div>
                 </div>
@@ -379,7 +409,7 @@ export default function DashboardPage() {
                     </div>
                     <div className="space-y-1 text-sm text-gray-600 dark:text-gray-400">
                       <div className="flex items-center">
-                        <Handshake className="h-4 w-4 mr-2" />
+                        <UserCheck className="h-4 w-4 mr-2" />
                         {sponsorship.exposureItems.join(', ')}
                       </div>
                       <div className="flex items-center">
@@ -410,7 +440,7 @@ export default function DashboardPage() {
                     onClick={() => router.push('/sponsorship')}
                     variant="outline"
                     className="w-full"
-                    leftIcon={<Handshake className="h-4 w-4" />}
+                    leftIcon={<UserCheck className="h-4 w-4" />}
                   >
                     스폰서십 제안 확인
                   </Button>

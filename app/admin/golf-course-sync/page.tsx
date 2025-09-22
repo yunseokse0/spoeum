@@ -276,7 +276,7 @@ export default function GolfCourseSyncPage() {
             <div className="flex items-center space-x-2">
               <Clock className="w-5 h-5 text-gray-500" />
               <span className="text-sm text-gray-600 dark:text-gray-400">
-                마지막 동기화: {formatDate(stats?.lastSyncTime)}
+                마지막 동기화: {stats?.lastSyncTime ? formatDate(stats.lastSyncTime) : '없음'}
               </span>
             </div>
           </CardBody>

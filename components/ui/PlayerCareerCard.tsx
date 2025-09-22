@@ -43,7 +43,7 @@ export function PlayerCareerCard({ player, className }: PlayerCareerCardProps) {
   const getResultColor = (result: string) => {
     if (result.includes('우승') || result.includes('1위')) return 'success';
     if (result.includes('준우승') || result.includes('2위')) return 'warning';
-    if (result.includes('Top') || result.includes('상위')) return 'primary';
+    if (result.includes('Top') || result.includes('상위')) return 'blue';
     return 'secondary';
   };
 

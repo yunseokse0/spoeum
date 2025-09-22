@@ -80,9 +80,9 @@ export default function ContractDetailPage() {
       case 'active':
         return 'success';
       case 'completed':
-        return 'primary';
+        return 'blue';
       case 'cancelled':
-        return 'error';
+        return 'destructive';
       default:
         return 'secondary';
     }

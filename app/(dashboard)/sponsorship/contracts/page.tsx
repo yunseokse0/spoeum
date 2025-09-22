@@ -124,9 +124,9 @@ export default function SponsorshipContractsPage() {
       case 'active':
         return 'success';
       case 'completed':
-        return 'primary';
+        return 'blue';
       case 'cancelled':
-        return 'error';
+        return 'destructive';
       default:
         return 'secondary';
     }
@@ -152,7 +152,7 @@ export default function SponsorshipContractsPage() {
       case 'pending':
         return 'warning';
       case 'refunded':
-        return 'error';
+        return 'destructive';
       default:
         return 'secondary';
     }

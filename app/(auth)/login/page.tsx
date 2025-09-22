@@ -41,7 +41,10 @@ export default function LoginPage() {
         name: '테스트 사용자',
         phone: '010-1234-5678',
         userType: 'caddy',
+        role: 'user',
         isVerified: true,
+        isActive: true,
+        status: 'active',
         createdAt: new Date(),
         updatedAt: new Date(),
       };

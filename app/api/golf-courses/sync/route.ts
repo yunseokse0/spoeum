@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
       name: course.name,
       region: course.region,
       city: course.city,
-      code: this.generateCode(course.name),
+      code: generateGolfCourseCode(course.name),
       address: course.address,
       phone: course.phone,
       website: course.website,
@@ -129,6 +129,14 @@ function mergeGolfCourses(existing: GolfCourse[], newCourses: GolfCourse[]): Gol
   });
 
   return Array.from(existingMap.values());
+}
+
+// 골프장 코드 생성 함수
+function generateGolfCourseCode(name: string): string {
+  // 골프장 이름에서 영문자만 추출하여 대문자로 변환
+  const cleanName = name.replace(/[^a-zA-Z]/g, '').toUpperCase();
+  // 최대 8자까지 제한
+  return cleanName.substring(0, 8) || 'GOLF';
 }
 
 // OPTIONS 메서드 (CORS 지원)

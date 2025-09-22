@@ -68,11 +68,11 @@ export function ContractCancellationCard({ cancellation, className }: ContractCa
       case 'pending':
         return 'warning';
       case 'processing':
-        return 'primary';
+        return 'blue';
       case 'completed':
         return 'success';
       case 'failed':
-        return 'error';
+        return 'destructive';
       default:
         return 'secondary';
     }

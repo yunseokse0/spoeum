@@ -5,415 +5,339 @@ import { AdminLayout } from '@/components/admin/AdminLayout';
 import { Card, CardBody, CardHeader } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
-import { Input } from '@/components/ui/Input';
 import { 
   Users, 
-  Search, 
-  Filter, 
-  MoreVertical,
+  Trophy,
+  User,
+  Building,
+  TrendingUp,
   UserCheck,
   UserX,
   Eye,
-  Edit,
-  Trash2,
-  Download,
-  Upload
+  ArrowRight
 } from 'lucide-react';
-import { User } from '@/types';
+import { useRouter } from 'next/navigation';
+import { useAuthStore } from '@/store/useAuthStore';
+import api from '@/lib/api';
+import toast from 'react-hot-toast';
 
-// Mock 회원 데이터
-const mockUsers: User[] = [
-  {
-    id: 'user_001',
-    email: 'golfer1@example.com',
-    name: '김골퍼',
-    phone: '010-1234-5678',
-    userType: 'tour_pro',
-    role: 'user',
-    profileImage: undefined,
-    isVerified: true,
-    isActive: true,
-    lastLoginAt: new Date('2024-01-15T10:30:00Z'),
-    createdAt: new Date('2024-01-01'),
-    updatedAt: new Date('2024-01-15')
-  },
-  {
-    id: 'user_002',
-    email: 'caddy1@example.com',
-    name: '이캐디',
-    phone: '010-2345-6789',
-    userType: 'caddy',
-    role: 'user',
-    profileImage: undefined,
-    isVerified: true,
-    isActive: true,
-    lastLoginAt: new Date('2024-01-14T15:20:00Z'),
-    createdAt: new Date('2024-01-02'),
-    updatedAt: new Date('2024-01-14')
-  },
-  {
-    id: 'user_003',
-    email: 'sponsor1@example.com',
-    name: '박스폰서',
-    phone: '010-3456-7890',
-    userType: 'sponsor',
-    role: 'user',
-    profileImage: undefined,
-    isVerified: false,
-    isActive: false,
-    lastLoginAt: new Date('2024-01-10T09:15:00Z'),
-    createdAt: new Date('2024-01-03'),
-    updatedAt: new Date('2024-01-10')
-  },
-  {
-    id: 'user_004',
-    email: 'amateur1@example.com',
-    name: '최아마추어',
-    phone: '010-4567-8901',
-    userType: 'amateur',
-    role: 'user',
-    profileImage: undefined,
-    isVerified: true,
-    isActive: true,
-    lastLoginAt: new Date('2024-01-13T14:45:00Z'),
-    createdAt: new Date('2024-01-04'),
-    updatedAt: new Date('2024-01-13')
-  },
-  {
-    id: 'user_005',
-    email: 'agency1@example.com',
-    name: '정에이전시',
-    phone: '010-5678-9012',
-    userType: 'agency',
-    role: 'user',
-    profileImage: undefined,
-    isVerified: true,
-    isActive: true,
-    lastLoginAt: new Date('2024-01-12T11:30:00Z'),
-    createdAt: new Date('2024-01-05'),
-    updatedAt: new Date('2024-01-12')
-  }
-];
+interface MemberStats {
+  total: number;
+  tourPro: number;
+  amateur: number;
+  caddy: number;
+  sponsor: number;
+  agency: number;
+  active: number;
+  pending: number;
+}
 
 export default function AdminMembersPage() {
-  const [users, setUsers] = useState<User[]>(mockUsers);
-  const [filteredUsers, setFilteredUsers] = useState<User[]>(mockUsers);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [typeFilter, setTypeFilter] = useState<string>('all');
+  const [stats, setStats] = useState<MemberStats>({
+    total: 0,
+    tourPro: 0,
+    amateur: 0,
+    caddy: 0,
+    sponsor: 0,
+    agency: 0,
+    active: 0,
+    pending: 0
+  });
+  const [isLoading, setIsLoading] = useState(true);
+  const { user: currentUser } = useAuthStore();
+  const router = useRouter();
 
   useEffect(() => {
-    filterUsers();
-  }, [searchQuery, statusFilter, typeFilter, users]);
-
-  const filterUsers = () => {
-    let filtered = users;
-
-    // 검색 필터
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(user => 
-        user.name.toLowerCase().includes(query) ||
-        user.email.toLowerCase().includes(query) ||
-        user.phone.includes(query)
-      );
+    if (!currentUser || (currentUser.role !== 'admin' && currentUser.role !== 'superadmin')) {
+      router.push('/admin/login');
+      return;
     }
 
-    // 상태 필터
-    if (statusFilter !== 'all') {
-      if (statusFilter === 'active') {
-        filtered = filtered.filter(user => user.isActive);
-      } else if (statusFilter === 'inactive') {
-        filtered = filtered.filter(user => !user.isActive);
-      } else if (statusFilter === 'verified') {
-        filtered = filtered.filter(user => user.isVerified);
-      } else if (statusFilter === 'unverified') {
-        filtered = filtered.filter(user => !user.isVerified);
+    fetchMemberStats();
+  }, [currentUser, router]);
+
+  const fetchMemberStats = async () => {
+    try {
+      const response = await api.get('/admin/members/stats');
+      if (response.success && response.data) {
+        setStats(response.data);
+      } else {
+        // Mock 데이터 사용
+        setStats({
+          total: 1250,
+          tourPro: 85,
+          amateur: 420,
+          caddy: 680,
+          sponsor: 45,
+          agency: 20,
+          active: 980,
+          pending: 35
+        });
       }
-    }
-
-    // 유형 필터
-    if (typeFilter !== 'all') {
-      filtered = filtered.filter(user => user.userType === typeFilter);
-    }
-
-    setFilteredUsers(filtered);
-  };
-
-  const getUserTypeLabel = (userType: string) => {
-    switch (userType) {
-      case 'tour_pro':
-        return '투어프로';
-      case 'amateur':
-        return '아마추어';
-      case 'caddy':
-        return '캐디';
-      case 'sponsor':
-        return '스폰서';
-      case 'agency':
-        return '에이전시';
-      case 'admin':
-        return '관리자';
-      case 'superadmin':
-        return '슈퍼관리자';
-      default:
-        return userType;
+    } catch (error) {
+      console.error('Failed to fetch member stats:', error);
+      // Mock 데이터 사용
+      setStats({
+        total: 1250,
+        tourPro: 85,
+        amateur: 420,
+        caddy: 680,
+        sponsor: 45,
+        agency: 20,
+        active: 980,
+        pending: 35
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const getUserTypeColor = (userType: string) => {
-    switch (userType) {
-      case 'tour_pro':
-        return 'primary';
-      case 'amateur':
-        return 'secondary';
-      case 'caddy':
-        return 'success';
-      case 'sponsor':
-        return 'warning';
-      case 'agency':
-        return 'error';
-      case 'admin':
-        return 'primary';
-      case 'superadmin':
-        return 'error';
-      default:
-        return 'secondary';
+  const memberTypes = [
+    {
+      type: 'tour_pro',
+      title: '투어프로',
+      icon: Trophy,
+      count: stats.tourPro,
+      color: 'text-yellow-600',
+      bgColor: 'bg-yellow-50',
+      description: 'KLPGA/KPGA 정회원',
+      route: '/admin/members/pro'
+    },
+    {
+      type: 'amateur',
+      title: '아마추어',
+      icon: User,
+      count: stats.amateur,
+      color: 'text-green-600',
+      bgColor: 'bg-green-50',
+      description: '아마추어 골퍼',
+      route: '/admin/members/amateur'
+    },
+    {
+      type: 'caddy',
+      title: '캐디',
+      icon: TrendingUp,
+      count: stats.caddy,
+      color: 'text-blue-600',
+      bgColor: 'bg-blue-50',
+      description: '전문 캐디',
+      route: '/admin/members/caddy'
+    },
+    {
+      type: 'sponsor',
+      title: '스폰서',
+      icon: Building,
+      count: stats.sponsor,
+      color: 'text-purple-600',
+      bgColor: 'bg-purple-50',
+      description: '기업 스폰서',
+      route: '/admin/members/sponsor'
+    },
+    {
+      type: 'agency',
+      title: '에이전시',
+      icon: Building,
+      count: stats.agency,
+      color: 'text-indigo-600',
+      bgColor: 'bg-indigo-50',
+      description: '에이전시',
+      route: '/admin/members/agency'
     }
-  };
+  ];
 
-  const handleToggleActive = (userId: string) => {
-    setUsers(prev => prev.map(user => 
-      user.id === userId 
-        ? { ...user, isActive: !user.isActive, updatedAt: new Date() }
-        : user
-    ));
-  };
-
-  const handleToggleVerified = (userId: string) => {
-    setUsers(prev => prev.map(user => 
-      user.id === userId 
-        ? { ...user, isVerified: !user.isVerified, updatedAt: new Date() }
-        : user
-    ));
-  };
+  if (isLoading) {
+    return (
+      <AdminLayout>
+        <div className="flex justify-center items-center h-full">
+          <p>회원 통계 로딩 중...</p>
+        </div>
+      </AdminLayout>
+    );
+  }
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
-        {/* 헤더 */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-              회원 관리
-            </h1>
-            <p className="text-gray-600 dark:text-gray-400">
-              전체 회원 정보를 관리하고 모니터링하세요
-            </p>
-          </div>
-          <div className="flex items-center space-x-3">
-            <Button variant="outline" leftIcon={<Download className="w-4 h-4" />}>
-              내보내기
-            </Button>
-            <Button leftIcon={<Upload className="w-4 h-4" />}>
-              회원 추가
-            </Button>
+      <div className="space-y-8">
+        <div className="flex justify-between items-center">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">회원 관리</h1>
+          <div className="text-sm text-gray-600 dark:text-gray-400">
+            총 {stats.total}명의 회원
           </div>
         </div>
 
-        {/* 통계 카드 */}
+        {/* 전체 통계 카드 */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <Card>
+          <Card className="shadow-lg">
             <CardBody className="p-6">
-              <div className="flex items-center">
-                <div className="p-3 bg-blue-100 dark:bg-blue-900 rounded-full">
-                  <Users className="w-6 h-6 text-blue-600" />
-                </div>
-                <div className="ml-4">
+              <div className="flex items-center justify-between">
+                <div>
                   <p className="text-sm font-medium text-gray-600 dark:text-gray-400">전체 회원</p>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {users.length}
-                  </p>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.total.toLocaleString()}</p>
+                </div>
+                <div className="p-3 bg-blue-100 rounded-full">
+                  <Users className="h-6 w-6 text-blue-600" />
                 </div>
               </div>
             </CardBody>
           </Card>
 
-          <Card>
+          <Card className="shadow-lg">
             <CardBody className="p-6">
-              <div className="flex items-center">
-                <div className="p-3 bg-green-100 dark:bg-green-900 rounded-full">
-                  <UserCheck className="w-6 h-6 text-green-600" />
-                </div>
-                <div className="ml-4">
+              <div className="flex items-center justify-between">
+                <div>
                   <p className="text-sm font-medium text-gray-600 dark:text-gray-400">활성 회원</p>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {users.filter(u => u.isActive).length}
-                  </p>
+                  <p className="text-2xl font-bold text-green-600">{stats.active.toLocaleString()}</p>
+                </div>
+                <div className="p-3 bg-green-100 rounded-full">
+                  <UserCheck className="h-6 w-6 text-green-600" />
                 </div>
               </div>
             </CardBody>
           </Card>
 
-          <Card>
+          <Card className="shadow-lg">
             <CardBody className="p-6">
-              <div className="flex items-center">
-                <div className="p-3 bg-purple-100 dark:bg-purple-900 rounded-full">
-                  <UserCheck className="w-6 h-6 text-purple-600" />
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">승인 대기</p>
+                  <p className="text-2xl font-bold text-yellow-600">{stats.pending.toLocaleString()}</p>
                 </div>
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">인증 회원</p>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {users.filter(u => u.isVerified).length}
-                  </p>
+                <div className="p-3 bg-yellow-100 rounded-full">
+                  <UserX className="h-6 w-6 text-yellow-600" />
                 </div>
               </div>
             </CardBody>
           </Card>
 
-          <Card>
+          <Card className="shadow-lg">
             <CardBody className="p-6">
-              <div className="flex items-center">
-                <div className="p-3 bg-red-100 dark:bg-red-900 rounded-full">
-                  <UserX className="w-6 h-6 text-red-600" />
-                </div>
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">비활성 회원</p>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {users.filter(u => !u.isActive).length}
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">활성 비율</p>
+                  <p className="text-2xl font-bold text-blue-600">
+                    {stats.total > 0 ? Math.round((stats.active / stats.total) * 100) : 0}%
                   </p>
+                </div>
+                <div className="p-3 bg-blue-100 rounded-full">
+                  <TrendingUp className="h-6 w-6 text-blue-600" />
                 </div>
               </div>
             </CardBody>
           </Card>
         </div>
 
-        {/* 검색 및 필터 */}
-        <Card>
-          <CardBody>
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="flex-1">
-                <Input
-                  placeholder="이름, 이메일, 전화번호로 검색..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  leftIcon={<Search className="h-5 w-5 text-gray-400" />}
-                />
-              </div>
-              <div className="flex gap-2">
-                <select
-                  value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-                >
-                  <option value="all">전체 상태</option>
-                  <option value="active">활성</option>
-                  <option value="inactive">비활성</option>
-                  <option value="verified">인증됨</option>
-                  <option value="unverified">미인증</option>
-                </select>
-                <select
-                  value={typeFilter}
-                  onChange={(e) => setTypeFilter(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-                >
-                  <option value="all">전체 유형</option>
-                  <option value="tour_pro">투어프로</option>
-                  <option value="amateur">아마추어</option>
-                  <option value="caddy">캐디</option>
-                  <option value="sponsor">스폰서</option>
-                  <option value="agency">에이전시</option>
-                </select>
-              </div>
+        {/* 회원 타입별 관리 */}
+        <Card className="shadow-lg">
+          <CardHeader className="border-b border-gray-200 dark:border-gray-700">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white">회원 타입별 관리</h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              각 회원 타입별로 상세 관리 기능을 제공합니다.
+            </p>
+          </CardHeader>
+          <CardBody className="p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {memberTypes.map((memberType) => {
+                const IconComponent = memberType.icon;
+                return (
+                  <div
+                    key={memberType.type}
+                    className="group relative p-6 border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-lg transition-all duration-200 cursor-pointer"
+                    onClick={() => router.push(memberType.route)}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-3 mb-3">
+                          <div className={`p-3 rounded-lg ${memberType.bgColor} dark:bg-gray-800`}>
+                            <IconComponent className={`h-6 w-6 ${memberType.color}`} />
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                              {memberType.title}
+                            </h3>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                              {memberType.description}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                              {memberType.count.toLocaleString()}
+                            </p>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">명</p>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                          >
+                            <ArrowRight className="h-5 w-5 text-gray-400 group-hover:text-gray-600" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* 상태 배지 */}
+                    <div className="absolute top-4 right-4">
+                      <Badge 
+                        variant={memberType.count > 0 ? 'success' : 'secondary'}
+                        className="text-xs"
+                      >
+                        {memberType.count > 0 ? '활성' : '없음'}
+                      </Badge>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </CardBody>
         </Card>
 
-        {/* 회원 목록 */}
-        <Card>
-          <CardHeader>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-              회원 목록 ({filteredUsers.length}명)
-            </h3>
+        {/* 최근 활동 */}
+        <Card className="shadow-lg">
+          <CardHeader className="border-b border-gray-200 dark:border-gray-700">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white">최근 회원 활동</h2>
           </CardHeader>
-          <CardBody>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-gray-200 dark:border-gray-700">
-                    <th className="text-left py-3 px-4 font-medium text-gray-900 dark:text-white">회원</th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-900 dark:text-white">유형</th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-900 dark:text-white">상태</th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-900 dark:text-white">마지막 로그인</th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-900 dark:text-white">가입일</th>
-                    <th className="text-right py-3 px-4 font-medium text-gray-900 dark:text-white">액션</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredUsers.map((user) => (
-                    <tr key={user.id} className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800">
-                      <td className="py-4 px-4">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center">
-                            <Users className="w-5 h-5 text-gray-500" />
-                          </div>
-                          <div>
-                            <p className="font-medium text-gray-900 dark:text-white">{user.name}</p>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">{user.email}</p>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">{user.phone}</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="py-4 px-4">
-                        <Badge variant={getUserTypeColor(user.userType)}>
-                          {getUserTypeLabel(user.userType)}
-                        </Badge>
-                      </td>
-                      <td className="py-4 px-4">
-                        <div className="flex items-center space-x-2">
-                          <Badge variant={user.isActive ? 'success' : 'error'} className="text-xs">
-                            {user.isActive ? '활성' : '비활성'}
-                          </Badge>
-                          <Badge variant={user.isVerified ? 'primary' : 'secondary'} className="text-xs">
-                            {user.isVerified ? '인증' : '미인증'}
-                          </Badge>
-                        </div>
-                      </td>
-                      <td className="py-4 px-4">
-                        <p className="text-sm text-gray-900 dark:text-white">
-                          {user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleDateString('ko-KR') : '없음'}
-                        </p>
-                      </td>
-                      <td className="py-4 px-4">
-                        <p className="text-sm text-gray-900 dark:text-white">
-                          {new Date(user.createdAt).toLocaleDateString('ko-KR')}
-                        </p>
-                      </td>
-                      <td className="py-4 px-4">
-                        <div className="flex items-center justify-end space-x-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleToggleActive(user.id)}
-                          >
-                            {user.isActive ? '비활성화' : '활성화'}
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleToggleVerified(user.id)}
-                          >
-                            {user.isVerified ? '인증해제' : '인증'}
-                          </Button>
-                          <Button size="sm" variant="outline">
-                            <Eye className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+          <CardBody className="p-6">
+            <div className="space-y-4">
+              <div className="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                <div className="p-2 bg-green-100 rounded-full">
+                  <UserCheck className="h-5 w-5 text-green-600" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-gray-900 dark:text-white">
+                    새로운 투어프로 회원 가입
+                  </p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400">김투어프로님이 KLPGA 회원으로 가입했습니다.</p>
+                </div>
+                <span className="text-xs text-gray-500">2분 전</span>
+              </div>
+              
+              <div className="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                <div className="p-2 bg-yellow-100 rounded-full">
+                  <UserX className="h-5 w-5 text-yellow-600" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-gray-900 dark:text-white">
+                    캐디 회원 승인 대기
+                  </p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400">이캐디님이 새로운 골프장 소속을 요청했습니다.</p>
+                </div>
+                <span className="text-xs text-gray-500">15분 전</span>
+              </div>
+              
+              <div className="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                <div className="p-2 bg-purple-100 rounded-full">
+                  <Building className="h-5 w-5 text-purple-600" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-gray-900 dark:text-white">
+                    스폰서 회원 검증 완료
+                  </p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400">ABC골프회사 사업자등록증이 승인되었습니다.</p>
+                </div>
+                <span className="text-xs text-gray-500">1시간 전</span>
+              </div>
             </div>
           </CardBody>
         </Card>

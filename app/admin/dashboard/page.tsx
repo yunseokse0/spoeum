@@ -9,7 +9,7 @@ import {
   Users, 
   FileText, 
   CreditCard, 
-  Handshake,
+  UserCheck,
   Trophy,
   TrendingUp,
   TrendingDown,
@@ -17,7 +17,8 @@ import {
   Calendar,
   AlertCircle,
   CheckCircle,
-  Clock
+  Clock,
+  BarChart3
 } from 'lucide-react';
 import { AdminStats } from '@/types';
 
@@ -103,7 +104,7 @@ export default function AdminDashboardPage() {
       case 'warning':
         return 'warning';
       case 'pending':
-        return 'primary';
+        return 'blue';
       default:
         return 'secondary';
     }
@@ -115,37 +116,37 @@ export default function AdminDashboardPage() {
         {/* 헤더 */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-              관리자 대시보드
+            <h1 className="text-3xl font-bold font-display text-golf-dark-700 flex items-center">
+              🏌️‍♂️ 골프 관리 대시보드
             </h1>
-            <p className="text-gray-600 dark:text-gray-400">
-              스포이음 플랫폼 전체 현황을 한눈에 확인하세요
+            <p className="text-golf-dark-600 text-lg">
+              스포이음 골프 플랫폼의 핵심 지표를 실시간으로 모니터링하세요
             </p>
           </div>
           <div className="flex items-center space-x-3">
-            <Badge variant="outline" className="text-sm">
+            <Badge variant="outline" className="text-sm bg-golf-green-50 border-golf-green-200 text-golf-green-700">
               <Calendar className="w-4 h-4 mr-1" />
               {new Date().toLocaleDateString('ko-KR')}
             </Badge>
           </div>
         </div>
 
-        {/* 통계 카드 */}
+        {/* 골프 KPI 카드 */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card className="border-blue-200 dark:border-blue-800">
+          <Card className="border-golf-green-200 bg-white/90 backdrop-blur-sm shadow-lg">
             <CardBody className="p-6">
               <div className="flex items-center">
-                <div className="p-3 bg-blue-100 dark:bg-blue-900 rounded-full">
-                  <Users className="w-6 h-6 text-blue-600" />
+                <div className="p-3 bg-golf-green-100 rounded-full">
+                  <div className="text-2xl">🏌️‍♂️</div>
                 </div>
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">전체 회원</p>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {stats.totalUsers.toLocaleString()}
+                  <p className="text-sm font-medium text-golf-green-600">이번주 대회 수</p>
+                  <p className="text-2xl font-display font-bold text-golf-green-700">
+                    {stats.upcomingTournaments}
                   </p>
-                  <p className="text-xs text-green-600 dark:text-green-400">
+                  <p className="text-xs text-golf-green-600">
                     <TrendingUp className="w-3 h-3 inline mr-1" />
-                    활성 회원 {stats.activeUsers.toLocaleString()}명
+                    총 대회 {stats.totalTournaments}개
                   </p>
                 </div>
               </div>
@@ -196,7 +197,7 @@ export default function AdminDashboardPage() {
             <CardBody className="p-6">
               <div className="flex items-center">
                 <div className="p-3 bg-orange-100 dark:bg-orange-900 rounded-full">
-                  <Handshake className="w-6 h-6 text-orange-600" />
+                  <UserCheck className="w-6 h-6 text-orange-600" />
                 </div>
                 <div className="ml-4">
                   <p className="text-sm font-medium text-gray-600 dark:text-gray-400">스폰서십</p>

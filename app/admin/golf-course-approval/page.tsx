@@ -129,7 +129,7 @@ export default function GolfCourseApprovalPage() {
       case 'approved':
         return 'success';
       case 'rejected':
-        return 'error';
+        return 'destructive';
       default:
         return 'secondary';
     }

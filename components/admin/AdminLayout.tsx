@@ -11,7 +11,7 @@ import {
   FileText, 
   CreditCard, 
   Coins,
-  Handshake,
+  UserCheck,
   Trophy,
   Bell,
   BarChart3,
@@ -70,7 +70,7 @@ const adminMenuItems = [
   {
     title: '스폰서십',
     href: '/admin/sponsorship',
-    icon: Handshake,
+    icon: UserCheck,
     description: '스폰서십 관리'
   },
   {
@@ -191,7 +191,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                 {adminUser.name}
               </p>
               <div className="flex items-center space-x-2">
-                <Badge variant={adminUser.role === 'superadmin' ? 'primary' : 'secondary'} className="text-xs">
+                <Badge variant={adminUser.role === 'superadmin' ? 'blue' : 'secondary'} className="text-xs">
                   {adminUser.role === 'superadmin' ? '슈퍼관리자' : '관리자'}
                 </Badge>
               </div>
