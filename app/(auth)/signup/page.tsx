@@ -47,6 +47,12 @@ export default function SignupPage() {
       return;
     }
 
+    // 투어 프로인 경우 별도 페이지로 리다이렉트
+    if (data.userType === 'tour_pro') {
+      router.push('/tour-pro-signup');
+      return;
+    }
+
     setIsLoading(true);
     
     try {
