@@ -110,7 +110,23 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     const token = localStorage.getItem('admin_token');
     const userStr = localStorage.getItem('admin_user');
     
+    // 개발/테스트용 임시 관리자 설정
     if (!token || !userStr) {
+      // URL에 ?demo=true가 있으면 임시 관리자로 로그인
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('demo') === 'true') {
+        const tempAdmin = {
+          id: 'temp_admin',
+          email: 'demo@spoeum.com',
+          name: '데모 관리자',
+          userType: 'admin' as const,
+          role: 'admin' as const
+        };
+        localStorage.setItem('admin_token', 'temp_token');
+        localStorage.setItem('admin_user', JSON.stringify(tempAdmin));
+        setAdminUser(tempAdmin);
+        return;
+      }
       router.push('/admin/login');
       return;
     }
