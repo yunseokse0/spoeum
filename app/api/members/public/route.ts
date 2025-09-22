@@ -49,12 +49,13 @@ const mockMembers: User[] = [
     gender: 'female',
     caddyInfo: {
       gender: 'female',
-      affiliatedGolfCourses: ['제주 블루원', '제주 핀크스'],
-      isFreelancer: false,
-      experience: 5,
+      mainClub: '제주 블루원',
+      additionalClubs: ['제주 핀크스'],
+      freelancer: false,
+      career: 5,
       rating: 4.8,
-      totalRounds: 1200,
-      specialties: ['코스 관리', '클럽 선택', '퍼팅 조언']
+      totalContracts: 1200,
+      specializations: ['코스 관리', '클럽 선택', '퍼팅 조언']
     }
   },
   {
@@ -73,14 +74,14 @@ const mockMembers: User[] = [
     status: 'pending',
     sponsorInfo: {
       companyName: '스포츠 브랜드',
-      businessRegistration: '123-45-67890',
-      contactPerson: '박스폰서',
-      phone: '010-3456-7890',
-      email: 'sponsor1@example.com',
+      businessLicense: '123-45-67890',
+      representative: '박스폰서',
       address: '서울특별시 강남구 테헤란로 123',
       website: 'https://sportsbrand.co.kr',
-      logo: '/images/sponsors/sports-brand.png',
-      isVerified: false
+      industry: '스포츠 용품',
+      companySize: 'medium',
+      budget: 100000000,
+      businessLicenseVerified: false
     }
   },
   {
@@ -101,9 +102,7 @@ const mockMembers: User[] = [
     amateurInfo: {
       gender: 'male',
       handicap: 12,
-      homeCourse: '서울 골프클럽',
-      experience: 3,
-      preferredTeeTime: 'morning'
+      preferredRegions: ['서울', '경기']
     }
   },
   {
@@ -121,17 +120,11 @@ const mockMembers: User[] = [
     updatedAt: new Date('2024-01-13'),
     status: 'active',
     agencyInfo: {
+      businessLicense: '987-65-43210',
       companyName: '골프 에이전시',
-      businessRegistration: '987-65-43210',
-      contactPerson: '정에이전시',
-      phone: '010-5678-9012',
-      email: 'agency1@example.com',
       address: '서울특별시 서초구 서초대로 456',
-      website: 'https://golfagency.co.kr',
-      logo: '/images/agencies/golf-agency.png',
-      isVerified: true,
-      clients: ['김투어프로', '이투어프로'],
-      specialties: ['투어프로 매니지먼트', '스폰서십 계약']
+      representative: '정에이전시',
+      businessLicenseVerified: true
     }
   }
 ];

@@ -158,7 +158,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gradient-to-br from-golf-green-50 via-white to-golf-sky-50 dark:from-golf-dark-900 dark:via-golf-dark-800 dark:to-golf-dark-900">
       {/* 모바일 사이드바 오버레이 */}
       {sidebarOpen && (
         <div 
@@ -169,7 +169,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
       {/* 사이드바 */}
       <div className={`
-        fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-800 shadow-lg transform transition-transform duration-300 ease-in-out
+        fixed inset-y-0 left-0 z-50 w-64 bg-white/95 dark:bg-golf-dark-800/95 backdrop-blur-sm shadow-lg transform transition-transform duration-300 ease-in-out border-r border-golf-green-200 dark:border-golf-dark-700
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
         lg:translate-x-0 lg:static lg:inset-0
       `}>
@@ -264,7 +264,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       {/* 메인 컨텐츠 */}
       <div className="lg:pl-64">
         {/* 상단바 */}
-        <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+        <header className="bg-white/95 dark:bg-golf-dark-800/95 backdrop-blur-sm shadow-sm border-b border-golf-green-200 dark:border-golf-dark-700">
           <div className="flex items-center justify-between px-4 py-3">
             <div className="flex items-center space-x-4">
               <button
@@ -284,7 +284,23 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             </div>
             
             <div className="flex items-center space-x-4">
-              <Badge variant="outline" className="text-xs">
+              <div className="text-right">
+                <div className="text-sm font-medium text-gray-900 dark:text-white">
+                  {new Date().toLocaleDateString('ko-KR', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric',
+                    weekday: 'long'
+                  })}
+                </div>
+                <div className="text-xs text-gray-600 dark:text-gray-400">
+                  {new Date().toLocaleTimeString('ko-KR', { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                  })}
+                </div>
+              </div>
+              <Badge variant="blue" className="text-xs">
                 {adminUser.role === 'superadmin' ? '슈퍼관리자' : '관리자'}
               </Badge>
             </div>
