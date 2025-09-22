@@ -1,0 +1,18 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next",
+  "framework": "nextjs",
+  "functions": {
+    "app/api/**/*.ts": {
+      "maxDuration": 30
+    }
+  },
+  "env": {
+    "NEXTAUTH_URL": "https://spoeum.vercel.app",
+    "NEXTAUTH_SECRET": "your-secret-key-for-production",
+    "JWT_SECRET": "your-jwt-secret-for-production",
+    "DATABASE_URL": "postgresql://localhost:5432/spoeum",
+    "PG_API_KEY": "",
+    "PG_API_SECRET": ""
+  }
+}
