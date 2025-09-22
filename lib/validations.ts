@@ -3,7 +3,24 @@ import { z } from 'zod';
 // 기본 검증 스키마
 export const emailSchema = z.string().email('올바른 이메일 형식이 아닙니다.');
 export const passwordSchema = z.string().min(8, '비밀번호는 최소 8자 이상이어야 합니다.');
-export const phoneSchema = z.string().regex(/^010-\d{4}-\d{4}$/, '올바른 휴대폰 번호 형식이 아닙니다.');
+export const phoneSchema = z.string()
+  .regex(/^(010|011|016|017|018|019)-?\d{3,4}-?\d{4}$/, '올바른 휴대폰 번호 형식이 아닙니다. (예: 010-1234-5678 또는 01012345678)')
+  .transform((val) => {
+    // 숫자만 남기기
+    const numbersOnly = val.replace(/[^\d]/g, '');
+    
+    // 11자리인 경우 하이픈 추가
+    if (numbersOnly.length === 11) {
+      return numbersOnly.replace(/^(\d{3})(\d{4})(\d{4})$/, '$1-$2-$3');
+    }
+    
+    // 10자리인 경우 (일부 통신사)
+    if (numbersOnly.length === 10) {
+      return numbersOnly.replace(/^(\d{3})(\d{3})(\d{4})$/, '$1-$2-$3');
+    }
+    
+    return val;
+  });
 export const nameSchema = z.string().min(2, '이름은 최소 2자 이상이어야 합니다.');
 
 // 로그인 폼 검증

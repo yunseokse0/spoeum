@@ -51,19 +51,19 @@ export function ContractCancellationModal({
   const finalReason = reason === '기타 (직접 입력)' ? customReason : reason;
   
   // 위약금 계산
-  const penaltyAmount = Math.round(contract.baseRate * (penaltyPercent / 100));
+  const penaltyAmount = Math.round(contract.terms.baseSalary * (penaltyPercent / 100));
   
   // 위약금 수령자 결정
   const getBeneficiary = (whoCancelled: string) => {
     switch (whoCancelled) {
       case 'golfer':
-        return contract.providerId.startsWith('caddy') ? '캐디' : '스폰서';
+        return contract.caddyId ? '캐디' : (contract.sponsorId ? '스폰서' : '상대방');
       case 'caddy':
-        return '골퍼';
+        return contract.tourProId ? '투어프로' : (contract.amateurId ? '아마추어' : '골퍼');
       case 'sponsor':
-        return '골퍼';
+        return contract.tourProId ? '투어프로' : '골퍼';
       default:
-        return '골퍼';
+        return '상대방';
     }
   };
 
@@ -169,13 +169,18 @@ export function ContractCancellationModal({
           <CardBody>
             <div className="space-y-3">
               <div className="flex justify-between">
-                <span className="text-gray-600 dark:text-gray-400">계약명:</span>
-                <span className="font-medium text-gray-900 dark:text-white">{contract.title}</span>
+                <span className="text-gray-600 dark:text-gray-400">계약 타입:</span>
+                <span className="font-medium text-gray-900 dark:text-white">
+                  {contract.type === 'tournament' ? '대회 계약' : 
+                   contract.type === 'annual' ? '연간 계약' :
+                   contract.type === 'training' ? '훈련 계약' :
+                   contract.type === 'sponsorship' ? '스폰서십' : contract.type}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600 dark:text-gray-400">계약 금액:</span>
                 <span className="font-medium text-gray-900 dark:text-white">
-                  {contract.baseRate.toLocaleString()}원
+                  {contract.terms.baseSalary.toLocaleString()}원
                 </span>
               </div>
               <div className="flex justify-between">
@@ -283,7 +288,7 @@ export function ContractCancellationModal({
                 <div className="flex justify-between items-center">
                   <span className="text-gray-600 dark:text-gray-400">계약 금액:</span>
                   <span className="font-medium text-gray-900 dark:text-white">
-                    {contract.baseRate.toLocaleString()}원
+                    {contract.terms.baseSalary.toLocaleString()}원
                   </span>
                 </div>
                 <div className="flex justify-between items-center">

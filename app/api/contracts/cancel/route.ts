@@ -5,36 +5,48 @@ import { ContractCancellationRequest, ContractCancellationResponse, Contract, Co
 const contracts: Contract[] = [
   {
     id: 'contract_001',
-    matchingRequestId: 'req_001',
-    requesterId: 'golfer_001',
-    providerId: 'caddy_001',
+    tourProId: 'golfer_001',
+    caddyId: 'caddy_001',
     type: 'tournament',
-    title: '제주 블루원 골프 투어',
-    description: '제주 블루원에서 진행되는 골프 투어 캐디 서비스',
+    status: 'active',
+    terms: {
+      baseSalary: 500000,
+      tournamentCount: 1,
+      winBonus: { percentage: 10, minAmount: 100000, maxAmount: 1000000 },
+      tournamentBonus: { first: 1000000, second: 500000, third: 300000, top10: 100000, participation: 50000 },
+      expenses: {
+        domestic: { transportation: true, accommodation: true, meals: true },
+        jeju: { transportation: true, accommodation: true, meals: true },
+        overseas: { transportation: true, accommodation: true, meals: true, visa: true }
+      },
+      contractConditions: { duration: 1, penaltyRate: 20, terminationNoticePeriod: 7 }
+    },
     startDate: new Date('2024-02-01'),
     endDate: new Date('2024-02-03'),
-    location: '제주 블루원',
-    baseRate: 500000,
-    status: 'active',
-    terms: '3일간 투어 캐디 서비스',
     penaltyRate: 20, // 20% 위약금
     createdAt: new Date('2024-01-15'),
     updatedAt: new Date('2024-01-15')
   },
   {
     id: 'contract_002',
-    matchingRequestId: 'req_002',
-    requesterId: 'sponsor_001',
-    providerId: 'golfer_001',
-    type: 'annual',
-    title: '2024 시즌 스폰서십 계약',
-    description: '1년간 골프백, 모자 스폰서십',
+    tourProId: 'golfer_001',
+    sponsorId: 'sponsor_001',
+    type: 'sponsorship',
+    status: 'active',
+    terms: {
+      baseSalary: 50000000,
+      tournamentCount: 24,
+      winBonus: { percentage: 15, minAmount: 500000, maxAmount: 5000000 },
+      tournamentBonus: { first: 2000000, second: 1000000, third: 500000, top10: 200000, participation: 100000 },
+      expenses: {
+        domestic: { transportation: true, accommodation: true, meals: true },
+        jeju: { transportation: true, accommodation: true, meals: true },
+        overseas: { transportation: true, accommodation: true, meals: true, visa: true }
+      },
+      contractConditions: { duration: 12, penaltyRate: 15, terminationNoticePeriod: 30 }
+    },
     startDate: new Date('2024-01-01'),
     endDate: new Date('2024-12-31'),
-    location: '전국',
-    baseRate: 50000000,
-    status: 'active',
-    terms: '1년간 스폰서십 서비스',
     penaltyRate: 15, // 15% 위약금
     createdAt: new Date('2024-01-01'),
     updatedAt: new Date('2024-01-01')
@@ -77,7 +89,7 @@ export async function POST(request: NextRequest) {
     const finalPenaltyPercent = penaltyPercent || contract.penaltyRate || 20;
     
     // 위약금 금액 계산
-    const penaltyAmount = Math.round(contract.baseRate * (finalPenaltyPercent / 100));
+    const penaltyAmount = Math.round(contract.terms.baseSalary * (finalPenaltyPercent / 100));
 
     // 위약금 수령자 결정
     let beneficiary: 'golfer' | 'caddy' | 'sponsor';
@@ -85,7 +97,7 @@ export async function POST(request: NextRequest) {
     switch (whoCancelled) {
       case 'golfer':
         // 골퍼가 파기 → 캐디 또는 스폰서가 위약금 수령
-        beneficiary = contract.providerId.startsWith('caddy') ? 'caddy' : 'sponsor';
+        beneficiary = contract.caddyId ? 'caddy' : (contract.sponsorId ? 'sponsor' : 'caddy');
         break;
       case 'caddy':
         // 캐디가 파기 → 골퍼가 위약금 수령
@@ -182,7 +194,7 @@ async function processPenaltyPayment(contract: Contract, cancellation: ContractC
 // 계약 파기 알림 발송 (Mock)
 function sendCancellationNotification(contract: Contract, cancellation: ContractCancellation) {
   console.log(`계약 파기 알림 발송:`);
-  console.log(`- 계약: ${contract.title}`);
+  console.log(`- 계약: ${contract.type} 계약 (${contract.id})`);
   console.log(`- 파기 주체: ${cancellation.whoCancelled}`);
   console.log(`- 위약금: ${cancellation.penaltyAmount.toLocaleString()}원`);
   console.log(`- 수령자: ${cancellation.beneficiary}`);

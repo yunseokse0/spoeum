@@ -4,6 +4,9 @@ export type UserType = 'tour_pro' | 'amateur' | 'agency' | 'caddy' | 'sponsor' |
 // 사용자 역할 정의
 export type UserRole = 'user' | 'admin' | 'superadmin';
 
+// 계약 타입 정의
+export type ContractType = 'tournament' | 'sponsorship' | 'training' | 'annual';
+
 // 폼 데이터 타입
 export interface LoginFormData {
   email: string;
@@ -434,20 +437,19 @@ export interface ContractCancellationResponse {
 // 계약 관련 타입
 export interface Contract {
   id: string;
-  matchingRequestId: string;
-  requesterId: string;
-  providerId: string;
-  type: 'tournament' | 'annual';
-  title: string;
-  description: string;
+  tourProId?: string;
+  caddyId?: string;
+  amateurId?: string;
+  sponsorId?: string;
+  tournamentId?: string;
+  type: ContractType;
+  status: 'pending' | 'active' | 'completed' | 'cancelled';
+  terms: any; // ContractTerms 객체
   startDate: Date;
   endDate: Date;
-  location: string;
-  baseRate: number;
-  status: 'pending' | 'active' | 'completed' | 'cancelled';
-  terms: string;
   cancellation?: ContractCancellation; // 계약 파기 정보
   penaltyRate?: number; // 계약 시 설정된 위약금 비율 (기본 20%)
+  contractDetails?: any; // 계약서 상세 내용
   createdAt: Date;
   updatedAt: Date;
 }

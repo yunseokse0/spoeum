@@ -9,12 +9,12 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { User, Mail, Phone, Lock, Building2, FileText, Upload, Globe, DollarSign } from 'lucide-react';
+import { User, Mail, Phone, Lock, Building2, FileText, Users, MapPin, Calendar } from 'lucide-react';
 import { GolfLogoWithText } from '@/components/ui/GolfLogo';
 import { useThemeStore } from '@/store/useThemeStore';
 
-// 스폰서 전용 회원가입 스키마
-const sponsorSignupSchema = z.object({
+// 에이전시 전용 회원가입 스키마
+const agencySignupSchema = z.object({
   name: z.string().min(2, '이름은 최소 2자 이상이어야 합니다.'),
   email: z.string().email('올바른 이메일 형식이 아닙니다.'),
   phone: z.string().regex(/^(010|011|016|017|018|019)-?\d{3,4}-?\d{4}$/, '올바른 휴대폰 번호 형식이 아닙니다.'),
@@ -25,11 +25,10 @@ const sponsorSignupSchema = z.object({
   representativeName: z.string().min(1, '대표자명을 입력해주세요.'),
   companyAddress: z.string().min(1, '회사 주소를 입력해주세요.'),
   companyPhone: z.string().min(1, '회사 전화번호를 입력해주세요.'),
-  companyWebsite: z.string().optional(),
-  industry: z.string().min(1, '업종을 선택해주세요.'),
-  sponsorshipBudget: z.string().min(1, '스폰서십 예산을 선택해주세요.'),
-  sponsorshipType: z.array(z.string()).min(1, '스폰서십 유형을 최소 1개 이상 선택해주세요.'),
-  preferredExposure: z.array(z.string()).min(1, '선호 노출 부위를 최소 1개 이상 선택해주세요.'),
+  establishedDate: z.string().min(1, '설립일을 입력해주세요.'),
+  employeeCount: z.string().min(1, '직원 수를 입력해주세요.'),
+  businessType: z.string().min(1, '업종을 선택해주세요.'),
+  services: z.array(z.string()).min(1, '제공 서비스를 최소 1개 이상 선택해주세요.'),
   terms: z.boolean().refine(val => val === true, '이용약관에 동의해주세요.'),
   privacy: z.boolean().refine(val => val === true, '개인정보처리방침에 동의해주세요.')
 }).refine(data => data.password === data.confirmPassword, {
@@ -37,48 +36,32 @@ const sponsorSignupSchema = z.object({
   path: ['confirmPassword']
 });
 
-type SponsorSignupForm = z.infer<typeof sponsorSignupSchema>;
+type AgencySignupForm = z.infer<typeof agencySignupSchema>;
 
-const INDUSTRIES = [
-  { value: 'golf_equipment', label: '골프 용품' },
-  { value: 'automotive', label: '자동차' },
-  { value: 'finance', label: '금융' },
-  { value: 'luxury', label: '럭셔리 브랜드' },
-  { value: 'technology', label: '기술/IT' },
-  { value: 'food_beverage', label: '식음료' },
-  { value: 'fashion', label: '패션' },
+const BUSINESS_TYPES = [
+  { value: 'golf_management', label: '골프 매니지먼트' },
+  { value: 'event_planning', label: '이벤트 기획' },
+  { value: 'talent_agency', label: '연예인 매니지먼트' },
+  { value: 'sports_agency', label: '스포츠 에이전시' },
+  { value: 'marketing', label: '마케팅 대행' },
   { value: 'other', label: '기타' }
 ];
 
-const SPONSORSHIP_BUDGET = [
-  { value: '10m-50m', label: '1천만원 - 5천만원' },
-  { value: '50m-100m', label: '5천만원 - 1억원' },
-  { value: '100m-500m', label: '1억원 - 5억원' },
-  { value: '500m+', label: '5억원 이상' }
+const SERVICES = [
+  { value: 'player_management', label: '선수 매니지먼트' },
+  { value: 'contract_negotiation', label: '계약 협상' },
+  { value: 'sponsorship', label: '스폰서십 연계' },
+  { value: 'event_planning', label: '대회 기획' },
+  { value: 'media_relations', label: '미디어 관계' },
+  { value: 'financial_management', label: '재정 관리' },
+  { value: 'career_planning', label: '커리어 플래닝' },
+  { value: 'training_support', label: '트레이닝 지원' }
 ];
 
-const SPONSORSHIP_TYPES = [
-  { value: 'individual', label: '개인 선수 스폰서십' },
-  { value: 'team', label: '팀 스폰서십' },
-  { value: 'tournament', label: '대회 스폰서십' },
-  { value: 'equipment', label: '장비 스폰서십' },
-  { value: 'training', label: '트레이닝 스폰서십' }
-];
-
-const EXPOSURE_ITEMS = [
-  { value: 'golf_bag', label: '골프백', icon: '🎒' },
-  { value: 'hat', label: '모자', icon: '🧢' },
-  { value: 'shirt', label: '상의', icon: '👕' },
-  { value: 'pants', label: '하의', icon: '👖' },
-  { value: 'shoes', label: '골프화', icon: '👟' },
-  { value: 'gloves', label: '골프장갑', icon: '🧤' }
-];
-
-export default function SponsorSignupPage() {
+export default function AgencySignupPage() {
   const router = useRouter();
   const { theme } = useThemeStore();
-  const [selectedSponsorshipTypes, setSelectedSponsorshipTypes] = useState<string[]>([]);
-  const [selectedExposureItems, setSelectedExposureItems] = useState<string[]>([]);
+  const [selectedServices, setSelectedServices] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const {
@@ -86,44 +69,42 @@ export default function SponsorSignupPage() {
     handleSubmit,
     formState: { errors },
     setValue
-  } = useForm<SponsorSignupForm>({
-    resolver: zodResolver(sponsorSignupSchema)
+  } = useForm<AgencySignupForm>({
+    resolver: zodResolver(agencySignupSchema)
   });
 
-  const onSubmit = async (data: SponsorSignupForm) => {
+  const onSubmit = async (data: AgencySignupForm) => {
     setIsLoading(true);
     try {
-      // 스폰서 전용 회원가입 로직
-      const sponsorData = {
+      // 에이전시 전용 회원가입 로직
+      const agencyData = {
         ...data,
-        userType: 'sponsor' as const,
-        sponsorshipType: selectedSponsorshipTypes,
-        preferredExposure: selectedExposureItems,
-        sponsorInfo: {
+        userType: 'agency' as const,
+        services: selectedServices,
+        agencyInfo: {
           companyName: data.companyName,
           businessNumber: data.businessNumber,
           representativeName: data.representativeName,
           companyAddress: data.companyAddress,
           companyPhone: data.companyPhone,
-          companyWebsite: data.companyWebsite,
-          industry: data.industry,
-          sponsorshipBudget: data.sponsorshipBudget,
-          sponsorshipType: selectedSponsorshipTypes,
-          preferredExposure: selectedExposureItems
+          establishedDate: data.establishedDate,
+          employeeCount: parseInt(data.employeeCount),
+          businessType: data.businessType,
+          services: selectedServices
         }
       };
 
-      console.log('스폰서 회원가입 데이터:', sponsorData);
+      console.log('에이전시 회원가입 데이터:', agencyData);
 
       // API 호출 (실제 구현 시)
       // const response = await fetch('/api/auth/signup', {
       //   method: 'POST',
       //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(sponsorData)
+      //   body: JSON.stringify(agencyData)
       // });
 
       // 성공 시 로그인 페이지로 이동 (회원가입 완료 메시지와 함께)
-      alert('스폰서 회원가입이 완료되었습니다! 로그인해주세요.');
+      alert('에이전시 회원가입이 완료되었습니다! 로그인해주세요.');
       router.push('/login?message=signup-success');
     } catch (error) {
       console.error('회원가입 오류:', error);
@@ -133,19 +114,11 @@ export default function SponsorSignupPage() {
     }
   };
 
-  const handleSponsorshipTypeToggle = (type: string) => {
-    setSelectedSponsorshipTypes(prev => 
-      prev.includes(type) 
-        ? prev.filter(t => t !== type)
-        : [...prev, type]
-    );
-  };
-
-  const handleExposureItemToggle = (item: string) => {
-    setSelectedExposureItems(prev => 
-      prev.includes(item) 
-        ? prev.filter(i => i !== item)
-        : [...prev, item]
+  const handleServiceToggle = (service: string) => {
+    setSelectedServices(prev => 
+      prev.includes(service) 
+        ? prev.filter(s => s !== service)
+        : [...prev, service]
     );
   };
 
@@ -161,11 +134,11 @@ export default function SponsorSignupPage() {
           <Card className={`${theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white'}`}>
             <CardHeader className="text-center">
               <CardTitle className="text-2xl font-bold text-green-600 flex items-center justify-center gap-2">
-                <DollarSign className="h-6 w-6" />
-                스폰서 회원가입
+                <Building2 className="h-6 w-6" />
+                에이전시 회원가입
               </CardTitle>
               <p className="text-gray-600 dark:text-gray-400">
-                골프 선수 스폰서십을 제공하고 싶어요
+                골프 관련 사업을 하고 계신가요?
               </p>
             </CardHeader>
 
@@ -264,12 +237,29 @@ export default function SponsorSignupPage() {
                   />
 
                   <Input
-                    label="회사 웹사이트 (선택사항)"
-                    placeholder="https://company.com"
-                    leftIcon={<Globe className="h-5 w-5 text-gray-400" />}
-                    error={errors.companyWebsite?.message}
-                    {...register('companyWebsite')}
+                    label="설립일"
+                    type="date"
+                    leftIcon={<Calendar className="h-5 w-5 text-gray-400" />}
+                    error={errors.establishedDate?.message}
+                    {...register('establishedDate')}
                   />
+
+                  <Input
+                    label="직원 수"
+                    type="number"
+                    placeholder="10"
+                    leftIcon={<Users className="h-5 w-5 text-gray-400" />}
+                    error={errors.employeeCount?.message}
+                    {...register('employeeCount')}
+                  />
+                </div>
+
+                {/* 업종 및 서비스 */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-green-600 flex items-center gap-2">
+                    <MapPin className="h-5 w-5" />
+                    업종 및 서비스
+                  </h3>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -277,117 +267,37 @@ export default function SponsorSignupPage() {
                     </label>
                     <select
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                      {...register('industry')}
+                      {...register('businessType')}
                     >
                       <option value="">업종을 선택하세요</option>
-                      {INDUSTRIES.map(industry => (
-                        <option key={industry.value} value={industry.value}>
-                          {industry.label}
+                      {BUSINESS_TYPES.map(type => (
+                        <option key={type.value} value={type.value}>
+                          {type.label}
                         </option>
                       ))}
                     </select>
-                    {errors.industry && <p className="text-red-500 text-sm mt-1">{errors.industry.message}</p>}
-                  </div>
-                </div>
-
-                {/* 스폰서십 정보 */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-green-600 flex items-center gap-2">
-                    <DollarSign className="h-5 w-5" />
-                    스폰서십 정보
-                  </h3>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      스폰서십 예산 *
-                    </label>
-                    <select
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                      {...register('sponsorshipBudget')}
-                    >
-                      <option value="">예산 범위를 선택하세요</option>
-                      {SPONSORSHIP_BUDGET.map(budget => (
-                        <option key={budget.value} value={budget.value}>
-                          {budget.label}
-                        </option>
-                      ))}
-                    </select>
-                    {errors.sponsorshipBudget && <p className="text-red-500 text-sm mt-1">{errors.sponsorshipBudget.message}</p>}
+                    {errors.businessType && <p className="text-red-500 text-sm mt-1">{errors.businessType.message}</p>}
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      스폰서십 유형 * (복수 선택 가능)
-                    </label>
-                    <div className="grid grid-cols-1 gap-2">
-                      {SPONSORSHIP_TYPES.map(type => (
-                        <div key={type.value} className="flex items-center space-x-2">
-                          <Checkbox
-                            id={`type-${type.value}`}
-                            checked={selectedSponsorshipTypes.includes(type.value)}
-                            onCheckedChange={() => handleSponsorshipTypeToggle(type.value)}
-                          />
-                          <label htmlFor={`type-${type.value}`} className="text-sm">
-                            {type.label}
-                          </label>
-                        </div>
-                      ))}
-                    </div>
-                    {errors.sponsorshipType && <p className="text-red-500 text-sm mt-1">{errors.sponsorshipType.message}</p>}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      선호 노출 부위 * (복수 선택 가능)
+                      제공 서비스 * (복수 선택 가능)
                     </label>
                     <div className="grid grid-cols-2 gap-2">
-                      {EXPOSURE_ITEMS.map(item => (
-                        <div key={item.value} className="flex items-center space-x-2">
+                      {SERVICES.map(service => (
+                        <div key={service.value} className="flex items-center space-x-2">
                           <Checkbox
-                            id={`exposure-${item.value}`}
-                            checked={selectedExposureItems.includes(item.value)}
-                            onCheckedChange={() => handleExposureItemToggle(item.value)}
+                            id={`service-${service.value}`}
+                            checked={selectedServices.includes(service.value)}
+                            onCheckedChange={() => handleServiceToggle(service.value)}
                           />
-                          <label htmlFor={`exposure-${item.value}`} className="text-sm flex items-center gap-1">
-                            <span>{item.icon}</span>
-                            {item.label}
+                          <label htmlFor={`service-${service.value}`} className="text-sm">
+                            {service.label}
                           </label>
                         </div>
                       ))}
                     </div>
-                    {errors.preferredExposure && <p className="text-red-500 text-sm mt-1">{errors.preferredExposure.message}</p>}
-                  </div>
-                </div>
-
-                {/* 브랜드 로고 업로드 */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-green-600 flex items-center gap-2">
-                    <Upload className="h-5 w-5" />
-                    브랜드 정보
-                  </h3>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      브랜드 로고 업로드 (선택사항)
-                    </label>
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-green-500 transition-colors">
-                      <Upload className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
-                        브랜드 로고를 업로드하세요
-                      </p>
-                      <p className="text-xs text-gray-500 mt-1">
-                        JPG, PNG 파일만 가능 (최대 5MB)
-                      </p>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        id="logo-upload"
-                      />
-                      <Button type="button" variant="outline" size="sm" className="mt-2">
-                        파일 선택
-                      </Button>
-                    </div>
+                    {errors.services && <p className="text-red-500 text-sm mt-1">{errors.services.message}</p>}
                   </div>
                 </div>
 
@@ -449,7 +359,7 @@ export default function SponsorSignupPage() {
                   className="w-full"
                   disabled={isLoading}
                 >
-                  {isLoading ? '가입 중...' : '스폰서 회원가입'}
+                  {isLoading ? '가입 중...' : '에이전시 회원가입'}
                 </Button>
 
                 {/* 로그인 링크 */}

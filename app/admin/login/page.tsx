@@ -57,6 +57,10 @@ export default function AdminLoginPage() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  
+  // URL 파라미터에서 리다이렉트 경로 가져오기
+  const searchParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
+  const redirectTo = searchParams.get('redirect') || null;
 
   const {
     register,
@@ -84,7 +88,13 @@ export default function AdminLoginPage() {
         localStorage.setItem('admin_user', JSON.stringify(admin));
         
         toast.success(`${admin.name}님, 관리자 페이지에 오신 것을 환영합니다.`);
-        router.push('/admin/dashboard');
+        
+        // 리다이렉트 경로가 있으면 해당 페이지로, 없으면 관리자 대시보드로
+        if (redirectTo) {
+          router.push(redirectTo);
+        } else {
+          router.push('/admin/dashboard');
+        }
       } else {
         toast.error('이메일 또는 비밀번호가 올바르지 않습니다.');
       }

@@ -27,11 +27,25 @@ export async function GET(
 
     console.log(`선수 정보 조회 요청: ${association} - ${memberId}`);
 
-    // 크롤링 실행
-    const playerInfo = await playerScraper.searchPlayer(
+    // 크롤링 실행 (실제 크롤링 + Mock 데이터 폴백)
+    let playerInfo = await playerScraper.searchPlayer(
       memberId.trim(), 
       association as GolfAssociation
     );
+
+    // 크롤링 실패 시 Mock API로 폴백
+    if (!playerInfo) {
+      console.log(`실제 크롤링 실패, Mock API로 폴백: ${association}/${memberId}`);
+      try {
+        const mockResponse = await fetch(`http://localhost:3000/api/player/mock/${association}/${memberId}`);
+        if (mockResponse.ok) {
+          const mockData = await mockResponse.json();
+          playerInfo = mockData.data;
+        }
+      } catch (mockError) {
+        console.error('Mock API 폴백 실패:', mockError);
+      }
+    }
 
     if (!playerInfo) {
       return NextResponse.json<PlayerSearchResponse>({

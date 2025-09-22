@@ -8,6 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { loginSchema, type LoginFormData } from '@/lib/validations';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import { GolfLogoWithText } from '@/components/ui/GolfLogo';
 import { useAuthStore } from '@/store/useAuthStore';
 import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -18,6 +19,18 @@ export default function LoginPage() {
   const { setAuth } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  
+  // URL 파라미터에서 리다이렉트 경로와 메시지 가져오기
+  const searchParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
+  const redirectTo = searchParams.get('redirect') || null;
+  const message = searchParams.get('message') || null;
+  
+  // 회원가입 완료 메시지 표시
+  React.useEffect(() => {
+    if (message === 'signup-success') {
+      toast.success('회원가입이 완료되었습니다! 로그인해주세요.');
+    }
+  }, [message]);
 
   const {
     register,
@@ -54,22 +67,24 @@ export default function LoginPage() {
       setAuth(mockUser, mockToken);
       toast.success('로그인에 성공했습니다.');
       
-      // 사용자 타입에 따른 리다이렉트
-      switch (mockUser.userType) {
-        case 'caddy':
-          router.push('/dashboard');
-          break;
-        case 'tour_pro':
-          router.push('/dashboard');
-          break;
-        case 'amateur':
-          router.push('/dashboard');
-          break;
-        case 'agency':
-          router.push('/admin');
-          break;
-        default:
-          router.push('/dashboard');
+      // 리다이렉트 경로가 있으면 해당 페이지로, 없으면 사용자 타입에 따른 기본 페이지로
+      if (redirectTo) {
+        router.push(redirectTo);
+      } else {
+        // 사용자 타입에 따른 기본 리다이렉트
+        const getDefaultRedirect = (userType: string) => {
+          switch (userType) {
+            case 'admin':
+            case 'superadmin':
+              return '/admin';
+            case 'agency':
+              return '/admin';
+            default:
+              return '/dashboard';
+          }
+        };
+        
+        router.push(getDefaultRedirect(mockUser.userType));
       }
     } catch (error) {
       console.error('Login error:', error);
@@ -84,12 +99,9 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         {/* 로고 및 제목 */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-600 rounded-full mb-4">
-            <span className="text-2xl font-bold text-white">S</span>
+          <div className="flex justify-center mb-4">
+            <GolfLogoWithText size="lg" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            스포이음
-          </h1>
           <p className="text-gray-600 dark:text-gray-400">
             골프 캐디 매칭 플랫폼에 오신 것을 환영합니다
           </p>

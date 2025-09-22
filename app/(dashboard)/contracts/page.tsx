@@ -2,124 +2,126 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuthStore } from '@/store/useAuthStore';
+import { Contract, ContractType } from '@/types';
 import Header from '@/components/layout/Header';
 import BottomNavigation from '@/components/layout/BottomNavigation';
-import { Card, CardBody, CardHeader } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
+import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { 
   Search, 
   Filter, 
-  FileText, 
   Calendar, 
-  MapPin,
-  DollarSign,
+  DollarSign, 
+  MapPin, 
   Clock,
-  User,
-  Plus,
-  Eye,
-  Edit,
-  X
+  Trophy,
+  FileText,
+  TrendingUp,
+  Eye
 } from 'lucide-react';
-import { formatCurrency, formatDate, formatRelativeTime } from '@/lib/utils';
-import { useAuthStore } from '@/store/useAuthStore';
-import { Contract } from '@/types';
 
-// 임시 계약 데이터
+// 새로운 Contract 타입에 맞는 mock 데이터
 const mockContracts: Contract[] = [
   {
     id: '1',
-    matchingRequestId: 'request1',
-    requesterId: 'user1',
-    providerId: 'user2',
+    tourProId: 'user1',
+    caddyId: 'user2',
     type: 'tournament',
-    title: '2024 PGA 투어 대회 계약',
-    description: '3월 15일-17일 제주도 PGA 투어 대회에서 캐디 서비스 제공',
+    status: 'active',
+    terms: {
+      baseSalary: 800000,
+      tournamentCount: 1,
+      winBonus: { percentage: 10, minAmount: 100000, maxAmount: 1000000 },
+      tournamentBonus: { first: 1000000, second: 500000, third: 300000, top10: 100000, participation: 50000 },
+      expenses: {
+        domestic: { transportation: true, accommodation: true, meals: true },
+        jeju: { transportation: true, accommodation: true, meals: true },
+        overseas: { transportation: true, accommodation: true, meals: true, visa: true }
+      },
+      contractConditions: { duration: 1, penaltyRate: 20, terminationNoticePeriod: 7 }
+    },
     startDate: new Date('2024-03-15'),
     endDate: new Date('2024-03-17'),
-    location: '제주도',
-    baseRate: 800000,
-    status: 'active',
-    terms: '대회 기간 중 캐디 서비스 제공, 성과에 따른 인센티브 지급',
     createdAt: new Date('2024-01-10'),
     updatedAt: new Date('2024-01-10'),
   },
   {
     id: '2',
-    matchingRequestId: 'request2',
-    requesterId: 'user2',
-    providerId: 'user1',
+    tourProId: 'user2',
+    caddyId: 'user1',
     type: 'annual',
-    title: '2024년 연간 캐디 계약',
-    description: '골프 아카데미에서 정규 캐디로 연간 계약',
+    status: 'active',
+    terms: {
+      baseSalary: 5000000,
+      tournamentCount: 24,
+      winBonus: { percentage: 15, minAmount: 500000, maxAmount: 5000000 },
+      tournamentBonus: { first: 2000000, second: 1000000, third: 500000, top10: 200000, participation: 100000 },
+      expenses: {
+        domestic: { transportation: true, accommodation: true, meals: true },
+        jeju: { transportation: true, accommodation: true, meals: true },
+        overseas: { transportation: true, accommodation: true, meals: true, visa: true }
+      },
+      contractConditions: { duration: 12, penaltyRate: 30, terminationNoticePeriod: 30 }
+    },
     startDate: new Date('2024-01-01'),
     endDate: new Date('2024-12-31'),
-    location: '서울 강남',
-    baseRate: 5000000,
-    status: 'active',
-    terms: '월급 + 인센티브, 주 5일 근무, 연차 및 휴가 제공',
     createdAt: new Date('2023-12-15'),
     updatedAt: new Date('2023-12-15'),
   },
   {
     id: '3',
-    matchingRequestId: 'request3',
-    requesterId: 'user3',
-    providerId: 'user1',
-    type: 'tournament',
-    title: '아마추어 골프 대회 계약',
-    description: '주말 아마추어 골프 대회 캐디 서비스',
-    startDate: new Date('2024-01-20'),
-    endDate: new Date('2024-01-20'),
-    location: '경기도 양평',
-    baseRate: 200000,
+    amateurId: 'user3',
+    caddyId: 'user1',
+    type: 'training',
     status: 'completed',
-    terms: '대회 당일 캐디 서비스 제공',
-    createdAt: new Date('2024-01-08'),
-    updatedAt: new Date('2024-01-21'),
+    terms: {
+      baseSalary: 300000,
+      tournamentCount: 8,
+      winBonus: { percentage: 5, minAmount: 50000, maxAmount: 500000 },
+      tournamentBonus: { first: 500000, second: 300000, third: 200000, top10: 100000, participation: 50000 },
+      expenses: {
+        domestic: { transportation: true, accommodation: false, meals: true },
+        jeju: { transportation: false, accommodation: false, meals: false },
+        overseas: { transportation: false, accommodation: false, meals: false, visa: false }
+      },
+      contractConditions: { duration: 1, penaltyRate: 15, terminationNoticePeriod: 7 }
+    },
+    startDate: new Date('2024-02-01'),
+    endDate: new Date('2024-02-28'),
+    createdAt: new Date('2024-01-20'),
+    updatedAt: new Date('2024-02-28'),
   },
 ];
 
 export default function ContractsPage() {
+  const { isAuthenticated } = useAuthStore();
   const router = useRouter();
-  const { userType, isAuthenticated } = useAuthStore();
+  const [contracts] = useState<Contract[]>(mockContracts);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFilter, setSelectedFilter] = useState('all');
   const [selectedType, setSelectedType] = useState('all');
-  const [filteredContracts, setFilteredContracts] = useState(mockContracts);
 
   useEffect(() => {
     if (!isAuthenticated) {
-      router.push('/login');
+      const currentPath = typeof window !== 'undefined' ? window.location.pathname : '/contracts';
+      router.push(`/login?redirect=${encodeURIComponent(currentPath)}`);
       return;
     }
   }, [isAuthenticated, router]);
 
-  useEffect(() => {
-    let filtered = mockContracts;
-
-    // 검색어 필터링
-    if (searchQuery) {
-      filtered = filtered.filter(contract =>
-        contract.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        contract.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        contract.location.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-
-    // 상태 필터링
-    if (selectedFilter !== 'all') {
-      filtered = filtered.filter(contract => contract.status === selectedFilter);
-    }
-
-    // 타입 필터링
-    if (selectedType !== 'all') {
-      filtered = filtered.filter(contract => contract.type === selectedType);
-    }
-
-    setFilteredContracts(filtered);
-  }, [searchQuery, selectedFilter, selectedType]);
+  const filteredContracts = contracts.filter(contract => {
+    const matchesSearch = !searchQuery || 
+      contract.type.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      contract.status.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const matchesFilter = selectedFilter === 'all' || contract.status === selectedFilter;
+    const matchesType = selectedType === 'all' || contract.type === selectedType;
+    
+    return matchesSearch && matchesFilter && matchesType;
+  });
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -145,57 +147,59 @@ export default function ContractsPage() {
       case 'completed':
         return '완료';
       case 'cancelled':
-        return '취소';
+        return '취소됨';
       default:
         return status;
     }
   };
 
-  const getTypeLabel = (type: string) => {
+  const getTypeLabel = (type: ContractType) => {
     switch (type) {
       case 'tournament':
         return '대회 계약';
       case 'annual':
         return '연간 계약';
+      case 'training':
+        return '훈련 계약';
+      case 'sponsorship':
+        return '스폰서십';
       default:
         return type;
     }
   };
 
-  const getTypeColor = (type: string) => {
+  const getTypeIcon = (type: ContractType) => {
     switch (type) {
       case 'tournament':
-        return 'blue';
+        return <Trophy className="h-4 w-4" />;
       case 'annual':
-        return 'success';
+        return <Calendar className="h-4 w-4" />;
+      case 'training':
+        return <FileText className="h-4 w-4" />;
+      case 'sponsorship':
+        return <TrendingUp className="h-4 w-4" />;
       default:
-        return 'secondary';
+        return <FileText className="h-4 w-4" />;
     }
   };
 
-  const isContractActive = (contract: Contract) => {
-    const now = new Date();
-    return contract.status === 'active' && 
-           contract.startDate <= now && 
-           contract.endDate >= now;
+  const formatDate = (date: Date) => {
+    return new Intl.DateTimeFormat('ko-KR', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    }).format(date);
   };
 
-  const isContractUpcoming = (contract: Contract) => {
-    const now = new Date();
-    return contract.status === 'active' && contract.startDate > now;
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('ko-KR').format(amount) + '원';
   };
 
-  const isContractExpired = (contract: Contract) => {
-    const now = new Date();
-    return contract.status === 'active' && contract.endDate < now;
-  };
-
-  // 통계 계산
-  const activeContracts = mockContracts.filter(c => c.status === 'active').length;
-  const completedContracts = mockContracts.filter(c => c.status === 'completed').length;
-  const totalEarnings = mockContracts
+  const activeContracts = contracts.filter(c => c.status === 'active').length;
+  const completedContracts = contracts.filter(c => c.status === 'completed').length;
+  const totalEarnings = contracts
     .filter(c => c.status === 'completed')
-    .reduce((sum, c) => sum + c.baseRate, 0);
+    .reduce((sum, c) => sum + c.terms.baseSalary, 0);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-golf-green-50 via-white to-golf-sky-50 dark:from-golf-dark-900 dark:via-golf-dark-800 dark:to-golf-dark-900 pb-20">
@@ -214,209 +218,147 @@ export default function ContractsPage() {
             <div className="text-center">
               <div className="text-2xl mb-1">🟢</div>
               <p className="text-2xl font-display font-bold text-golf-green-600">{activeContracts}</p>
-              <p className="text-xs text-golf-green-600 font-medium">진행중</p>
+              <p className="text-xs text-golf-green-500 font-medium">진행중</p>
             </div>
           </Card>
+          
           <Card className="p-3 bg-white/80 backdrop-blur-sm border-golf-sky-200 shadow-lg">
             <div className="text-center">
-              <div className="text-2xl mb-1">🏆</div>
+              <div className="text-2xl mb-1">✅</div>
               <p className="text-2xl font-display font-bold text-golf-sky-600">{completedContracts}</p>
-              <p className="text-xs text-golf-sky-600 font-medium">완료</p>
+              <p className="text-xs text-golf-sky-500 font-medium">완료</p>
             </div>
           </Card>
+          
           <Card className="p-3 bg-white/80 backdrop-blur-sm border-golf-sand-200 shadow-lg">
             <div className="text-center">
               <div className="text-2xl mb-1">💰</div>
-              <p className="text-lg font-display font-bold text-golf-sand-600">
-                {formatCurrency(totalEarnings).replace('₩', '')}원
-              </p>
-              <p className="text-xs text-golf-sand-600 font-medium">총 수익</p>
+              <p className="text-lg font-display font-bold text-golf-sand-600">{formatCurrency(totalEarnings)}</p>
+              <p className="text-xs text-golf-sand-500 font-medium">총 수익</p>
             </div>
           </Card>
         </div>
 
         {/* 검색 및 필터 */}
+        <Card className="bg-white/80 backdrop-blur-sm shadow-lg">
+          <CardContent className="p-4 space-y-4">
+            <div className="flex gap-2">
+              <div className="flex-1">
+                <Input
+                  placeholder="계약 검색..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  leftIcon={<Search className="h-4 w-4" />}
+                />
+              </div>
+              <Button variant="outline" size="sm">
+                <Filter className="h-4 w-4" />
+              </Button>
+            </div>
+            
+            <div className="flex gap-2">
+              <select
+                value={selectedFilter}
+                onChange={(e) => setSelectedFilter(e.target.value)}
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-golf-green-500"
+              >
+                <option value="all">전체 상태</option>
+                <option value="active">진행중</option>
+                <option value="pending">대기중</option>
+                <option value="completed">완료</option>
+                <option value="cancelled">취소됨</option>
+              </select>
+              
+              <select
+                value={selectedType}
+                onChange={(e) => setSelectedType(e.target.value)}
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-golf-green-500"
+              >
+                <option value="all">전체 타입</option>
+                <option value="tournament">대회 계약</option>
+                <option value="annual">연간 계약</option>
+                <option value="training">훈련 계약</option>
+                <option value="sponsorship">스폰서십</option>
+              </select>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* 계약 리스트 */}
         <div className="space-y-3">
-          {/* 검색 바 */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-            <Input
-              placeholder="계약을 검색하세요..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-
-          {/* 필터 탭 */}
-          <div className="flex space-x-2 overflow-x-auto scrollbar-thin">
-            {[
-              { value: 'all', label: '전체' },
-              { value: 'active', label: '진행중' },
-              { value: 'pending', label: '대기중' },
-              { value: 'completed', label: '완료' },
-              { value: 'cancelled', label: '취소' },
-            ].map((filter) => (
-              <button
-                key={filter.value}
-                onClick={() => setSelectedFilter(filter.value)}
-                className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
-                  selectedFilter === filter.value
-                    ? 'bg-primary-600 text-white'
-                    : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600'
-                }`}
-              >
-                {filter.label}
-              </button>
-            ))}
-          </div>
-
-          {/* 타입 필터 */}
-          <div className="flex space-x-2 overflow-x-auto scrollbar-thin">
-            {[
-              { value: 'all', label: '전체 타입' },
-              { value: 'tournament', label: '대회 계약' },
-              { value: 'annual', label: '연간 계약' },
-            ].map((type) => (
-              <button
-                key={type.value}
-                onClick={() => setSelectedType(type.value)}
-                className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${
-                  selectedType === type.value
-                    ? 'bg-primary-600 text-white'
-                    : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600'
-                }`}
-              >
-                {type.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* 액션 버튼 */}
-        <Button
-          onClick={() => router.push('/contracts/create')}
-          className="w-full"
-          leftIcon={<Plus className="h-5 w-5" />}
-        >
-          새로운 계약 생성
-        </Button>
-
-        {/* 골프 스코어보드 스타일 계약 목록 */}
-        <div className="space-y-4">
-          {filteredContracts.length === 0 ? (
-            <Card className="bg-white/90 backdrop-blur-sm shadow-lg border-golf-green-100">
-              <CardBody className="text-center py-12">
-                <div className="text-6xl mb-4">📋</div>
-                <h3 className="text-lg font-medium text-golf-dark-700 mb-2">
-                  계약이 없습니다
-                </h3>
-                <p className="text-golf-dark-600">
-                  {searchQuery ? '검색 결과가 없습니다.' : '아직 등록된 계약이 없습니다.'}
-                </p>
-              </CardBody>
-            </Card>
-          ) : (
-            filteredContracts.map((contract, index) => (
-              <Card key={contract.id} className="cursor-pointer hover:shadow-lg transition-all duration-300 bg-white/90 backdrop-blur-sm border-golf-green-100 shadow-md">
-                <CardBody>
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-3 mb-2">
-                        <div className="w-8 h-8 bg-golf-green-100 rounded-full flex items-center justify-center text-golf-green-600 font-display font-bold text-sm">
-                          {index + 1}
-                        </div>
-                        <Badge 
-                          variant={getTypeColor(contract.type)}
-                          className={`${
-                            contract.type === 'tournament' ? 'bg-golf-green-100 text-golf-green-700' :
-                            contract.type === 'annual' ? 'bg-golf-sky-100 text-golf-sky-700' :
-                            'bg-golf-sand-100 text-golf-sand-700'
-                          }`}
-                        >
-                          {getTypeLabel(contract.type)}
-                        </Badge>
-                        <Badge 
-                          variant={getStatusColor(contract.status)}
-                          className={`${
-                            contract.status === 'active' ? 'bg-golf-green-100 text-golf-green-700' :
-                            contract.status === 'completed' ? 'bg-golf-sky-100 text-golf-sky-700' :
-                            contract.status === 'cancelled' ? 'bg-red-100 text-red-700' :
-                            'bg-golf-sand-100 text-golf-sand-700'
-                          }`}
-                        >
-                          {getStatusLabel(contract.status)}
-                        </Badge>
-                        {isContractUpcoming(contract) && (
-                          <Badge variant="warning">시작 예정</Badge>
-                        )}
-                        {isContractExpired(contract) && (
-                          <Badge variant="destructive">만료됨</Badge>
-                        )}
-                      </div>
-                      <h3 className="font-semibold text-gray-900 dark:text-white text-lg mb-1">
-                        {contract.title}
+          {filteredContracts.map((contract) => (
+            <Card key={contract.id} className="bg-white/80 backdrop-blur-sm shadow-lg hover:shadow-xl transition-shadow">
+              <CardContent className="p-4">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="text-golf-green-600">
+                      {getTypeIcon(contract.type)}
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900 dark:text-white">
+                        {getTypeLabel(contract.type)}
                       </h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                        {contract.description}
+                      <p className="text-sm text-gray-500">
+                        #{contract.id}
                       </p>
                     </div>
                   </div>
+                  <Badge variant={getStatusColor(contract.status)}>
+                    {getStatusLabel(contract.status)}
+                  </Badge>
+                </div>
 
-                  <div className="space-y-2 mb-4">
-                    <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-                      <MapPin className="h-4 w-4 mr-2" />
-                      {contract.location}
-                    </div>
-                    <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-                      <Calendar className="h-4 w-4 mr-2" />
-                      {formatDate(contract.startDate)} ~ {formatDate(contract.endDate)}
-                    </div>
-                    <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-                      <DollarSign className="h-4 w-4 mr-2" />
-                      {formatCurrency(contract.baseRate)}
-                    </div>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <Calendar className="h-4 w-4" />
+                    <span>{formatDate(contract.startDate)} ~ {formatDate(contract.endDate)}</span>
                   </div>
+                  
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <DollarSign className="h-4 w-4" />
+                    <span>{formatCurrency(contract.terms.baseSalary)}</span>
+                  </div>
+                  
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <Trophy className="h-4 w-4" />
+                    <span>{contract.terms.tournamentCount}개 대회</span>
+                  </div>
+                  
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <Clock className="h-4 w-4" />
+                    <span>{contract.terms.contractConditions.duration}개월</span>
+                  </div>
+                </div>
 
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center text-xs text-gray-500 dark:text-gray-500">
-                      <Clock className="h-3 w-3 mr-1" />
-                      {formatRelativeTime(contract.createdAt)}
-                    </div>
-                    
-                    <div className="flex space-x-2">
-                      {contract.status === 'active' && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            router.push(`/contracts/${contract.id}/edit`);
-                          }}
-                          leftIcon={<Edit className="h-4 w-4" />}
-                        >
-                          수정
-                        </Button>
-                      )}
-                      
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          router.push(`/contracts/${contract.id}`);
-                        }}
-                        rightIcon={<Eye className="h-4 w-4" />}
-                      >
-                        상세보기
-                      </Button>
-                    </div>
-                  </div>
-                </CardBody>
-              </Card>
-            ))
-          )}
+                <div className="mt-4 flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => router.push(`/contracts/${contract.id}`)}
+                    className="flex-1"
+                  >
+                    <Eye className="h-4 w-4 mr-1" />
+                    상세보기
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
+
+        {filteredContracts.length === 0 && (
+          <Card className="bg-white/80 backdrop-blur-sm shadow-lg">
+            <CardContent className="p-8 text-center">
+              <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                계약이 없습니다
+              </h3>
+              <p className="text-gray-500">
+                검색 조건에 맞는 계약을 찾을 수 없습니다.
+              </p>
+            </CardContent>
+          </Card>
+        )}
       </main>
 
       {/* 하단 네비게이션 */}

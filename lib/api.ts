@@ -39,7 +39,9 @@ apiClient.interceptors.response.use(
       // 토큰 만료 시 로그아웃
       if (typeof window !== 'undefined') {
         localStorage.removeItem('auth_token');
-        window.location.href = '/login';
+        // 현재 페이지 정보를 로그인 페이지로 전달
+        const currentPath = window.location.pathname;
+        window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
       }
     }
     return Promise.reject(error);

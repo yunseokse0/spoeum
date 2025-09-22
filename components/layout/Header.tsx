@@ -43,7 +43,9 @@ export default function Header({
 
   const handleLogout = () => {
     clearAuth();
-    router.push('/login');
+    // 현재 페이지 정보를 로그인 페이지로 전달
+    const currentPath = typeof window !== 'undefined' ? window.location.pathname : '/dashboard';
+    router.push(`/login?redirect=${encodeURIComponent(currentPath)}`);
   };
 
   const getUserTypeLabel = (userType: string) => {

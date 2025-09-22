@@ -143,7 +143,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   const handleLogout = () => {
     localStorage.removeItem('admin_token');
     localStorage.removeItem('admin_user');
-    router.push('/admin/login');
+    // 현재 페이지 정보를 관리자 로그인 페이지로 전달
+    const currentPath = typeof window !== 'undefined' ? window.location.pathname : '/admin';
+    router.push(`/admin/login?redirect=${encodeURIComponent(currentPath)}`);
   };
 
   if (!adminUser) {

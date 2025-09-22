@@ -8,28 +8,27 @@ import { z } from 'zod';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { Badge } from '@/components/ui/Badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select';
 import { Checkbox } from '@/components/ui/checkbox';
-import { User, Mail, Phone, Lock, MapPin, Briefcase, Calendar, Users } from 'lucide-react';
+import { User, Mail, Phone, Lock, Trophy, Target, Calendar, MapPin } from 'lucide-react';
 import { GolfLogoWithText } from '@/components/ui/GolfLogo';
 import { useThemeStore } from '@/store/useThemeStore';
 
-// 캐디 전용 회원가입 스키마
-const caddySignupSchema = z.object({
+// 아마추어 전용 회원가입 스키마
+const amateurSignupSchema = z.object({
   name: z.string().min(2, '이름은 최소 2자 이상이어야 합니다.'),
   email: z.string().email('올바른 이메일 형식이 아닙니다.'),
   phone: z.string().regex(/^(010|011|016|017|018|019)-?\d{3,4}-?\d{4}$/, '올바른 휴대폰 번호 형식이 아닙니다.'),
   password: z.string().min(8, '비밀번호는 최소 8자 이상이어야 합니다.'),
   confirmPassword: z.string(),
-  gender: z.enum(['male', 'female'], { required_error: '성별을 선택해주세요.' }),
-  experience: z.string().min(1, '경력을 선택해주세요.'),
-  mainGolfCourse: z.string().min(1, '주 소속 골프장을 선택해주세요.'),
-  additionalGolfCourses: z.array(z.string()).optional(),
-  freelancer: z.boolean().optional(),
-  availableDays: z.array(z.string()).min(1, '가능한 요일을 최소 1개 이상 선택해주세요.'),
-  hourlyRate: z.string().min(1, '시간당 요금을 입력해주세요.'),
-  specialSkills: z.array(z.string()).optional(),
+  gender: z.enum(['male', 'female']).optional(),
+  handicap: z.string().optional(),
+  golfExperience: z.string().min(1, '골프 경력을 선택해주세요.'),
+  preferredLocation: z.array(z.string()).optional(),
+  availableDays: z.array(z.string()).optional(),
+  preferredTime: z.string().optional(),
+  budgetRange: z.string().optional(),
+  specialRequests: z.string().optional(),
   terms: z.boolean().refine(val => val === true, '이용약관에 동의해주세요.'),
   privacy: z.boolean().refine(val => val === true, '개인정보처리방침에 동의해주세요.')
 }).refine(data => data.password === data.confirmPassword, {
@@ -37,51 +36,58 @@ const caddySignupSchema = z.object({
   path: ['confirmPassword']
 });
 
-type CaddySignupForm = z.infer<typeof caddySignupSchema>;
+type AmateurSignupForm = z.infer<typeof amateurSignupSchema>;
 
-const EXPERIENCE_OPTIONS = [
-  { value: '0-1', label: '1년 미만' },
-  { value: '1-3', label: '1-3년' },
-  { value: '3-5', label: '3-5년' },
-  { value: '5-10', label: '5-10년' },
-  { value: '10+', label: '10년 이상' }
+const GOLF_EXPERIENCE = [
+  { value: 'beginner', label: '초급 (1년 미만)' },
+  { value: 'intermediate', label: '중급 (1-3년)' },
+  { value: 'advanced', label: '고급 (3-5년)' },
+  { value: 'expert', label: '전문가 (5년 이상)' }
+];
+
+const HANDICAP_RANGE = [
+  { value: '0-10', label: '0-10 (싱글핸디캡)' },
+  { value: '11-20', label: '11-20 (중급)' },
+  { value: '21-30', label: '21-30 (초급)' },
+  { value: '30+', label: '30+ (입문)' },
+  { value: 'unknown', label: '모르겠음' }
+];
+
+const PREFERRED_LOCATIONS = [
+  { value: 'seoul', label: '서울' },
+  { value: 'gyeonggi', label: '경기' },
+  { value: 'incheon', label: '인천' },
+  { value: 'gangwon', label: '강원' },
+  { value: 'jeju', label: '제주' },
+  { value: 'busan', label: '부산' },
+  { value: 'any', label: '지역 무관' }
 ];
 
 const AVAILABLE_DAYS = [
-  { value: 'monday', label: '월요일' },
-  { value: 'tuesday', label: '화요일' },
-  { value: 'wednesday', label: '수요일' },
-  { value: 'thursday', label: '목요일' },
-  { value: 'friday', label: '금요일' },
-  { value: 'saturday', label: '토요일' },
-  { value: 'sunday', label: '일요일' }
+  { value: 'weekday', label: '평일' },
+  { value: 'weekend', label: '주말' },
+  { value: 'both', label: '평일/주말 모두' }
 ];
 
-const SPECIAL_SKILLS = [
-  { value: 'distance', label: '거리 측정 전문' },
-  { value: 'putting', label: '퍼팅 조언' },
-  { value: 'course_management', label: '코스 관리' },
-  { value: 'equipment', label: '장비 조언' },
-  { value: 'psychology', label: '심리 관리' },
-  { value: 'weather', label: '날씨 분석' }
+const PREFERRED_TIME = [
+  { value: 'morning', label: '오전 (6:00-12:00)' },
+  { value: 'afternoon', label: '오후 (12:00-18:00)' },
+  { value: 'evening', label: '저녁 (18:00 이후)' },
+  { value: 'any', label: '시간 무관' }
 ];
 
-// Mock 골프장 데이터 (실제로는 API에서 가져올 예정)
-const GOLF_COURSES = [
-  { id: 'jeju_blueone', name: '제주 블루원', region: '제주도' },
-  { id: 'jeju_pinx', name: '제주 핀크스', region: '제주도' },
-  { id: 'seoul_gc', name: '서울골프클럽', region: '서울' },
-  { id: 'gyeonggi_resort', name: '경기골프리조트', region: '경기' },
-  { id: 'busan_cc', name: '부산 컨트리클럽', region: '경남' },
-  { id: 'gangwon_resort', name: '강원 리조트', region: '강원' }
+const BUDGET_RANGE = [
+  { value: '50k-100k', label: '5만원 - 10만원' },
+  { value: '100k-200k', label: '10만원 - 20만원' },
+  { value: '200k-300k', label: '20만원 - 30만원' },
+  { value: '300k+', label: '30만원 이상' }
 ];
 
-export default function CaddySignupPage() {
+export default function AmateurSignupPage() {
   const router = useRouter();
   const { theme } = useThemeStore();
-  const [selectedCourses, setSelectedCourses] = useState<string[]>([]);
+  const [preferredLocations, setPreferredLocations] = useState<string[]>([]);
   const [availableDays, setAvailableDays] = useState<string[]>([]);
-  const [specialSkills, setSpecialSkills] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const {
@@ -90,44 +96,41 @@ export default function CaddySignupPage() {
     formState: { errors },
     setValue,
     watch
-  } = useForm<CaddySignupForm>({
-    resolver: zodResolver(caddySignupSchema)
+  } = useForm<AmateurSignupForm>({
+    resolver: zodResolver(amateurSignupSchema)
   });
 
-  const freelancer = watch('freelancer');
-
-  const onSubmit = async (data: CaddySignupForm) => {
+  const onSubmit = async (data: AmateurSignupForm) => {
     setIsLoading(true);
     try {
-      // 캐디 전용 회원가입 로직
-      const caddyData = {
+      // 아마추어 전용 회원가입 로직
+      const amateurData = {
         ...data,
-        userType: 'caddy' as const,
-        additionalGolfCourses: selectedCourses,
+        userType: 'amateur' as const,
+        preferredLocation: preferredLocations,
         availableDays,
-        specialSkills,
-        caddyInfo: {
-          experience: data.experience,
-          mainGolfCourse: data.mainGolfCourse,
-          additionalGolfCourses: selectedCourses,
-          freelancer: freelancer || false,
+        amateurInfo: {
+          handicap: data.handicap,
+          golfExperience: data.golfExperience,
+          preferredLocation: preferredLocations,
           availableDays,
-          hourlyRate: parseInt(data.hourlyRate),
-          specialSkills
+          preferredTime: data.preferredTime,
+          budgetRange: data.budgetRange,
+          specialRequests: data.specialRequests
         }
       };
 
-      console.log('캐디 회원가입 데이터:', caddyData);
+      console.log('아마추어 회원가입 데이터:', amateurData);
 
       // API 호출 (실제 구현 시)
       // const response = await fetch('/api/auth/signup', {
       //   method: 'POST',
       //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(caddyData)
+      //   body: JSON.stringify(amateurData)
       // });
 
       // 성공 시 로그인 페이지로 이동 (회원가입 완료 메시지와 함께)
-      alert('캐디 회원가입이 완료되었습니다! 로그인해주세요.');
+      alert('아마추어 회원가입이 완료되었습니다! 로그인해주세요.');
       router.push('/login?message=signup-success');
     } catch (error) {
       console.error('회원가입 오류:', error);
@@ -137,11 +140,11 @@ export default function CaddySignupPage() {
     }
   };
 
-  const handleCourseToggle = (courseId: string) => {
-    setSelectedCourses(prev => 
-      prev.includes(courseId) 
-        ? prev.filter(id => id !== courseId)
-        : [...prev, courseId]
+  const handleLocationToggle = (location: string) => {
+    setPreferredLocations(prev => 
+      prev.includes(location) 
+        ? prev.filter(l => l !== location)
+        : [...prev, location]
     );
   };
 
@@ -150,14 +153,6 @@ export default function CaddySignupPage() {
       prev.includes(day) 
         ? prev.filter(d => d !== day)
         : [...prev, day]
-    );
-  };
-
-  const handleSkillToggle = (skill: string) => {
-    setSpecialSkills(prev => 
-      prev.includes(skill) 
-        ? prev.filter(s => s !== skill)
-        : [...prev, skill]
     );
   };
 
@@ -173,11 +168,11 @@ export default function CaddySignupPage() {
           <Card className={`${theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white'}`}>
             <CardHeader className="text-center">
               <CardTitle className="text-2xl font-bold text-green-600 flex items-center justify-center gap-2">
-                <Briefcase className="h-6 w-6" />
-                캐디 회원가입
+                <Trophy className="h-6 w-6" />
+                아마추어 회원가입
               </CardTitle>
               <p className="text-gray-600 dark:text-gray-400">
-                프로 골퍼들과 함께할 캐디가 되어보세요
+                프로 캐디와 함께 골프 실력을 향상시켜보세요
               </p>
             </CardHeader>
 
@@ -218,7 +213,7 @@ export default function CaddySignupPage() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      성별 *
+                      성별 (선택사항)
                     </label>
                     <Select onValueChange={(value) => setValue('gender', value as 'male' | 'female')}>
                       <SelectTrigger>
@@ -229,99 +224,94 @@ export default function CaddySignupPage() {
                         <SelectItem value="female">여성</SelectItem>
                       </SelectContent>
                     </Select>
-                    {errors.gender && <p className="text-red-500 text-sm mt-1">{errors.gender.message}</p>}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      캐디 경력 *
-                    </label>
-                    <Select onValueChange={(value) => setValue('experience', value)}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="경력을 선택하세요" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {EXPERIENCE_OPTIONS.map(option => (
-                          <SelectItem key={option.value} value={option.value}>
-                            {option.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {errors.experience && <p className="text-red-500 text-sm mt-1">{errors.experience.message}</p>}
                   </div>
                 </div>
 
-                {/* 골프장 정보 */}
+                {/* 골프 정보 */}
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold text-green-600 flex items-center gap-2">
-                    <MapPin className="h-5 w-5" />
-                    소속 골프장
+                    <Target className="h-5 w-5" />
+                    골프 정보
                   </h3>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      주 소속 골프장 *
+                      골프 경력 *
                     </label>
-                    <Select onValueChange={(value) => setValue('mainGolfCourse', value)}>
+                    <Select onValueChange={(value) => setValue('golfExperience', value)}>
                       <SelectTrigger>
-                        <SelectValue placeholder="주 소속 골프장을 선택하세요" />
+                        <SelectValue placeholder="골프 경력을 선택하세요" />
                       </SelectTrigger>
                       <SelectContent>
-                        {GOLF_COURSES.map(course => (
-                          <SelectItem key={course.id} value={course.id}>
-                            {course.name} ({course.region})
+                        {GOLF_EXPERIENCE.map(exp => (
+                          <SelectItem key={exp.value} value={exp.value}>
+                            {exp.label}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
-                    {errors.mainGolfCourse && <p className="text-red-500 text-sm mt-1">{errors.mainGolfCourse.message}</p>}
+                    {errors.golfExperience && <p className="text-red-500 text-sm mt-1">{errors.golfExperience.message}</p>}
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      추가 소속 골프장 (선택사항)
+                      핸디캡 (선택사항)
+                    </label>
+                    <Select onValueChange={(value) => setValue('handicap', value)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="핸디캡을 선택하세요" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {HANDICAP_RANGE.map(handicap => (
+                          <SelectItem key={handicap.value} value={handicap.value}>
+                            {handicap.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {/* 선호 지역 */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-green-600 flex items-center gap-2">
+                    <MapPin className="h-5 w-5" />
+                    선호 지역
+                  </h3>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      희망 지역 (복수 선택 가능)
                     </label>
                     <div className="grid grid-cols-2 gap-2">
-                      {GOLF_COURSES.map(course => (
-                        <div key={course.id} className="flex items-center space-x-2">
+                      {PREFERRED_LOCATIONS.map(location => (
+                        <div key={location.value} className="flex items-center space-x-2">
                           <Checkbox
-                            id={`course-${course.id}`}
-                            checked={selectedCourses.includes(course.id)}
-                            onCheckedChange={() => handleCourseToggle(course.id)}
+                            id={`location-${location.value}`}
+                            checked={preferredLocations.includes(location.value)}
+                            onCheckedChange={() => handleLocationToggle(location.value)}
                           />
-                          <label htmlFor={`course-${course.id}`} className="text-sm">
-                            {course.name}
+                          <label htmlFor={`location-${location.value}`} className="text-sm">
+                            {location.label}
                           </label>
                         </div>
                       ))}
                     </div>
                   </div>
-
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="freelancer"
-                      checked={freelancer}
-                      onCheckedChange={(checked) => setValue('freelancer', !!checked)}
-                    />
-                    <label htmlFor="freelancer" className="text-sm">
-                      프리랜서 활동 (소속 골프장 없이 활동)
-                    </label>
-                  </div>
                 </div>
 
-                {/* 근무 정보 */}
+                {/* 이용 가능 시간 */}
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold text-green-600 flex items-center gap-2">
                     <Calendar className="h-5 w-5" />
-                    근무 정보
+                    이용 가능 시간
                   </h3>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      가능한 요일 *
+                      이용 가능 요일
                     </label>
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-1 gap-2">
                       {AVAILABLE_DAYS.map(day => (
                         <div key={day.value} className="flex items-center space-x-2">
                           <Checkbox
@@ -335,36 +325,61 @@ export default function CaddySignupPage() {
                         </div>
                       ))}
                     </div>
-                    {errors.availableDays && <p className="text-red-500 text-sm mt-1">{errors.availableDays.message}</p>}
                   </div>
-
-                  <Input
-                    label="시간당 요금 (원)"
-                    type="number"
-                    placeholder="50000"
-                    leftIcon={<span className="text-green-600">₩</span>}
-                    error={errors.hourlyRate?.message}
-                    {...register('hourlyRate')}
-                  />
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      전문 분야 (선택사항)
+                      선호 시간대
                     </label>
-                    <div className="grid grid-cols-2 gap-2">
-                      {SPECIAL_SKILLS.map(skill => (
-                        <div key={skill.value} className="flex items-center space-x-2">
-                          <Checkbox
-                            id={`skill-${skill.value}`}
-                            checked={specialSkills.includes(skill.value)}
-                            onCheckedChange={() => handleSkillToggle(skill.value)}
-                          />
-                          <label htmlFor={`skill-${skill.value}`} className="text-sm">
-                            {skill.label}
-                          </label>
-                        </div>
-                      ))}
-                    </div>
+                    <Select onValueChange={(value) => setValue('preferredTime', value)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="선호 시간대를 선택하세요" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {PREFERRED_TIME.map(time => (
+                          <SelectItem key={time.value} value={time.value}>
+                            {time.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      예산 범위
+                    </label>
+                    <Select onValueChange={(value) => setValue('budgetRange', value)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="예산 범위를 선택하세요" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {BUDGET_RANGE.map(budget => (
+                          <SelectItem key={budget.value} value={budget.value}>
+                            {budget.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {/* 특별 요청사항 */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-green-600">
+                    특별 요청사항
+                  </h3>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      추가 요청사항 (선택사항)
+                    </label>
+                    <textarea
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                      rows={3}
+                      placeholder="캐디에게 전달하고 싶은 특별한 요청사항이 있다면 입력해주세요..."
+                      {...register('specialRequests')}
+                    />
                   </div>
                 </div>
 
@@ -426,7 +441,7 @@ export default function CaddySignupPage() {
                   className="w-full"
                   disabled={isLoading}
                 >
-                  {isLoading ? '가입 중...' : '캐디 회원가입'}
+                  {isLoading ? '가입 중...' : '아마추어 회원가입'}
                 </Button>
 
                 {/* 로그인 링크 */}
