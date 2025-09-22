@@ -1,0 +1,149 @@
+{
+  "name": "스포이음 - 골프 캐디 매칭 플랫폼",
+  "short_name": "스포이음",
+  "description": "골프 캐디와 골퍼를 연결하는 최고의 매칭 플랫폼",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0ea5e9",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "ko",
+  "categories": ["sports", "business", "productivity"],
+  "icons": [
+    {
+      "src": "/icons/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/desktop-1.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "스포이음 데스크톱 대시보드"
+    },
+    {
+      "src": "/screenshots/mobile-1.png",
+      "sizes": "375x812",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "스포이음 모바일 대시보드"
+    },
+    {
+      "src": "/screenshots/mobile-2.png",
+      "sizes": "375x812",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "매칭 서비스 화면"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "대시보드",
+      "short_name": "대시보드",
+      "description": "대시보드로 이동",
+      "url": "/dashboard",
+      "icons": [
+        {
+          "src": "/icons/shortcut-dashboard.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "매칭",
+      "short_name": "매칭",
+      "description": "매칭 서비스로 이동",
+      "url": "/matching",
+      "icons": [
+        {
+          "src": "/icons/shortcut-matching.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "계약",
+      "short_name": "계약",
+      "description": "계약 관리로 이동",
+      "url": "/contracts",
+      "icons": [
+        {
+          "src": "/icons/shortcut-contracts.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "프로필",
+      "short_name": "프로필",
+      "description": "프로필로 이동",
+      "url": "/profile",
+      "icons": [
+        {
+          "src": "/icons/shortcut-profile.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "related_applications": [
+    {
+      "platform": "webapp",
+      "url": "https://spoeum.com/manifest.json"
+    }
+  ],
+  "prefer_related_applications": false,
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  }
+}

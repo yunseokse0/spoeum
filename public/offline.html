@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>오프라인 - 스포이음</title>
+  <meta name="description" content="인터넷 연결이 필요합니다">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Pretendard Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    
+    .container {
+      background: white;
+      border-radius: 1rem;
+      padding: 3rem 2rem;
+      text-align: center;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      max-width: 400px;
+      width: 100%;
+    }
+    
+    .icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 2rem;
+      background: #fef3c7;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+    }
+    
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #1f2937;
+      margin-bottom: 1rem;
+    }
+    
+    p {
+      color: #6b7280;
+      line-height: 1.6;
+      margin-bottom: 2rem;
+    }
+    
+    .button {
+      background: #0ea5e9;
+      color: white;
+      border: none;
+      padding: 0.875rem 2rem;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      width: 100%;
+    }
+    
+    .button:hover {
+      background: #0284c7;
+    }
+    
+    .button:active {
+      transform: translateY(1px);
+    }
+    
+    .status {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      background: #f9fafb;
+      border-radius: 0.5rem;
+      font-size: 0.875rem;
+      color: #6b7280;
+    }
+    
+    .spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 2px solid #f3f4f6;
+      border-radius: 50%;
+      border-top-color: #0ea5e9;
+      animation: spin 1s ease-in-out infinite;
+      margin-right: 0.5rem;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .hidden {
+      display: none;
+    }
+    
+    @media (prefers-color-scheme: dark) {
+      body {
+        background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+      }
+      
+      .container {
+        background: #1f2937;
+        color: #f9fafb;
+      }
+      
+      h1 {
+        color: #f9fafb;
+      }
+      
+      p {
+        color: #d1d5db;
+      }
+      
+      .icon {
+        background: #374151;
+      }
+      
+      .status {
+        background: #374151;
+        color: #d1d5db;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="icon">📡</div>
+    <h1>인터넷 연결이 필요합니다</h1>
+    <p>
+      스포이음을 사용하려면 인터넷 연결이 필요합니다.<br>
+      연결을 확인한 후 다시 시도해주세요.
+    </p>
+    <button class="button" onclick="retryConnection()">
+      <span id="button-text">다시 시도</span>
+      <span id="button-spinner" class="spinner hidden"></span>
+    </button>
+    <div class="status">
+      <div id="status-text">연결 상태를 확인하고 있습니다...</div>
+    </div>
+  </div>
+
+  <script>
+    let isRetrying = false;
+    
+    function updateStatus(message, isError = false) {
+      const statusText = document.getElementById('status-text');
+      statusText.textContent = message;
+      statusText.style.color = isError ? '#ef4444' : '#6b7280';
+    }
+    
+    function setButtonLoading(loading) {
+      const button = document.querySelector('.button');
+      const buttonText = document.getElementById('button-text');
+      const buttonSpinner = document.getElementById('button-spinner');
+      
+      if (loading) {
+        button.disabled = true;
+        buttonText.classList.add('hidden');
+        buttonSpinner.classList.remove('hidden');
+        updateStatus('연결을 시도하고 있습니다...');
+      } else {
+        button.disabled = false;
+        buttonText.classList.remove('hidden');
+        buttonSpinner.classList.add('hidden');
+      }
+    }
+    
+    async function checkConnection() {
+      try {
+        const response = await fetch('/api/health', {
+          method: 'GET',
+          cache: 'no-cache',
+          headers: {
+            'Cache-Control': 'no-cache'
+          }
+        });
+        
+        if (response.ok) {
+          updateStatus('연결이 복구되었습니다!');
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
+          return true;
+        }
+      } catch (error) {
+        console.log('Connection check failed:', error);
+      }
+      return false;
+    }
+    
+    async function retryConnection() {
+      if (isRetrying) return;
+      
+      isRetrying = true;
+      setButtonLoading(true);
+      
+      // Try multiple endpoints
+      const endpoints = ['/api/health', '/api/auth/login', '/'];
+      let connected = false;
+      
+      for (const endpoint of endpoints) {
+        try {
+          const response = await fetch(endpoint, {
+            method: 'HEAD',
+            cache: 'no-cache',
+            headers: {
+              'Cache-Control': 'no-cache'
+            }
+          });
+          
+          if (response.ok || response.status < 500) {
+            connected = true;
+            break;
+          }
+        } catch (error) {
+          console.log(`Endpoint ${endpoint} failed:`, error);
+        }
+      }
+      
+      if (connected) {
+        updateStatus('연결이 복구되었습니다! 페이지를 새로고침합니다.');
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
+      } else {
+        updateStatus('여전히 연결할 수 없습니다. 네트워크 설정을 확인해주세요.', true);
+      }
+      
+      setButtonLoading(false);
+      isRetrying = false;
+    }
+    
+    // Check connection periodically
+    setInterval(checkConnection, 5000);
+    
+    // Check connection on page load
+    window.addEventListener('load', () => {
+      setTimeout(checkConnection, 1000);
+    });
+    
+    // Check connection when online
+    window.addEventListener('online', () => {
+      updateStatus('네트워크 연결이 감지되었습니다. 확인 중...');
+      setTimeout(checkConnection, 1000);
+    });
+    
+    // Update status when offline
+    window.addEventListener('offline', () => {
+      updateStatus('네트워크 연결이 끊어졌습니다.', true);
+    });
+  </script>
+</body>
+</html>
