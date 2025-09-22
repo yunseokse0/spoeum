@@ -5,6 +5,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { 
   Shield, 
   Users, 
@@ -286,6 +287,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             </div>
             
             <div className="flex items-center space-x-4">
+              {/* 다크테마 토글 버튼 */}
+              <ThemeToggle variant="button" />
+              
               <div className="text-right">
                 <div className="text-sm font-medium text-gray-900 dark:text-white">
                   {new Date().toLocaleDateString('ko-KR', { 

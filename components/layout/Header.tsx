@@ -7,6 +7,7 @@ import { Bell, Menu, Search, User, LogOut, Settings } from 'lucide-react';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useNotificationStore } from '@/store/useNotificationStore';
 import { Button } from '@/components/ui/Button';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { cn } from '@/lib/utils';
 
 interface HeaderProps {
@@ -112,6 +113,9 @@ export default function Header({
               <Search className="w-5 h-5" />
             </Link>
           )}
+
+          {/* 다크테마 토글 버튼 */}
+          <ThemeToggle variant="button" />
 
           {showNotificationButton && (
             <Link

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { Briefcase, Trophy, Users, Building2, DollarSign, ArrowRight } from 'lucide-react';
 import { GolfLogoWithText } from '@/components/ui/GolfLogo';
 import { useThemeStore } from '@/store/useThemeStore';
@@ -87,6 +88,11 @@ export default function SignupPage() {
 
   return (
     <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900' : 'bg-gradient-to-br from-green-50 to-blue-50'}`}>
+      {/* 다크테마 토글 버튼 */}
+      <div className="absolute top-4 right-4">
+        <ThemeToggle variant="button" />
+      </div>
+      
       <div className="container mx-auto px-4 py-8">
         {/* 헤더 */}
         <div className="flex items-center justify-center mb-8">
