@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { TournamentScraper } from '@/lib/scraper/tournament-scraper';
 import { GolfCourseScraper } from '@/lib/scraper/golf-course-scraper';
 import { playerScraper } from '@/lib/scraper';
+import { NaverGolfScraper } from '@/lib/scraper/naver-golf-scraper';
 import { Tournament, GolfCourse, PlayerInfo } from '@/types';
 import { dataStorage } from '@/lib/data-storage';
 
@@ -181,25 +182,45 @@ async function handleScraping(request: NextRequest) {
         console.log('선수 정보 크롤링 시작...');
         const playerStartTime = Date.now();
         
-        // 실제 선수 정보 크롤링 실행
-        const samplePlayerIds = [
-          { id: 'KPGA12345', association: 'KPGA' as const },
-          { id: 'KLPGA67890', association: 'KLPGA' as const },
-          { id: 'KPGA11111', association: 'KPGA' as const },
-          { id: 'KLPGA22222', association: 'KLPGA' as const }
-        ];
-
         const players: PlayerInfo[] = [];
         const playerErrors: string[] = [];
 
-        for (const { id, association } of samplePlayerIds) {
-          try {
-            const player = await playerScraper.searchPlayer(id, association);
-            if (player) {
-              players.push(player);
+        // 1단계: 네이버 스포츠 골프 랭킹 크롤링 (추천 방법)
+        try {
+          console.log('네이버 스포츠 골프 랭킹 크롤링 시도...');
+          const naverGolfScraper = new NaverGolfScraper();
+          
+          const [naverKLPGA, naverKPGA] = await Promise.all([
+            naverGolfScraper.scrapeKLPGARanking(),
+            naverGolfScraper.scrapeKPGARanking()
+          ]);
+          
+          players.push(...naverKLPGA, ...naverKPGA);
+          console.log(`네이버 스포츠에서 ${naverKLPGA.length + naverKPGA.length}명 선수 수집 완료`);
+        } catch (naverError) {
+          console.error('네이버 스포츠 골프 크롤링 실패:', naverError);
+          playerErrors.push(`네이버 스포츠: ${naverError instanceof Error ? naverError.message : '알 수 없는 오류'}`);
+        }
+
+        // 2단계: 기존 개별 선수 검색 (백업)
+        if (players.length === 0) {
+          console.log('개별 선수 검색으로 fallback...');
+          const samplePlayerIds = [
+            { id: 'KPGA12345', association: 'KPGA' as const },
+            { id: 'KLPGA67890', association: 'KLPGA' as const },
+            { id: 'KPGA11111', association: 'KPGA' as const },
+            { id: 'KLPGA22222', association: 'KLPGA' as const }
+          ];
+
+          for (const { id, association } of samplePlayerIds) {
+            try {
+              const player = await playerScraper.searchPlayer(id, association);
+              if (player) {
+                players.push(player);
+              }
+            } catch (error) {
+              playerErrors.push(`${association} ${id}: ${error instanceof Error ? error.message : '알 수 없는 오류'}`);
             }
-          } catch (error) {
-            playerErrors.push(`${association} ${id}: ${error instanceof Error ? error.message : '알 수 없는 오류'}`);
           }
         }
 

@@ -1,15 +1,18 @@
 import { KLPGAscraper } from './klpga';
 import { KPGAscraper } from './kpga';
+import { NaverGolfScraper } from './naver-golf-scraper';
 import { PlayerInfo, GolfAssociation } from '@/types';
 
 export class PlayerScraper {
   private klpgaScraper: KLPGAscraper;
   private kpgaScraper: KPGAscraper;
+  private naverGolfScraper: NaverGolfScraper;
   private cache: Map<string, PlayerInfo> = new Map();
 
   constructor() {
     this.klpgaScraper = new KLPGAscraper();
     this.kpgaScraper = new KPGAscraper();
+    this.naverGolfScraper = new NaverGolfScraper();
   }
 
   async searchPlayer(memberId: string, association: GolfAssociation): Promise<PlayerInfo | null> {

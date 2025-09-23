@@ -2,15 +2,15 @@
   "tournaments": {
     "klpga": [
       {
-        "id": "klpga_1758618944409_0",
+        "id": "klpga_1758619997457_0",
         "name": "월",
         "description": "KLPGA 월",
         "location": "장소 미정",
         "course": "코스 미정",
-        "startDate": "2025-09-23T09:15:44.409Z",
-        "endDate": "2025-09-23T09:15:44.409Z",
-        "registrationStartDate": "2025-08-24T09:15:44.409Z",
-        "registrationEndDate": "2025-09-16T09:15:44.409Z",
+        "startDate": "2025-09-23T09:33:17.457Z",
+        "endDate": "2025-09-23T09:33:17.457Z",
+        "registrationStartDate": "2025-08-24T09:33:17.457Z",
+        "registrationEndDate": "2025-09-16T09:33:17.457Z",
         "type": "pga",
         "category": "women",
         "entryFee": 0,
@@ -27,22 +27,22 @@
         "rules": [
           "KLPGA 규정 준수"
         ],
-        "createdAt": "2025-09-23T09:15:44.410Z",
-        "updatedAt": "2025-09-23T09:15:44.410Z"
+        "createdAt": "2025-09-23T09:33:17.457Z",
+        "updatedAt": "2025-09-23T09:33:17.457Z"
       }
     ],
     "kpga": [],
     "all": [
       {
-        "id": "klpga_1758618944409_0",
+        "id": "klpga_1758619997457_0",
         "name": "월",
         "description": "KLPGA 월",
         "location": "장소 미정",
         "course": "코스 미정",
-        "startDate": "2025-09-23T09:15:44.409Z",
-        "endDate": "2025-09-23T09:15:44.409Z",
-        "registrationStartDate": "2025-08-24T09:15:44.409Z",
-        "registrationEndDate": "2025-09-16T09:15:44.409Z",
+        "startDate": "2025-09-23T09:33:17.457Z",
+        "endDate": "2025-09-23T09:33:17.457Z",
+        "registrationStartDate": "2025-08-24T09:33:17.457Z",
+        "registrationEndDate": "2025-09-16T09:33:17.457Z",
         "type": "pga",
         "category": "women",
         "entryFee": 0,
@@ -59,8 +59,8 @@
         "rules": [
           "KLPGA 규정 준수"
         ],
-        "createdAt": "2025-09-23T09:15:44.410Z",
-        "updatedAt": "2025-09-23T09:15:44.410Z"
+        "createdAt": "2025-09-23T09:33:17.457Z",
+        "updatedAt": "2025-09-23T09:33:17.457Z"
       }
     ],
     "count": 1,
@@ -239,8 +239,8 @@
         "association": "KLPGA",
         "memberId": "KLPGA1",
         "birth": "1990-01-01",
-        "currentRanking": 9,
-        "totalPrize": 53370589,
+        "currentRanking": 31,
+        "totalPrize": 26550526,
         "isActive": true,
         "career": [
           {
@@ -259,9 +259,9 @@
           }
         ],
         "ranking": {
-          "current": 82,
-          "best": 34,
-          "previous": 46
+          "current": 78,
+          "best": 19,
+          "previous": 69
         }
       },
       {
@@ -291,8 +291,8 @@
         "association": "KLPGA",
         "memberId": "KLPGA1",
         "birth": "1990-01-01",
-        "currentRanking": 61,
-        "totalPrize": 23157731,
+        "currentRanking": 36,
+        "totalPrize": 89329171,
         "isActive": true,
         "career": [
           {
@@ -311,9 +311,9 @@
           }
         ],
         "ranking": {
-          "current": 87,
-          "best": 27,
-          "previous": 62
+          "current": 15,
+          "best": 45,
+          "previous": 79
         }
       }
     ],
@@ -325,6 +325,6 @@
     ],
     "isMock": false
   },
-  "lastUpdated": "2025-09-23T09:16:16.490Z",
-  "version": 17
+  "lastUpdated": "2025-09-23T09:33:50.735Z",
+  "version": 21
 }
