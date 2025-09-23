@@ -675,16 +675,33 @@ export class TournamentScraper extends BaseScraper {
           const prize = $el.find('.prize, .money, .reward').first().text().trim();
 
           if (name && name.length > 3) {
+            const startDateStr = this.parseNaverDate(date) || new Date().toISOString().split('T')[0];
+            const endDateStr = this.parseNaverDate(date) || new Date().toISOString().split('T')[0];
+            
             const tournament: Tournament = {
               id: `naver-kpga-${Date.now()}-${i}`,
               name,
-              type: 'pga',
-              startDate: this.parseNaverDate(date) || new Date().toISOString().split('T')[0],
-              endDate: this.parseNaverDate(date) || new Date().toISOString().split('T')[0],
+              description: `네이버 스포츠에서 수집된 KPGA 대회: ${name}`,
               location: location || '장소 미정',
-              prize: this.parsePrizeAmount(prize),
-              status: this.determineTournamentStatus(date),
-              description: `네이버 스포츠에서 수집된 KPGA 대회: ${name}`
+              course: location || '장소 미정',
+              startDate: new Date(startDateStr),
+              endDate: new Date(endDateStr),
+              registrationStartDate: new Date(startDateStr),
+              registrationEndDate: new Date(endDateStr),
+              type: 'pga',
+              category: 'men',
+              entryFee: 0,
+              prizePool: this.parsePrizeAmount(prize),
+              maxParticipants: 0,
+              currentParticipants: 0,
+              organizer: 'KPGA',
+              contactInfo: 'KPGA 공식 연락처',
+              isActive: true,
+              isRegistrationOpen: this.determineTournamentStatus(date) === 'upcoming',
+              requirements: ['KPGA 정회원'],
+              rules: ['KPGA 규정 준수'],
+              createdAt: new Date(),
+              updatedAt: new Date()
             };
 
             tournaments.push(tournament);
