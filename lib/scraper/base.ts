@@ -19,7 +19,9 @@ export class BaseScraper {
 
   async initBrowser(): Promise<Browser> {
     if (!this.browser) {
-      this.browser = await puppeteer.launch({
+      const isVercel = process.env.VERCEL === '1';
+      
+      const launchOptions: any = {
         headless: true,
         args: [
           '--no-sandbox',
@@ -28,9 +30,19 @@ export class BaseScraper {
           '--disable-accelerated-2d-canvas',
           '--no-first-run',
           '--no-zygote',
-          '--disable-gpu'
+          '--disable-gpu',
+          '--disable-web-security',
+          '--disable-features=VizDisplayCompositor'
         ]
-      });
+      };
+
+      // Vercel 환경에서 Chromium 경로 설정
+      if (isVercel) {
+        launchOptions.executablePath = '/usr/bin/chromium-browser';
+        launchOptions.args.push('--disable-extensions');
+      }
+
+      this.browser = await puppeteer.launch(launchOptions);
     }
     return this.browser;
   }

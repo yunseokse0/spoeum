@@ -1,0 +1,399 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { Card } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
+import { Badge } from '@/components/ui/Badge';
+import { Table } from '@/components/ui/Table';
+import { Modal } from '@/components/ui/Modal';
+
+interface ScrapedData {
+  tournaments?: {
+    klpga: any[];
+    kpga: any[];
+    all: any[];
+    count: number;
+    total: number;
+    pagination: any;
+  };
+  golfCourses?: {
+    courses: any[];
+    count: number;
+    total: number;
+    regions: Record<string, number>;
+    sources: Record<string, number>;
+    pagination: any;
+  };
+  players?: {
+    players: any[];
+    count: number;
+    total: number;
+    errors: string[];
+    associations: string[];
+    pagination: any;
+  };
+}
+
+interface ScrapingStats {
+  totalTime: number;
+  errors: Array<{
+    type: string;
+    error: string;
+  }>;
+}
+
+export default function DataScraperPage() {
+  const [isLoading, setIsLoading] = useState(false);
+  const [scrapedData, setScrapedData] = useState<ScrapedData>({});
+  const [scrapingStats, setScrapingStats] = useState<ScrapingStats | null>(null);
+  const [selectedDataType, setSelectedDataType] = useState<string>('all');
+  const [selectedView, setSelectedView] = useState<string>('summary');
+  const [showModal, setShowModal] = useState(false);
+  const [modalData, setModalData] = useState<any>(null);
+  const [pagination, setPagination] = useState({
+    limit: 10,
+    offset: 0
+  });
+
+  // 전체 데이터 크롤링 실행
+  const handleScrapeAll = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch(`/api/data/scrape-all?type=${selectedDataType}&mock=true`);
+      const result = await response.json();
+      
+      if (result.success) {
+        setScrapedData(result.data);
+        setScrapingStats(result.stats);
+        alert(`${selectedDataType} 데이터 크롤링이 완료되었습니다!`);
+      } else {
+        alert(`크롤링 실패: ${result.error}`);
+      }
+    } catch (error) {
+      console.error('크롤링 오류:', error);
+      alert('크롤링 중 오류가 발생했습니다.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // 크롤링된 데이터 조회
+  const handleViewData = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch(
+        `/api/data/view?type=${selectedDataType}&limit=${pagination.limit}&offset=${pagination.offset}&mock=true`
+      );
+      const result = await response.json();
+      
+      if (result.success) {
+        setScrapedData(result.data);
+        setPagination(result.pagination);
+      } else {
+        alert(`데이터 조회 실패: ${result.error}`);
+      }
+    } catch (error) {
+      console.error('데이터 조회 오류:', error);
+      alert('데이터 조회 중 오류가 발생했습니다.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // 모달에서 상세 데이터 보기
+  const handleViewDetails = (data: any, type: string) => {
+    setModalData({ ...data, type });
+    setShowModal(true);
+  };
+
+  // 페이지네이션 핸들러
+  const handlePagination = (direction: 'prev' | 'next') => {
+    const newOffset = direction === 'next' 
+      ? pagination.offset + pagination.limit
+      : Math.max(0, pagination.offset - pagination.limit);
+    
+    setPagination(prev => ({ ...prev, offset: newOffset }));
+  };
+
+  useEffect(() => {
+    // 페이지 로드 시 초기 데이터 조회
+    handleViewData();
+  }, [selectedDataType, pagination.offset, pagination.limit]);
+
+  const renderSummary = () => (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {/* 대회 정보 */}
+      {scrapedData.tournaments && (
+        <Card className="p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold">대회 정보</h3>
+            <Badge variant="blue">{scrapedData.tournaments.count}개</Badge>
+          </div>
+          <div className="space-y-2">
+            <div className="flex justify-between">
+              <span className="text-sm text-gray-600">KLPGA:</span>
+              <span className="font-medium">{scrapedData.tournaments.klpga?.length || 0}개</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-sm text-gray-600">KPGA:</span>
+              <span className="font-medium">{scrapedData.tournaments.kpga?.length || 0}개</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-sm text-gray-600">총 대회:</span>
+              <span className="font-medium">{scrapedData.tournaments.total || 0}개</span>
+            </div>
+          </div>
+          <Button 
+            className="w-full mt-4" 
+            onClick={() => handleViewDetails(scrapedData.tournaments, 'tournaments')}
+          >
+            상세 보기
+          </Button>
+        </Card>
+      )}
+
+      {/* 골프장 정보 */}
+      {scrapedData.golfCourses && (
+        <Card className="p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold">골프장 정보</h3>
+            <Badge variant="green">{scrapedData.golfCourses.count}개</Badge>
+          </div>
+          <div className="space-y-2">
+            <div className="flex justify-between">
+              <span className="text-sm text-gray-600">총 골프장:</span>
+              <span className="font-medium">{scrapedData.golfCourses.total || 0}개</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-sm text-gray-600">지역 수:</span>
+              <span className="font-medium">{Object.keys(scrapedData.golfCourses.regions || {}).length}개</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-sm text-gray-600">소스 수:</span>
+              <span className="font-medium">{Object.keys(scrapedData.golfCourses.sources || {}).length}개</span>
+            </div>
+          </div>
+          <Button 
+            className="w-full mt-4" 
+            onClick={() => handleViewDetails(scrapedData.golfCourses, 'golf-courses')}
+          >
+            상세 보기
+          </Button>
+        </Card>
+      )}
+
+      {/* 선수 정보 */}
+      {scrapedData.players && (
+        <Card className="p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold">선수 정보</h3>
+            <Badge variant="purple">{scrapedData.players.count}개</Badge>
+          </div>
+          <div className="space-y-2">
+            <div className="flex justify-between">
+              <span className="text-sm text-gray-600">총 선수:</span>
+              <span className="font-medium">{scrapedData.players.total || 0}개</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-sm text-gray-600">협회 수:</span>
+              <span className="font-medium">{scrapedData.players.associations?.length || 0}개</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-sm text-gray-600">오류:</span>
+              <span className="font-medium text-red-600">{scrapedData.players.errors?.length || 0}개</span>
+            </div>
+          </div>
+          <Button 
+            className="w-full mt-4" 
+            onClick={() => handleViewDetails(scrapedData.players, 'players')}
+          >
+            상세 보기
+          </Button>
+        </Card>
+      )}
+    </div>
+  );
+
+  const renderTable = () => {
+    if (selectedDataType === 'tournaments' && scrapedData.tournaments) {
+      return (
+        <Table
+          headers={['이름', '협회', '카테고리', '시작일', '종료일', '장소', '상금']}
+          data={scrapedData.tournaments.all?.map((tournament: any) => [
+            tournament.name,
+            tournament.organizer,
+            tournament.category,
+            new Date(tournament.startDate).toLocaleDateString(),
+            new Date(tournament.endDate).toLocaleDateString(),
+            tournament.location,
+            `${(tournament.prizePool || 0).toLocaleString()}원`
+          ]) || []}
+        />
+      );
+    }
+
+    if (selectedDataType === 'golf-courses' && scrapedData.golfCourses) {
+      return (
+        <Table
+          headers={['이름', '지역', '도시', '주소', '전화번호', '소스']}
+          data={scrapedData.golfCourses.courses?.map((course: any) => [
+            course.name,
+            course.region,
+            course.city,
+            course.address,
+            course.phone || '-',
+            course.source
+          ]) || []}
+        />
+      );
+    }
+
+    if (selectedDataType === 'players' && scrapedData.players) {
+      return (
+        <Table
+          headers={['이름', '협회', '생년월일', '현재 랭킹', '총 상금', '활성 상태']}
+          data={scrapedData.players.players?.map((player: any) => [
+            player.name,
+            player.association,
+            player.birth,
+            player.currentRanking || '-',
+            `${(player.totalPrize || 0).toLocaleString()}원`,
+            player.isActive ? '활성' : '비활성'
+          ]) || []}
+        />
+      );
+    }
+
+    return <div className="text-center text-gray-500">데이터가 없습니다.</div>;
+  };
+
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold mb-2">데이터 크롤링 관리</h1>
+        <p className="text-gray-600">전체 데이터 크롤링 및 조회를 관리할 수 있습니다.</p>
+      </div>
+
+      {/* 컨트롤 패널 */}
+      <Card className="p-6 mb-8">
+        <div className="flex flex-wrap gap-4 items-center">
+          <div className="flex gap-2">
+            <label className="text-sm font-medium">데이터 타입:</label>
+            <select 
+              value={selectedDataType} 
+              onChange={(e) => setSelectedDataType(e.target.value)}
+              className="border rounded px-3 py-1"
+            >
+              <option value="all">전체</option>
+              <option value="tournaments">대회 정보</option>
+              <option value="golf-courses">골프장 정보</option>
+              <option value="players">선수 정보</option>
+            </select>
+          </div>
+
+          <div className="flex gap-2">
+            <label className="text-sm font-medium">보기 방식:</label>
+            <select 
+              value={selectedView} 
+              onChange={(e) => setSelectedView(e.target.value)}
+              className="border rounded px-3 py-1"
+            >
+              <option value="summary">요약</option>
+              <option value="table">테이블</option>
+            </select>
+          </div>
+
+          <Button 
+            onClick={handleScrapeAll}
+            disabled={isLoading}
+            className="bg-blue-600 hover:bg-blue-700"
+          >
+            {isLoading ? '크롤링 중...' : '데이터 크롤링'}
+          </Button>
+
+          <Button 
+            onClick={handleViewData}
+            disabled={isLoading}
+            variant="outline"
+          >
+            {isLoading ? '조회 중...' : '데이터 조회'}
+          </Button>
+        </div>
+
+        {/* 크롤링 통계 */}
+        {scrapingStats && (
+          <div className="mt-4 p-4 bg-gray-50 rounded">
+            <h4 className="font-medium mb-2">크롤링 통계</h4>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+              <div>
+                <span className="text-gray-600">실행 시간:</span>
+                <span className="ml-2 font-medium">{scrapingStats.totalTime}ms</span>
+              </div>
+              <div>
+                <span className="text-gray-600">오류 수:</span>
+                <span className="ml-2 font-medium text-red-600">{scrapingStats.errors.length}개</span>
+              </div>
+            </div>
+            {scrapingStats.errors.length > 0 && (
+              <div className="mt-2">
+                <span className="text-red-600 text-sm">오류 상세:</span>
+                <ul className="text-xs text-red-600 ml-4">
+                  {scrapingStats.errors.map((error, index) => (
+                    <li key={index}>• {error.type}: {error.error}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
+      </Card>
+
+      {/* 데이터 표시 */}
+      <div className="mb-8">
+        {selectedView === 'summary' ? renderSummary() : renderTable()}
+      </div>
+
+      {/* 페이지네이션 */}
+      {selectedView === 'table' && (
+        <div className="flex justify-between items-center">
+          <div className="text-sm text-gray-600">
+            {pagination.offset + 1} - {Math.min(pagination.offset + pagination.limit, pagination.total)} / {pagination.total}
+          </div>
+          <div className="flex gap-2">
+            <Button 
+              onClick={() => handlePagination('prev')}
+              disabled={pagination.offset === 0}
+              variant="outline"
+              size="sm"
+            >
+              이전
+            </Button>
+            <Button 
+              onClick={() => handlePagination('next')}
+              disabled={pagination.offset + pagination.limit >= pagination.total}
+              variant="outline"
+              size="sm"
+            >
+              다음
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* 상세 데이터 모달 */}
+      <Modal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        title={`${modalData?.type} 상세 정보`}
+      >
+        {modalData && (
+          <div className="max-h-96 overflow-y-auto">
+            <pre className="text-xs bg-gray-100 p-4 rounded">
+              {JSON.stringify(modalData, null, 2)}
+            </pre>
+          </div>
+        )}
+      </Modal>
+    </div>
+  );
+}

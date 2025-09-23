@@ -189,6 +189,7 @@ export default function AdminPage() {
     { id: 'users', label: '회원 관리', icon: Users },
     { id: 'payments', label: '결제 관리', icon: DollarSign },
     { id: 'notifications', label: '알림 관리', icon: Bell },
+    { id: 'data-scraper', label: '데이터 크롤링', icon: Settings },
   ];
 
   const renderDashboard = () => (
@@ -505,6 +506,25 @@ export default function AdminPage() {
               <p className="text-gray-600 dark:text-gray-400">
                 알림 관리 기능이 곧 추가됩니다.
               </p>
+            </CardBody>
+          </Card>
+        )}
+        {activeTab === 'data-scraper' && (
+          <Card>
+            <CardBody className="text-center py-12">
+              <Settings className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                데이터 크롤링 관리
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400 mb-6">
+                전체 데이터 크롤링 및 조회를 관리할 수 있습니다.
+              </p>
+              <Button 
+                onClick={() => router.push('/admin/data-scraper')}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                데이터 크롤링 페이지로 이동
+              </Button>
             </CardBody>
           </Card>
         )}
