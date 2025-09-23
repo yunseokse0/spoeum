@@ -45,11 +45,14 @@ interface ScrapingStats {
 export default function DataScraperPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [scrapedData, setScrapedData] = useState<ScrapedData>({});
+  const [storedData, setStoredData] = useState<any>(null);
   const [scrapingStats, setScrapingStats] = useState<ScrapingStats | null>(null);
   const [selectedDataType, setSelectedDataType] = useState<string>('all');
   const [selectedView, setSelectedView] = useState<string>('summary');
+  const [dataSource, setDataSource] = useState<'live' | 'stored'>('stored'); // live: 실시간 크롤링, stored: 저장된 데이터
   const [showModal, setShowModal] = useState(false);
   const [modalData, setModalData] = useState<any>(null);
+  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
   const [pagination, setPagination] = useState({
     limit: 10,
     offset: 0,
@@ -91,6 +94,35 @@ export default function DataScraperPage() {
     } catch (error) {
       console.error('크롤링 오류:', error);
       alert('크롤링 중 오류가 발생했습니다.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // 저장된 데이터 로드
+  const loadStoredData = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch(`/api/data/stored?type=${selectedDataType}&metadata=true`);
+      const data = await response.json();
+      
+      if (data.success) {
+        setStoredData(data.data);
+        setLastUpdated(data.metadata?.lastUpdated || null);
+        
+        // 페이지네이션 초기화
+        setPagination(prev => ({
+          ...prev,
+          total: data.data.tournaments?.all?.length || 
+                 data.data.golfCourses?.courses?.length || 
+                 data.data.players?.all?.length || 0
+        }));
+      } else {
+        alert(`저장된 데이터 로드 실패: ${data.message}`);
+      }
+    } catch (error: any) {
+      console.error('데이터 로드 오류:', error);
+      alert(`데이터 로드 중 오류가 발생했습니다: ${error.message}`);
     } finally {
       setIsLoading(false);
     }
@@ -361,8 +393,40 @@ export default function DataScraperPage() {
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">데이터 크롤링 관리</h1>
-        <p className="text-gray-600">전체 데이터 크롤링 및 조회를 관리할 수 있습니다.</p>
+        <p className="text-gray-600">전체 데이터 크롤링 및 조회를 관리할 수 있습니다. (1년 2회 크롤링 최적화)</p>
       </div>
+
+      {/* 데이터 소스 선택 */}
+      <Card className="p-6 mb-8">
+        <h2 className="text-lg font-semibold mb-3">데이터 소스 선택</h2>
+        <div className="flex gap-6 mb-4">
+          <label className="flex items-center">
+            <input
+              type="radio"
+              value="stored"
+              checked={dataSource === 'stored'}
+              onChange={(e) => setDataSource(e.target.value as 'stored')}
+              className="mr-2"
+            />
+            <span>저장된 데이터 (권장)</span>
+          </label>
+          <label className="flex items-center">
+            <input
+              type="radio"
+              value="live"
+              checked={dataSource === 'live'}
+              onChange={(e) => setDataSource(e.target.value as 'live')}
+              className="mr-2"
+            />
+            <span>실시간 크롤링</span>
+          </label>
+        </div>
+        {lastUpdated && (
+          <p className="text-sm text-gray-600">
+            마지막 업데이트: {new Date(lastUpdated).toLocaleString('ko-KR')}
+          </p>
+        )}
+      </Card>
 
       {/* 컨트롤 패널 */}
       <Card className="p-6 mb-8">
@@ -393,21 +457,41 @@ export default function DataScraperPage() {
             </select>
           </div>
 
-          <Button 
-            onClick={handleScrapeAll}
-            disabled={isLoading}
-            className="bg-blue-600 hover:bg-blue-700"
-          >
-            {isLoading ? '크롤링 중...' : '데이터 크롤링'}
-          </Button>
-
-          <Button 
-            onClick={handleViewData}
-            disabled={isLoading}
-            variant="outline"
-          >
-            {isLoading ? '조회 중...' : '데이터 조회'}
-          </Button>
+          {dataSource === 'stored' ? (
+            <>
+              <Button 
+                onClick={loadStoredData}
+                disabled={isLoading}
+                className="bg-green-600 hover:bg-green-700"
+              >
+                {isLoading ? '로딩 중...' : '저장된 데이터 로드'}
+              </Button>
+              <Button 
+                onClick={handleScrapeAll}
+                disabled={isLoading}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                {isLoading ? '크롤링 중...' : '새로 크롤링'}
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button 
+                onClick={handleScrapeAll}
+                disabled={isLoading}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                {isLoading ? '크롤링 중...' : '데이터 크롤링'}
+              </Button>
+              <Button 
+                onClick={handleViewData}
+                disabled={isLoading}
+                variant="outline"
+              >
+                {isLoading ? '조회 중...' : '데이터 조회'}
+              </Button>
+            </>
+          )}
         </div>
 
         {/* 크롤링 통계 */}

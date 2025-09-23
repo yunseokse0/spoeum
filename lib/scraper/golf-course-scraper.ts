@@ -29,27 +29,38 @@ export class GolfCourseScraper {
   private browser: Browser | null = null;
   private page: Page | null = null;
 
-  // 골프장 데이터 소스 정의
+  // 골프장 데이터 소스 정의 (실제 크롤링 가능한 사이트들)
   private sources: GolfCourseSource[] = [
     {
-      name: 'golf.co.kr',
-      url: 'https://www.golf.co.kr/course/list',
+      name: '프렌즈 스크린',
+      url: 'https://www.friendsscreen.kr/main/course',
       selector: {
-        container: '.course-item',
-        name: '.course-name',
-        region: '.course-region',
-        address: '.course-address',
-        phone: '.course-phone'
+        container: '.course-item, .golf-course-card, [class*="course"], .item, .card',
+        name: '.course-name, .golf-course-name, h3, h4, .title, .name, [class*="name"], [class*="title"]',
+        region: '.course-region, .location, .area, .region, [class*="region"], [class*="location"]',
+        address: '.course-address, .address, .location-detail, .addr, [class*="address"], [class*="addr"]',
+        phone: '.course-phone, .phone, .contact, .tel, [class*="phone"], [class*="tel"]'
       }
     },
     {
-      name: 'golfzon.com',
+      name: '골프존 메인',
+      url: 'https://www.golfzon.com/course/main',
+      selector: {
+        container: '.course-item, .golf-course-item, [class*="course"], .item, .card, div[class*="golf"], div[class*="course"]',
+        name: '.course-name, .golf-course-name, h3, h4, .title, .name, [class*="name"], [class*="title"]',
+        region: '.course-region, .location, .area, .region, [class*="region"], [class*="location"]',
+        address: '.course-address, .address, .location-detail, .addr, [class*="address"], [class*="addr"]',
+        phone: '.course-phone, .phone, .contact, .tel, [class*="phone"], [class*="tel"]'
+      }
+    },
+    {
+      name: '골프존 코스',
       url: 'https://www.golfzon.com/course/search',
       selector: {
-        container: '.course-list-item',
-        name: '.course-title',
-        region: '.course-location',
-        address: '.course-address'
+        container: '.course-list-item, .course-item, .item, .card, div[class*="course"], div[class*="golf"]',
+        name: '.course-title, .course-name, h3, h4, .title, .name, [class*="name"], [class*="title"]',
+        region: '.course-location, .location, .region, [class*="location"], [class*="region"]',
+        address: '.course-address, .address, .addr, [class*="address"], [class*="addr"]'
       }
     }
   ];
@@ -157,7 +168,45 @@ export class GolfCourseScraper {
   }
 
   async scrapeAllSources(): Promise<ScrapedGolfCourse[]> {
-    // 간단한 Mock 데이터로 시작 (실제 크롤링은 나중에 구현)
+    const allCourses: ScrapedGolfCourse[] = [];
+
+    // 1단계: 프렌즈 스크린 전용 크롤링 시도
+    try {
+      console.log('프렌즈 스크린에서 골프장 정보 크롤링 시도...');
+      const friendsScreenCourses = await this.scrapeFriendsScreen();
+      if (friendsScreenCourses.length > 0) {
+        allCourses.push(...friendsScreenCourses);
+        console.log(`프렌즈 스크린에서 ${friendsScreenCourses.length}개 골프장 크롤링 성공`);
+      }
+    } catch (error) {
+      console.error('프렌즈 스크린 처리 오류:', error);
+    }
+
+    // 2단계: 기존 소스들 크롤링 시도
+    for (const source of this.sources) {
+      try {
+        console.log(`${source.name}에서 골프장 정보 크롤링 시도...`);
+        const courses = await this.scrapeFromSource(source);
+        if (courses.length > 0) {
+          allCourses.push(...courses);
+          console.log(`${source.name}에서 ${courses.length}개 골프장 크롤링 성공`);
+        }
+        
+        // 소스 간 요청 지연
+        await new Promise(resolve => setTimeout(resolve, 2000));
+      } catch (error) {
+        console.error(`소스 ${source.name} 처리 오류:`, error);
+      }
+    }
+
+    // 2단계: 실제 크롤링 성공 시 결과 반환
+    if (allCourses.length > 0) {
+      console.log(`실제 크롤링으로 ${allCourses.length}개 골프장 수집 완료`);
+      return this.deduplicateCourses(allCourses);
+    }
+
+    // 3단계: Fallback Mock 데이터
+    console.log('모든 크롤링 실패, Mock 데이터 사용');
     const mockCourses: ScrapedGolfCourse[] = [
       {
         name: '용인골프클럽',
@@ -184,6 +233,24 @@ export class GolfCourseScraper {
         address: '부산광역시 해운대구 부산골프로 789',
         phone: '051-123-4567',
         website: 'https://busan-golf.co.kr',
+        source: 'mock'
+      },
+      {
+        name: '제주골프클럽',
+        region: '제주특별자치도',
+        city: '제주시',
+        address: '제주특별자치도 제주시 제주골프로 101',
+        phone: '064-123-4567',
+        website: 'https://jeju-golf.co.kr',
+        source: 'mock'
+      },
+      {
+        name: '강원골프클럽',
+        region: '강원도',
+        city: '춘천시',
+        address: '강원도 춘천시 강원골프로 202',
+        phone: '033-123-4567',
+        website: 'https://gangwon-golf.co.kr',
         source: 'mock'
       }
     ];
@@ -335,6 +402,155 @@ export class GolfCourseScraper {
       return await this.addManualCourses();
     } finally {
       await this.closeBrowser();
+    }
+  }
+
+  // 프렌즈 스크린 전용 크롤링 (동적 로딩 처리)
+  async scrapeFriendsScreen(): Promise<ScrapedGolfCourse[]> {
+    try {
+      console.log('프렌즈 스크린 전용 크롤링 시작...');
+      
+      await this.initBrowser();
+      if (!this.page) throw new Error("Page not initialized");
+
+      await this.page.goto('https://www.friendsscreen.kr/main/course', { waitUntil: 'domcontentloaded' });
+
+      // 페이지 완전 로딩 대기
+      await new Promise(resolve => setTimeout(resolve, 5000));
+
+      // 스크롤하여 동적 콘텐츠 로딩
+      await this.page.evaluate(() => {
+        return new Promise((resolve) => {
+          let totalHeight = 0;
+          const distance = 100;
+          const timer = setInterval(() => {
+            const scrollHeight = document.body.scrollHeight;
+            window.scrollBy(0, distance);
+            totalHeight += distance;
+
+            if(totalHeight >= scrollHeight){
+              clearInterval(timer);
+              resolve(undefined);
+            }
+          }, 100);
+        });
+      });
+
+      // 추가 대기
+      await new Promise(resolve => setTimeout(resolve, 3000));
+
+      // 다양한 셀렉터로 골프장 정보 찾기
+      const selectors = [
+        '.course-item',
+        '.golf-course-card', 
+        '[class*="course"]',
+        '.item',
+        '.card',
+        'div[class*="golf"]',
+        'div[class*="course"]',
+        '.top-course',
+        '.popular-course',
+        '.new-course'
+      ];
+
+      let courses: ScrapedGolfCourse[] = [];
+      
+      for (const selector of selectors) {
+        try {
+          const elements = await this.page.$$(selector);
+          console.log(`프렌즈 스크린: ${selector}에서 ${elements.length}개 항목 발견`);
+          
+          if (elements.length > 0) {
+            for (let i = 0; i < Math.min(elements.length, 20); i++) {
+              try {
+                const element = elements[i];
+                const text = await element.evaluate((el: Element) => el.textContent?.trim() || '');
+                
+                if (text && text.length > 10) {
+                  const course = this.parseFriendsScreenCourse(text, i);
+                  if (course) {
+                    courses.push(course);
+                  }
+                }
+              } catch (e) {
+                console.error(`프렌즈 스크린 항목 ${i} 파싱 오류:`, e);
+              }
+            }
+            
+            if (courses.length > 0) {
+              break; // 성공적으로 파싱했으면 중단
+            }
+          }
+        } catch (e) {
+          console.error(`프렌즈 스크린 셀렉터 ${selector} 오류:`, e);
+        }
+      }
+
+      console.log(`프렌즈 스크린 크롤링 완료: ${courses.length}개`);
+      return courses;
+
+    } catch (error) {
+      console.error('프렌즈 스크린 크롤링 오류:', error);
+      return [];
+    }
+  }
+
+  // 프렌즈 스크린 골프장 파싱
+  private parseFriendsScreenCourse(text: string, index: number): ScrapedGolfCourse | null {
+    try {
+      // 텍스트에서 골프장 정보 추출
+      const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+      
+      if (lines.length < 2) return null;
+
+      // 골프장 이름 추출 (첫 번째 의미있는 라인)
+      const name = lines[0] || `프렌즈 스크린 골프장 ${index + 1}`;
+      
+      // 지역 정보 추출
+      let region = '전국';
+      let city = '미상';
+      let address = '주소 정보 없음';
+
+      for (const line of lines) {
+        if (line.includes('수도권') || line.includes('서울') || line.includes('경기')) {
+          region = '수도권';
+          city = line.includes('서울') ? '서울' : '경기';
+          address = line;
+        } else if (line.includes('강원도')) {
+          region = '강원도';
+          city = '강원';
+          address = line;
+        } else if (line.includes('충청도')) {
+          region = '충청도';
+          city = '충청';
+          address = line;
+        } else if (line.includes('전라도')) {
+          region = '전라도';
+          city = '전라';
+          address = line;
+        } else if (line.includes('경상도')) {
+          region = '경상도';
+          city = '경상';
+          address = line;
+        } else if (line.includes('제주도')) {
+          region = '제주도';
+          city = '제주';
+          address = line;
+        }
+      }
+
+      return {
+        name,
+        region,
+        city,
+        address,
+        phone: '1666-1538', // 프렌즈 스크린 대표번호
+        website: 'https://www.friendsscreen.kr',
+        source: '프렌즈 스크린'
+      };
+    } catch (error) {
+      console.error('프렌즈 스크린 골프장 파싱 오류:', error);
+      return null;
     }
   }
 }

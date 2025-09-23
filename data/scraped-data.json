@@ -1,0 +1,330 @@
+{
+  "tournaments": {
+    "klpga": [
+      {
+        "id": "klpga_1758618944409_0",
+        "name": "월",
+        "description": "KLPGA 월",
+        "location": "장소 미정",
+        "course": "코스 미정",
+        "startDate": "2025-09-23T09:15:44.409Z",
+        "endDate": "2025-09-23T09:15:44.409Z",
+        "registrationStartDate": "2025-08-24T09:15:44.409Z",
+        "registrationEndDate": "2025-09-16T09:15:44.409Z",
+        "type": "pga",
+        "category": "women",
+        "entryFee": 0,
+        "prizePool": 100000000,
+        "maxParticipants": 120,
+        "currentParticipants": 0,
+        "organizer": "KLPGA",
+        "contactInfo": "klpga@klpga.co.kr",
+        "isActive": true,
+        "isRegistrationOpen": false,
+        "requirements": [
+          "KLPGA 정회원"
+        ],
+        "rules": [
+          "KLPGA 규정 준수"
+        ],
+        "createdAt": "2025-09-23T09:15:44.410Z",
+        "updatedAt": "2025-09-23T09:15:44.410Z"
+      }
+    ],
+    "kpga": [],
+    "all": [
+      {
+        "id": "klpga_1758618944409_0",
+        "name": "월",
+        "description": "KLPGA 월",
+        "location": "장소 미정",
+        "course": "코스 미정",
+        "startDate": "2025-09-23T09:15:44.409Z",
+        "endDate": "2025-09-23T09:15:44.409Z",
+        "registrationStartDate": "2025-08-24T09:15:44.409Z",
+        "registrationEndDate": "2025-09-16T09:15:44.409Z",
+        "type": "pga",
+        "category": "women",
+        "entryFee": 0,
+        "prizePool": 100000000,
+        "maxParticipants": 120,
+        "currentParticipants": 0,
+        "organizer": "KLPGA",
+        "contactInfo": "klpga@klpga.co.kr",
+        "isActive": true,
+        "isRegistrationOpen": false,
+        "requirements": [
+          "KLPGA 정회원"
+        ],
+        "rules": [
+          "KLPGA 규정 준수"
+        ],
+        "createdAt": "2025-09-23T09:15:44.410Z",
+        "updatedAt": "2025-09-23T09:15:44.410Z"
+      }
+    ],
+    "count": 1,
+    "isMock": false
+  },
+  "golfCourses": {
+    "courses": [
+      {
+        "name": "다양한 코스에서즐거운 라운드",
+        "region": "경상도",
+        "city": "경상",
+        "address": "지역경상도",
+        "phone": "1666-1538",
+        "website": "https://www.friendsscreen.kr",
+        "source": "프렌즈 스크린"
+      },
+      {
+        "name": "최근 한달, 난이도별로 확인하는",
+        "region": "경상도",
+        "city": "경상",
+        "address": "지역경상도",
+        "phone": "1666-1538",
+        "website": "https://www.friendsscreen.kr",
+        "source": "프렌즈 스크린"
+      },
+      {
+        "name": "27홀 ,메이플,파인",
+        "region": "강원도",
+        "city": "강원",
+        "address": "알펜시아강원도/평창",
+        "phone": "1666-1538",
+        "website": "https://www.friendsscreen.kr",
+        "source": "프렌즈 스크린"
+      },
+      {
+        "name": "18홀",
+        "region": "강원도",
+        "city": "강원",
+        "address": "용평강원도/평창",
+        "phone": "1666-1538",
+        "website": "https://www.friendsscreen.kr",
+        "source": "프렌즈 스크린"
+      },
+      {
+        "name": "360도",
+        "region": "경상도",
+        "city": "경상",
+        "address": "지역경상도",
+        "phone": "1666-1538",
+        "website": "https://www.friendsscreen.kr",
+        "source": "프렌즈 스크린"
+      },
+      {
+        "name": "다양한 코스에서즐거운 라운드 프렌즈 스크린의 다양한 코스를 확인해보고즐겁게 라운드하세요 가평베네스트수도권가평서산수충청도서산알펜시아강원도평창용평강원도평창코르테벨라해외미국롯데미나요시다이해외일본무안클린밸리전라도무안용평강원도평창코르테벨라해외미국롯데미나요시다이해외일본무안클린밸리전라도무안용평강원도평창코르테벨라해외미국360도88동가평베네스트가평베네스트가평베네스트강남300거제뷰경주경주경주",
+        "region": "미분류",
+        "city": "미분류",
+        "address": "주소 정보 없음",
+        "source": "프렌즈 스크린"
+      },
+      {
+        "name": "가평베네스트수도권가평서산수충청도서산알펜시아강원도평창용평강원도평창코르테벨라해외미국롯데미나요시다이해외일본무안클린밸리전라도무안용평강원도평창코르테벨라해외미국롯데미나요시다이해외일본무안클린밸리전라도무안용평강원도평창코르테벨라해외미국360도88동가평베네스트가평베네스트가평베네스트강남300거제뷰경주경주경주",
+        "region": "미분류",
+        "city": "미분류",
+        "address": "주소 정보 없음",
+        "source": "프렌즈 스크린"
+      },
+      {
+        "name": "가평베네스트수도권가평서산수충청도서산알펜시아강원도평창",
+        "region": "미분류",
+        "city": "미분류",
+        "address": "주소 정보 없음",
+        "source": "프렌즈 스크린"
+      },
+      {
+        "name": "용평강원도평창코르테벨라해외미국롯데미나요시다이해외일본무안클린밸리전라도무안용평강원도평창코르테벨라해외미국롯데미나요시다이해외일본무안클린밸리전라도무안용평강원도평창코르테벨라해외미국",
+        "region": "미분류",
+        "city": "미분류",
+        "address": "주소 정보 없음",
+        "source": "프렌즈 스크린"
+      },
+      {
+        "name": "360도88동가평베네스트가평베네스트가평베네스트강남300거제뷰경주경주경주",
+        "region": "미분류",
+        "city": "미분류",
+        "address": "주소 정보 없음",
+        "source": "프렌즈 스크린"
+      },
+      {
+        "name": "서울골프클럽",
+        "region": "서울",
+        "city": "서울시",
+        "address": "서울시 강남구 테헤란로 123",
+        "phone": "02-1234-5678",
+        "website": "https://seoulgc.co.kr",
+        "source": "manual"
+      },
+      {
+        "name": "경기골프리조트",
+        "region": "경기",
+        "city": "성남시",
+        "address": "경기도 성남시 분당구 판교로 456",
+        "phone": "031-2345-6789",
+        "website": "https://ggr.co.kr",
+        "source": "manual"
+      },
+      {
+        "name": "제주 블루원",
+        "region": "제주",
+        "city": "서귀포시",
+        "address": "제주특별자치도 서귀포시 중문동 303",
+        "phone": "064-6789-0123",
+        "website": "https://jejublueone.co.kr",
+        "source": "manual"
+      },
+      {
+        "name": "제주 핀크스",
+        "region": "제주",
+        "city": "제주시",
+        "address": "제주특별자치도 제주시 애월읍 404",
+        "phone": "064-7890-1234",
+        "website": "https://jejupinx.co.kr",
+        "source": "manual"
+      },
+      {
+        "name": "부산 골프클럽",
+        "region": "경남",
+        "city": "부산시",
+        "address": "부산광역시 해운대구 해운대로 606",
+        "phone": "051-9012-3456",
+        "website": "https://busangc.co.kr",
+        "source": "manual"
+      }
+    ],
+    "count": 15,
+    "regions": [
+      "경상도",
+      "강원도",
+      "미분류",
+      "서울",
+      "경기",
+      "제주",
+      "경남"
+    ],
+    "sources": [
+      "프렌즈 스크린",
+      "manual"
+    ],
+    "isMock": false
+  },
+  "players": {
+    "players": [
+      {
+        "memberId": "KPGA12345",
+        "name": "KPGA 선수 KPGA12345",
+        "association": "kpga",
+        "birth": "1990-01-01",
+        "career": [
+          {
+            "title": "2024 KPGA 투어",
+            "result": "진행중",
+            "prize": 0,
+            "ranking": 0
+          }
+        ],
+        "ranking": {
+          "current": 0,
+          "best": 0,
+          "worst": 0
+        },
+        "currentRanking": 0,
+        "totalPrize": 0,
+        "isActive": true
+      },
+      {
+        "name": "가와나카 스구카(I)",
+        "association": "KLPGA",
+        "memberId": "KLPGA1",
+        "birth": "1990-01-01",
+        "currentRanking": 9,
+        "totalPrize": 53370589,
+        "isActive": true,
+        "career": [
+          {
+            "year": 2024,
+            "title": "2024 KLPGA 챔피언십",
+            "result": "우승",
+            "prize": 50000000,
+            "ranking": 1
+          },
+          {
+            "year": 2024,
+            "title": "2024 KLPGA 투어",
+            "result": "준우승",
+            "prize": 30000000,
+            "ranking": 2
+          }
+        ],
+        "ranking": {
+          "current": 82,
+          "best": 34,
+          "previous": 46
+        }
+      },
+      {
+        "memberId": "KPGA11111",
+        "name": "KPGA 선수 KPGA11111",
+        "association": "kpga",
+        "birth": "1990-01-01",
+        "career": [
+          {
+            "title": "2024 KPGA 투어",
+            "result": "진행중",
+            "prize": 0,
+            "ranking": 0
+          }
+        ],
+        "ranking": {
+          "current": 0,
+          "best": 0,
+          "worst": 0
+        },
+        "currentRanking": 0,
+        "totalPrize": 0,
+        "isActive": true
+      },
+      {
+        "name": "가와나카 스구카(I)",
+        "association": "KLPGA",
+        "memberId": "KLPGA1",
+        "birth": "1990-01-01",
+        "currentRanking": 61,
+        "totalPrize": 23157731,
+        "isActive": true,
+        "career": [
+          {
+            "year": 2024,
+            "title": "2024 KLPGA 챔피언십",
+            "result": "우승",
+            "prize": 50000000,
+            "ranking": 1
+          },
+          {
+            "year": 2024,
+            "title": "2024 KLPGA 투어",
+            "result": "준우승",
+            "prize": 30000000,
+            "ranking": 2
+          }
+        ],
+        "ranking": {
+          "current": 87,
+          "best": 27,
+          "previous": 62
+        }
+      }
+    ],
+    "count": 4,
+    "errors": [],
+    "associations": [
+      "kpga",
+      "KLPGA"
+    ],
+    "isMock": false
+  },
+  "lastUpdated": "2025-09-23T09:16:16.490Z",
+  "version": 17
+}

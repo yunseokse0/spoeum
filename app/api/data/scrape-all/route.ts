@@ -3,14 +3,23 @@ import { TournamentScraper } from '@/lib/scraper/tournament-scraper';
 import { GolfCourseScraper } from '@/lib/scraper/golf-course-scraper';
 import { playerScraper } from '@/lib/scraper';
 import { Tournament, GolfCourse, PlayerInfo } from '@/types';
+import { dataStorage } from '@/lib/data-storage';
 
 export const dynamic = 'force-dynamic';
 
 // 전체 데이터 크롤링 API
+export async function GET(request: NextRequest) {
+  return await handleScraping(request);
+}
+
 export async function POST(request: NextRequest) {
+  return await handleScraping(request);
+}
+
+async function handleScraping(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const dataType = searchParams.get('type') || 'all'; // 'all', 'tournaments', 'golf-courses', 'players'
+    const dataType = searchParams.get('dataType') || searchParams.get('type') || 'all'; // 'all', 'tournaments', 'golf-courses', 'players'
     const includeMock = searchParams.get('mock') === 'true';
     const forceRealData = searchParams.get('mock') === 'false';
 
@@ -266,6 +275,22 @@ export async function POST(request: NextRequest) {
     results.stats.totalTime = Date.now() - startTime;
     results.message = `${dataType} 데이터 크롤링이 완료되었습니다.`;
 
+    // 크롤링된 데이터를 영구 저장소에 저장
+    try {
+      await dataStorage.saveData({
+        tournaments: results.data.tournaments,
+        golfCourses: results.data.golfCourses,
+        players: results.data.players
+      });
+      console.log('크롤링 데이터 저장 완료');
+    } catch (saveError) {
+      console.error('데이터 저장 실패:', saveError);
+      results.stats.errors.push({
+        type: 'storage',
+        error: '데이터 저장 실패'
+      });
+    }
+
     console.log(`전체 데이터 크롤링 완료: ${results.stats.totalTime}ms`);
 
     return NextResponse.json(results);
@@ -281,48 +306,6 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// 크롤링 상태 및 통계 조회
-export async function GET(request: NextRequest) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const includeStats = searchParams.get('stats') === 'true';
-
-    const response: any = {
-      success: true,
-      message: '전체 데이터 크롤링 서비스가 정상 작동 중입니다.',
-      timestamp: new Date().toISOString(),
-      endpoints: {
-        scrapeAll: 'POST /api/data/scrape-all?type=all|tournaments|golf-courses|players&mock=true',
-        status: 'GET /api/data/scrape-all?stats=true'
-      }
-    };
-
-    if (includeStats) {
-      // 캐시 통계
-      const cacheStats = playerScraper.getCacheStats();
-      
-      response.stats = {
-        cache: cacheStats,
-        services: {
-          tournaments: 'KLPGA/KPGA 대회 정보',
-          golfCourses: '골프장 정보 (다중 소스)',
-          players: 'KLPGA/KPGA 선수 정보'
-        },
-        lastUpdated: new Date().toISOString()
-      };
-    }
-
-    return NextResponse.json(response);
-
-  } catch (error) {
-    console.error('크롤링 상태 확인 오류:', error);
-    
-    return NextResponse.json({
-      success: false,
-      error: error instanceof Error ? error.message : '상태 확인 중 오류가 발생했습니다.'
-    }, { status: 500 });
-  }
-}
 
 // OPTIONS 메서드 (CORS 지원)
 export async function OPTIONS() {
