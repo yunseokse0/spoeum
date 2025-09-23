@@ -99,15 +99,18 @@ export default function DataScraperPage() {
       const result = await response.json();
       
       if (result.success) {
-        setScrapedData(result.data);
+        setScrapedData(result.data || {}); // Ensure scrapedData is always an object
         if (result.pagination) {
           setPagination(result.pagination);
         }
       } else {
+        console.error('데이터 조회 실패:', result.error);
+        setScrapedData({}); // Set empty object on error
         alert(`데이터 조회 실패: ${result.error}`);
       }
     } catch (error) {
       console.error('데이터 조회 오류:', error);
+      setScrapedData({}); // Set empty object on error
       alert('데이터 조회 중 오류가 발생했습니다.');
     } finally {
       setIsLoading(false);
@@ -129,10 +132,10 @@ export default function DataScraperPage() {
     setPagination(prev => ({ ...prev, offset: newOffset }));
   };
 
-  useEffect(() => {
-    // 페이지 로드 시 초기 데이터 조회
-    handleViewData();
-  }, [selectedDataType, pagination.offset, pagination.limit]);
+  // 페이지 로드 시 자동 데이터 조회 비활성화
+  // useEffect(() => {
+  //   handleViewData();
+  // }, [selectedDataType, pagination.offset, pagination.limit]);
 
   // 에러 바운더리
   if (typeof window !== 'undefined' && !window.location) {
@@ -142,7 +145,7 @@ export default function DataScraperPage() {
   const renderSummary = () => (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       {/* 대회 정보 */}
-      {scrapedData.tournaments && (
+      {scrapedData && scrapedData.tournaments && (
         <Card className="p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold">대회 정보</h3>
@@ -172,7 +175,7 @@ export default function DataScraperPage() {
       )}
 
       {/* 골프장 정보 */}
-      {scrapedData.golfCourses && (
+      {scrapedData && scrapedData.golfCourses && (
         <Card className="p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold">골프장 정보</h3>
@@ -202,7 +205,7 @@ export default function DataScraperPage() {
       )}
 
       {/* 선수 정보 */}
-      {scrapedData.players && (
+      {scrapedData && scrapedData.players && (
         <Card className="p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold">선수 정보</h3>
@@ -234,7 +237,7 @@ export default function DataScraperPage() {
   );
 
   const renderTable = () => {
-    if (selectedDataType === 'tournaments' && scrapedData.tournaments) {
+    if (selectedDataType === 'tournaments' && scrapedData && scrapedData.tournaments) {
       const tournaments = scrapedData.tournaments.all || [];
       return (
         <div className="overflow-x-auto">
@@ -272,7 +275,7 @@ export default function DataScraperPage() {
       );
     }
 
-    if (selectedDataType === 'golf-courses' && scrapedData.golfCourses) {
+    if (selectedDataType === 'golf-courses' && scrapedData && scrapedData.golfCourses) {
       const courses = scrapedData.golfCourses.courses || [];
       return (
         <div className="overflow-x-auto">
@@ -304,7 +307,7 @@ export default function DataScraperPage() {
       );
     }
 
-    if (selectedDataType === 'players' && scrapedData.players) {
+    if (selectedDataType === 'players' && scrapedData && scrapedData.players) {
       const players = scrapedData.players.players || [];
       return (
         <div className="overflow-x-auto">
