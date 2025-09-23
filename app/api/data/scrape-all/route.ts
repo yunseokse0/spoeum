@@ -33,45 +33,46 @@ export async function POST(request: NextRequest) {
         console.log('대회 정보 크롤링 시작...');
         const tournamentStartTime = Date.now();
         
-        // Mock 데이터를 먼저 반환 (실제 크롤링은 시간이 오래 걸림)
+        // 실제 크롤링 실행
         const tournamentScraper = new TournamentScraper();
-        const mockKLPGA = (tournamentScraper as any).getMockKLPGAEvents();
-        const mockKPGA = (tournamentScraper as any).getMockKPGAEvents();
-        const mockAll = [...mockKLPGA, ...mockKPGA];
-
-        results.data.tournaments = {
-          klpga: mockKLPGA,
-          kpga: mockKPGA,
-          all: mockAll,
-          count: mockAll.length,
-          isMock: true
-        };
-
-        const tournamentTime = Date.now() - tournamentStartTime;
-        console.log(`대회 정보 크롤링 완료: ${mockAll.length}개 (${tournamentTime}ms)`);
         
-        // 실제 크롤링은 백그라운드에서 실행 (선택사항)
-        if (!includeMock) {
-          try {
-            const [klpgaEvents, kpgaEvents] = await Promise.all([
-              tournamentScraper.scrapeKLPGAEvents(),
-              tournamentScraper.scrapeKPGAEvents()
-            ]);
-            
-            const tournaments = [...klpgaEvents, ...kpgaEvents];
-            await tournamentScraper.closeBrowser();
+        try {
+          const [klpgaEvents, kpgaEvents] = await Promise.all([
+            tournamentScraper.scrapeKLPGAEvents(),
+            tournamentScraper.scrapeKPGAEvents()
+          ]);
+          
+          const tournaments = [...klpgaEvents, ...kpgaEvents];
+          await tournamentScraper.closeBrowser();
 
-            results.data.tournaments = {
-              klpga: klpgaEvents,
-              kpga: kpgaEvents,
-              all: tournaments,
-              count: tournaments.length,
-              isMock: false
-            };
-          } catch (realError) {
-            console.error('실제 대회 정보 크롤링 오류:', realError);
-            // Mock 데이터 유지
-          }
+          results.data.tournaments = {
+            klpga: klpgaEvents,
+            kpga: kpgaEvents,
+            all: tournaments,
+            count: tournaments.length,
+            isMock: false
+          };
+
+          const tournamentTime = Date.now() - tournamentStartTime;
+          console.log(`대회 정보 크롤링 완료: ${tournaments.length}개 (${tournamentTime}ms)`);
+          
+        } catch (realError) {
+          console.error('실제 대회 정보 크롤링 오류:', realError);
+          
+          // 실제 크롤링 실패 시 Mock 데이터로 fallback
+          const mockKLPGA = (tournamentScraper as any).getMockKLPGAEvents();
+          const mockKPGA = (tournamentScraper as any).getMockKPGAEvents();
+          const mockAll = [...mockKLPGA, ...mockKPGA];
+
+          results.data.tournaments = {
+            klpga: mockKLPGA,
+            kpga: mockKPGA,
+            all: mockAll,
+            count: mockAll.length,
+            isMock: true
+          };
+          
+          console.log(`대회 정보 Mock 데이터 사용: ${mockAll.length}개`);
         }
         
       } catch (error) {
@@ -102,37 +103,38 @@ export async function POST(request: NextRequest) {
         console.log('골프장 정보 크롤링 시작...');
         const golfCourseStartTime = Date.now();
         
-        // Mock 데이터를 먼저 반환
+        // 실제 크롤링 실행
         const golfCourseScraper = new GolfCourseScraper();
-        const mockCourses = await golfCourseScraper.addManualCourses();
-
-        results.data.golfCourses = {
-          courses: mockCourses,
-          count: mockCourses.length,
-          regions: [...new Set(mockCourses.map(course => course.region))],
-          sources: [...new Set(mockCourses.map(course => course.source))],
-          isMock: true
-        };
-
-        const golfCourseTime = Date.now() - golfCourseStartTime;
-        console.log(`골프장 정보 크롤링 완료: ${mockCourses.length}개 (${golfCourseTime}ms)`);
         
-        // 실제 크롤링은 백그라운드에서 실행 (선택사항)
-        if (!includeMock) {
-          try {
-            const golfCourses = await golfCourseScraper.collectAllCourses();
+        try {
+          const golfCourses = await golfCourseScraper.collectAllCourses();
 
-            results.data.golfCourses = {
-              courses: golfCourses,
-              count: golfCourses.length,
-              regions: [...new Set(golfCourses.map(course => course.region))],
-              sources: [...new Set(golfCourses.map(course => course.source))],
-              isMock: false
-            };
-          } catch (realError) {
-            console.error('실제 골프장 정보 크롤링 오류:', realError);
-            // Mock 데이터 유지
-          }
+          results.data.golfCourses = {
+            courses: golfCourses,
+            count: golfCourses.length,
+            regions: [...new Set(golfCourses.map(course => course.region))],
+            sources: [...new Set(golfCourses.map(course => course.source))],
+            isMock: false
+          };
+
+          const golfCourseTime = Date.now() - golfCourseStartTime;
+          console.log(`골프장 정보 크롤링 완료: ${golfCourses.length}개 (${golfCourseTime}ms)`);
+          
+        } catch (realError) {
+          console.error('실제 골프장 정보 크롤링 오류:', realError);
+          
+          // 실제 크롤링 실패 시 Mock 데이터로 fallback
+          const mockCourses = await golfCourseScraper.addManualCourses();
+
+          results.data.golfCourses = {
+            courses: mockCourses,
+            count: mockCourses.length,
+            regions: [...new Set(mockCourses.map(course => course.region))],
+            sources: [...new Set(mockCourses.map(course => course.source))],
+            isMock: true
+          };
+          
+          console.log(`골프장 정보 Mock 데이터 사용: ${mockCourses.length}개`);
         }
         
       } catch (error) {
@@ -161,119 +163,77 @@ export async function POST(request: NextRequest) {
         console.log('선수 정보 크롤링 시작...');
         const playerStartTime = Date.now();
         
-        // Mock 선수 데이터 생성
-        const mockPlayers: PlayerInfo[] = [
-          {
-            memberId: 'KPGA12345',
-            name: '김골프',
-            association: 'KPGA',
-            birth: '1990-05-15',
-            career: [
-              {
-                year: 2024,
-                title: '2024 KPGA 투어',
-                result: '2승 8회 상위10위',
-                prize: 50000000,
-                ranking: 5
-              },
-              {
-                year: 2023,
-                title: '2023 KPGA 투어',
-                result: '1승 12회 상위10위',
-                prize: 35000000,
-                ranking: 8
-              }
-            ],
-            ranking: {
-              current: 5,
-              best: 3,
-              points: 1250
-            },
-            currentRanking: 5,
-            totalPrize: 85000000,
-            isActive: true
-          },
-          {
-            memberId: 'KLPGA67890',
-            name: '이여자골프',
-            association: 'KLPGA',
-            birth: '1995-08-22',
-            career: [
-              {
-                year: 2024,
-                title: '2024 KLPGA 투어',
-                result: '1승 6회 상위10위',
-                prize: 30000000,
-                ranking: 7
-              }
-            ],
-            ranking: {
-              current: 7,
-              best: 5,
-              points: 980
-            },
-            currentRanking: 7,
-            totalPrize: 30000000,
-            isActive: true
-          },
-          {
-            memberId: 'KPGA11111',
-            name: '박프로',
-            association: 'KPGA',
-            birth: '1988-03-10',
-            career: [
-              {
-                year: 2024,
-                title: '2024 KPGA 투어',
-                result: '0승 5회 상위10위',
-                prize: 15000000,
-                ranking: 15
-              }
-            ],
-            ranking: {
-              current: 15,
-              best: 10,
-              points: 750
-            },
-            currentRanking: 15,
-            totalPrize: 15000000,
-            isActive: true
-          },
-          {
-            memberId: 'KLPGA22222',
-            name: '최여자프로',
-            association: 'KLPGA',
-            birth: '1992-11-05',
-            career: [
-              {
-                year: 2024,
-                title: '2024 KLPGA 투어',
-                result: '0승 3회 상위10위',
-                prize: 8000000,
-                ranking: 25
-              }
-            ],
-            ranking: {
-              current: 25,
-              best: 18,
-              points: 450
-            },
-            currentRanking: 25,
-            totalPrize: 8000000,
-            isActive: true
-          }
+        // 실제 선수 정보 크롤링 실행
+        const samplePlayerIds = [
+          { id: 'KPGA12345', association: 'KPGA' as const },
+          { id: 'KLPGA67890', association: 'KLPGA' as const },
+          { id: 'KPGA11111', association: 'KPGA' as const },
+          { id: 'KLPGA22222', association: 'KLPGA' as const }
         ];
 
+        const players: PlayerInfo[] = [];
+        const playerErrors: string[] = [];
+
+        for (const { id, association } of samplePlayerIds) {
+          try {
+            const player = await playerScraper.searchPlayer(id, association);
+            if (player) {
+              players.push(player);
+            }
+          } catch (error) {
+            playerErrors.push(`${association} ${id}: ${error instanceof Error ? error.message : '알 수 없는 오류'}`);
+          }
+        }
+
         results.data.players = {
-          players: mockPlayers,
-          count: mockPlayers.length,
-          errors: [],
-          associations: [...new Set(mockPlayers.map(p => p.association))],
-          isMock: true
+          players,
+          count: players.length,
+          errors: playerErrors,
+          associations: [...new Set(players.map(p => p.association))],
+          isMock: false
         };
 
         const playerTime = Date.now() - playerStartTime;
-        console.log(`선수 정보 크롤링 완료: ${mockPlayers.length}개 (${playerTime}ms)`);
+        console.log(`선수 정보 크롤링 완료: ${players.length}개 (${playerTime}ms)`);
+        
+        // 실제 크롤링 결과가 없으면 Mock 데이터로 fallback
+        if (players.length === 0) {
+          const mockPlayers: PlayerInfo[] = [
+            {
+              memberId: 'KPGA12345',
+              name: '김골프',
+              association: 'KPGA',
+              birth: '1990-05-15',
+              career: [
+                {
+                  year: 2024,
+                  title: '2024 KPGA 투어',
+                  result: '2승 8회 상위10위',
+                  prize: 50000000,
+                  ranking: 5
+                }
+              ],
+              ranking: {
+                current: 5,
+                best: 3,
+                points: 1250
+              },
+              currentRanking: 5,
+              totalPrize: 85000000,
+              isActive: true
+            }
+          ];
+
+          results.data.players = {
+            players: mockPlayers,
+            count: mockPlayers.length,
+            errors: playerErrors,
+            associations: [...new Set(mockPlayers.map(p => p.association))],
+            isMock: true
+          };
+          
+          console.log(`선수 정보 Mock 데이터 사용: ${mockPlayers.length}개`);
+        }
         
       } catch (error) {
         console.error('선수 정보 크롤링 오류:', error);

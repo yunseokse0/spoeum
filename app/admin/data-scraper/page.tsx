@@ -71,7 +71,7 @@ export default function DataScraperPage() {
   const handleScrapeAll = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(`/api/data/scrape-all?type=${selectedDataType}&mock=true`);
+      const response = await fetch(`/api/data/scrape-all?type=${selectedDataType}&mock=false`);
       const result = await response.json();
       
       if (result.success) {
@@ -94,7 +94,7 @@ export default function DataScraperPage() {
     setIsLoading(true);
     try {
       const response = await fetch(
-        `/api/data/view?type=${selectedDataType}&limit=${pagination.limit}&offset=${pagination.offset}&mock=true`
+        `/api/data/view?type=${selectedDataType}&limit=${pagination.limit}&offset=${pagination.offset}&mock=false`
       );
       const result = await response.json();
       
