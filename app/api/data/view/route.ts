@@ -12,6 +12,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const dataType = searchParams.get('type') || 'all'; // 'all', 'tournaments', 'golf-courses', 'players'
     const includeMock = searchParams.get('mock') === 'true';
+    const forceRealData = searchParams.get('mock') === 'false';
     const limit = parseInt(searchParams.get('limit') || '50');
     const offset = parseInt(searchParams.get('offset') || '0');
 
@@ -65,6 +66,7 @@ export async function GET(request: NextRequest) {
           
         } catch (error) {
           console.error('실제 대회 정보 크롤링 오류:', error);
+          console.error('에러 상세:', error instanceof Error ? error.message : '알 수 없는 오류');
           
           // 실제 크롤링 실패 시 Mock 데이터 사용
           const mockKLPGA = (tournamentScraper as any).getMockKLPGAEvents();
@@ -81,6 +83,7 @@ export async function GET(request: NextRequest) {
             count: paginatedTournaments.length,
             total: mockAll.length,
             isMock: true,
+            error: error instanceof Error ? error.message : '크롤링 실패',
             pagination: {
               limit,
               offset,
@@ -236,16 +239,24 @@ export async function GET(request: NextRequest) {
         const players: PlayerInfo[] = [];
         const playerErrors: string[] = [];
 
+        console.log('선수 정보 크롤링 시작...');
         for (const { id, association } of samplePlayerIds) {
           try {
+            console.log(`${association} ${id} 크롤링 시도...`);
             const player = await playerScraper.searchPlayer(id, association);
             if (player) {
               players.push(player);
+              console.log(`${association} ${id} 크롤링 성공`);
+            } else {
+              console.log(`${association} ${id} 크롤링 결과 없음`);
             }
           } catch (error) {
-            playerErrors.push(`${association} ${id}: ${error instanceof Error ? error.message : '알 수 없는 오류'}`);
+            const errorMsg = `${association} ${id}: ${error instanceof Error ? error.message : '알 수 없는 오류'}`;
+            console.error(errorMsg);
+            playerErrors.push(errorMsg);
           }
         }
+        console.log(`선수 정보 크롤링 완료: ${players.length}개 성공, ${playerErrors.length}개 실패`);
 
         // 페이지네이션 적용
         const paginatedPlayers = players.slice(offset, offset + limit);
