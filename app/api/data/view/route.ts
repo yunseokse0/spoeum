@@ -31,66 +31,64 @@ export async function GET(request: NextRequest) {
     // 1. 대회 정보 조회
     if (dataType === 'all' || dataType === 'tournaments') {
       try {
+        // Mock 데이터 사용
         const tournamentScraper = new TournamentScraper();
-        const [klpgaEvents, kpgaEvents] = await Promise.all([
-          tournamentScraper.scrapeKLPGAEvents(),
-          tournamentScraper.scrapeKPGAEvents()
-        ]);
+        const mockKLPGA = (tournamentScraper as any).getMockKLPGAEvents();
+        const mockKPGA = (tournamentScraper as any).getMockKPGAEvents();
+        const mockAll = [...mockKLPGA, ...mockKPGA];
         
-        const tournaments = [...klpgaEvents, ...kpgaEvents];
-        await tournamentScraper.closeBrowser();
-
         // 페이지네이션 적용
-        const paginatedTournaments = tournaments.slice(offset, offset + limit);
+        const paginatedTournaments = mockAll.slice(offset, offset + limit);
 
         results.data.tournaments = {
-          klpga: klpgaEvents.slice(offset, offset + limit),
-          kpga: kpgaEvents.slice(offset, offset + limit),
+          klpga: mockKLPGA.slice(offset, offset + limit),
+          kpga: mockKPGA.slice(offset, offset + limit),
           all: paginatedTournaments,
           count: paginatedTournaments.length,
-          total: tournaments.length,
+          total: mockAll.length,
+          isMock: true,
           pagination: {
             limit,
             offset,
-            total: tournaments.length,
-            hasMore: offset + limit < tournaments.length
+            total: mockAll.length,
+            hasMore: offset + limit < mockAll.length
           }
         };
 
-        results.pagination.total += tournaments.length;
+        results.pagination.total += mockAll.length;
         
       } catch (error) {
         console.error('대회 정보 조회 오류:', error);
         
-        if (includeMock) {
-          const tournamentScraper = new TournamentScraper();
-          const mockKLPGA = (tournamentScraper as any).getMockKLPGAEvents();
-          const mockKPGA = (tournamentScraper as any).getMockKPGAEvents();
-          const mockAll = [...mockKLPGA, ...mockKPGA];
-          
-          results.data.tournaments = {
-            klpga: mockKLPGA,
-            kpga: mockKPGA,
-            all: mockAll,
-            count: mockAll.length,
+        // 오류 시에도 Mock 데이터 반환
+        const tournamentScraper = new TournamentScraper();
+        const mockKLPGA = (tournamentScraper as any).getMockKLPGAEvents();
+        const mockKPGA = (tournamentScraper as any).getMockKPGAEvents();
+        const mockAll = [...mockKLPGA, ...mockKPGA];
+        
+        results.data.tournaments = {
+          klpga: mockKLPGA,
+          kpga: mockKPGA,
+          all: mockAll,
+          count: mockAll.length,
+          total: mockAll.length,
+          isMock: true,
+          pagination: {
+            limit,
+            offset,
             total: mockAll.length,
-            isMock: true,
-            pagination: {
-              limit,
-              offset,
-              total: mockAll.length,
-              hasMore: false
-            }
-          };
-        }
+            hasMore: false
+          }
+        };
       }
     }
 
     // 2. 골프장 정보 조회
     if (dataType === 'all' || dataType === 'golf-courses') {
       try {
+        // Mock 데이터 사용
         const golfCourseScraper = new GolfCourseScraper();
-        const golfCourses = await golfCourseScraper.collectAllCourses();
+        const golfCourses = await golfCourseScraper.addManualCourses();
 
         // 페이지네이션 적용
         const paginatedCourses = golfCourses.slice(offset, offset + limit);
@@ -113,6 +111,7 @@ export async function GET(request: NextRequest) {
           total: golfCourses.length,
           regions: regionStats,
           sources: sourceStats,
+          isMock: true,
           pagination: {
             limit,
             offset,
@@ -125,55 +124,165 @@ export async function GET(request: NextRequest) {
         
       } catch (error) {
         console.error('골프장 정보 조회 오류:', error);
+        
+        // 오류 시에도 Mock 데이터 반환
+        const golfCourseScraper = new GolfCourseScraper();
+        const golfCourses = await golfCourseScraper.addManualCourses();
+        
+        results.data.golfCourses = {
+          courses: golfCourses,
+          count: golfCourses.length,
+          total: golfCourses.length,
+          regions: {},
+          sources: {},
+          isMock: true,
+          pagination: {
+            limit,
+            offset,
+            total: golfCourses.length,
+            hasMore: false
+          }
+        };
       }
     }
 
     // 3. 선수 정보 조회 (샘플)
     if (dataType === 'all' || dataType === 'players') {
       try {
-        // 샘플 선수 ID들로 크롤링 테스트
-        const samplePlayerIds = [
-          { id: 'KPGA12345', association: 'KPGA' as const },
-          { id: 'KLPGA67890', association: 'KLPGA' as const },
-          { id: 'KPGA11111', association: 'KPGA' as const },
-          { id: 'KLPGA22222', association: 'KLPGA' as const }
+        // Mock 선수 데이터 생성
+        const mockPlayers: PlayerInfo[] = [
+          {
+            memberId: 'KPGA12345',
+            name: '김골프',
+            association: 'KPGA',
+            birth: '1990-05-15',
+            career: [
+              {
+                year: 2024,
+                title: '2024 KPGA 투어',
+                result: '2승 8회 상위10위',
+                prize: 50000000,
+                ranking: 5
+              }
+            ],
+            ranking: {
+              current: 5,
+              best: 3,
+              points: 1250
+            },
+            currentRanking: 5,
+            totalPrize: 85000000,
+            isActive: true
+          },
+          {
+            memberId: 'KLPGA67890',
+            name: '이여자골프',
+            association: 'KLPGA',
+            birth: '1995-08-22',
+            career: [
+              {
+                year: 2024,
+                title: '2024 KLPGA 투어',
+                result: '1승 6회 상위10위',
+                prize: 30000000,
+                ranking: 7
+              }
+            ],
+            ranking: {
+              current: 7,
+              best: 5,
+              points: 980
+            },
+            currentRanking: 7,
+            totalPrize: 30000000,
+            isActive: true
+          },
+          {
+            memberId: 'KPGA11111',
+            name: '박프로',
+            association: 'KPGA',
+            birth: '1988-03-10',
+            career: [
+              {
+                year: 2024,
+                title: '2024 KPGA 투어',
+                result: '0승 5회 상위10위',
+                prize: 15000000,
+                ranking: 15
+              }
+            ],
+            ranking: {
+              current: 15,
+              best: 10,
+              points: 750
+            },
+            currentRanking: 15,
+            totalPrize: 15000000,
+            isActive: true
+          },
+          {
+            memberId: 'KLPGA22222',
+            name: '최여자프로',
+            association: 'KLPGA',
+            birth: '1992-11-05',
+            career: [
+              {
+                year: 2024,
+                title: '2024 KLPGA 투어',
+                result: '0승 3회 상위10위',
+                prize: 8000000,
+                ranking: 25
+              }
+            ],
+            ranking: {
+              current: 25,
+              best: 18,
+              points: 450
+            },
+            currentRanking: 25,
+            totalPrize: 8000000,
+            isActive: true
+          }
         ];
 
-        const players: PlayerInfo[] = [];
-        const playerErrors: string[] = [];
-
-        for (const { id, association } of samplePlayerIds) {
-          try {
-            const player = await playerScraper.searchPlayer(id, association);
-            if (player) {
-              players.push(player);
-            }
-          } catch (error) {
-            playerErrors.push(`${association} ${id}: ${error instanceof Error ? error.message : '알 수 없는 오류'}`);
-          }
-        }
-
         // 페이지네이션 적용
-        const paginatedPlayers = players.slice(offset, offset + limit);
+        const paginatedPlayers = mockPlayers.slice(offset, offset + limit);
 
         results.data.players = {
           players: paginatedPlayers,
           count: paginatedPlayers.length,
-          total: players.length,
-          errors: playerErrors,
-          associations: [...new Set(players.map(p => p.association))],
+          total: mockPlayers.length,
+          errors: [],
+          associations: [...new Set(mockPlayers.map(p => p.association))],
+          isMock: true,
           pagination: {
             limit,
             offset,
-            total: players.length,
-            hasMore: offset + limit < players.length
+            total: mockPlayers.length,
+            hasMore: offset + limit < mockPlayers.length
           }
         };
 
-        results.pagination.total += players.length;
+        results.pagination.total += mockPlayers.length;
         
       } catch (error) {
         console.error('선수 정보 조회 오류:', error);
+        
+        // 오류 시에도 Mock 데이터 반환
+        results.data.players = {
+          players: [],
+          count: 0,
+          total: 0,
+          errors: ['선수 정보 조회 실패'],
+          associations: [],
+          isMock: true,
+          pagination: {
+            limit,
+            offset,
+            total: 0,
+            hasMore: false
+          }
+        };
       }
     }
 

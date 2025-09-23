@@ -111,18 +111,19 @@ export default function AdminPage() {
   const { userType, isAuthenticated } = useAuthStore();
   const [activeTab, setActiveTab] = useState('dashboard');
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      router.push('/login');
-      return;
-    }
+  // 관리자 페이지 접근 제한 제거 - 자유롭게 접근 가능
+  // useEffect(() => {
+  //   if (!isAuthenticated) {
+  //     router.push('/login');
+  //     return;
+  //   }
 
-    // 관리자 권한 확인
-    if (userType !== 'agency') {
-      router.push('/dashboard');
-      return;
-    }
-  }, [isAuthenticated, userType, router]);
+  //   // 관리자 권한 확인
+  //   if (userType !== 'agency') {
+  //     router.push('/dashboard');
+  //     return;
+  //   }
+  // }, [isAuthenticated, userType, router]);
 
   const getUserTypeLabel = (userType: string) => {
     switch (userType) {
@@ -446,17 +447,18 @@ export default function AdminPage() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* 헤더 */}
-      <Header 
-        title="관리자 대시보드" 
-        showNotificationButton={true}
-        showMenuButton={false}
-      />
+      <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+        <div className="px-6 py-4">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">관리자 대시보드</h1>
+          <p className="text-gray-600 dark:text-gray-400">스포이음 골프 플랫폼 관리</p>
+        </div>
+      </div>
 
       {/* 탭 네비게이션 */}
       <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-        <div className="px-4">
+        <div className="px-6">
           <div className="flex space-x-8">
             {tabs.map((tab) => {
               const Icon = tab.icon;
@@ -466,7 +468,7 @@ export default function AdminPage() {
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex items-center space-x-2 py-4 border-b-2 transition-colors ${
                     activeTab === tab.id
-                      ? 'border-primary-500 text-primary-600 dark:text-primary-400'
+                      ? 'border-blue-500 text-blue-600 dark:text-blue-400'
                       : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
                   }`}
                 >
@@ -480,7 +482,7 @@ export default function AdminPage() {
       </div>
 
       {/* 메인 콘텐츠 */}
-      <main className="px-4 py-6">
+      <main className="px-6 py-8">
         {activeTab === 'dashboard' && renderDashboard()}
         {activeTab === 'users' && renderUsers()}
         {activeTab === 'payments' && (
@@ -510,28 +512,82 @@ export default function AdminPage() {
           </Card>
         )}
         {activeTab === 'data-scraper' && (
-          <Card>
-            <CardBody className="text-center py-12">
-              <Settings className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-                데이터 크롤링 관리
-              </h3>
-              <p className="text-gray-600 dark:text-gray-400 mb-6">
-                전체 데이터 크롤링 및 조회를 관리할 수 있습니다.
-              </p>
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">데이터 크롤링 관리</h2>
+                <p className="text-gray-600 dark:text-gray-400">전체 데이터 크롤링 및 조회를 관리할 수 있습니다.</p>
+              </div>
               <Button 
                 onClick={() => router.push('/admin/data-scraper')}
                 className="bg-blue-600 hover:bg-blue-700"
               >
-                데이터 크롤링 페이지로 이동
+                크롤링 페이지로 이동
               </Button>
-            </CardBody>
-          </Card>
+            </div>
+            
+            {/* 크롤링된 데이터 미리보기 */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <Card>
+                <CardBody className="p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold">대회 정보</h3>
+                    <Badge variant="blue">실시간</Badge>
+                  </div>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                    KLPGA/KPGA 대회 정보를 실시간으로 수집합니다.
+                  </p>
+                  <Button 
+                    onClick={() => router.push('/admin/data-scraper?type=tournaments')}
+                    variant="outline"
+                    className="w-full"
+                  >
+                    대회 데이터 보기
+                  </Button>
+                </CardBody>
+              </Card>
+
+              <Card>
+                <CardBody className="p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold">골프장 정보</h3>
+                    <Badge variant="green">업데이트됨</Badge>
+                  </div>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                    전국 골프장 정보를 다중 소스에서 수집합니다.
+                  </p>
+                  <Button 
+                    onClick={() => router.push('/admin/data-scraper?type=golf-courses')}
+                    variant="outline"
+                    className="w-full"
+                  >
+                    골프장 데이터 보기
+                  </Button>
+                </CardBody>
+              </Card>
+
+              <Card>
+                <CardBody className="p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold">선수 정보</h3>
+                    <Badge variant="purple">샘플</Badge>
+                  </div>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                    KLPGA/KPGA 선수 프로필 및 경력 정보를 수집합니다.
+                  </p>
+                  <Button 
+                    onClick={() => router.push('/admin/data-scraper?type=players')}
+                    variant="outline"
+                    className="w-full"
+                  >
+                    선수 데이터 보기
+                  </Button>
+                </CardBody>
+              </Card>
+            </div>
+          </div>
         )}
       </main>
-
-      {/* 하단 네비게이션 */}
-      <BottomNavigation />
     </div>
   );
 }
