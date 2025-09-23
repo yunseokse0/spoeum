@@ -56,6 +56,17 @@ export default function DataScraperPage() {
     total: 0
   });
 
+  // URL 파라미터 처리
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const type = urlParams.get('type');
+      if (type && ['all', 'tournaments', 'golf-courses', 'players'].includes(type)) {
+        setSelectedDataType(type);
+      }
+    }
+  }, []);
+
   // 전체 데이터 크롤링 실행
   const handleScrapeAll = async () => {
     setIsLoading(true);
@@ -122,6 +133,11 @@ export default function DataScraperPage() {
     // 페이지 로드 시 초기 데이터 조회
     handleViewData();
   }, [selectedDataType, pagination.offset, pagination.limit]);
+
+  // 에러 바운더리
+  if (typeof window !== 'undefined' && !window.location) {
+    return <div className="p-8 text-center">페이지를 로딩 중입니다...</div>;
+  }
 
   const renderSummary = () => (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -219,6 +235,7 @@ export default function DataScraperPage() {
 
   const renderTable = () => {
     if (selectedDataType === 'tournaments' && scrapedData.tournaments) {
+      const tournaments = scrapedData.tournaments.all || [];
       return (
         <div className="overflow-x-auto">
           <Table>
@@ -234,17 +251,21 @@ export default function DataScraperPage() {
               </tr>
             </thead>
             <tbody>
-              {scrapedData.tournaments.all?.map((tournament: any, index: number) => (
+              {tournaments.map((tournament: any, index: number) => (
                 <tr key={index} className="border-b hover:bg-gray-50">
-                  <td className="px-4 py-2">{tournament.name}</td>
-                  <td className="px-4 py-2">{tournament.organizer}</td>
-                  <td className="px-4 py-2">{tournament.category}</td>
-                  <td className="px-4 py-2">{new Date(tournament.startDate).toLocaleDateString()}</td>
-                  <td className="px-4 py-2">{new Date(tournament.endDate).toLocaleDateString()}</td>
-                  <td className="px-4 py-2">{tournament.location}</td>
-                  <td className="px-4 py-2">{`${(tournament.prizePool || 0).toLocaleString()}원`}</td>
+                  <td className="px-4 py-2">{tournament?.name || '-'}</td>
+                  <td className="px-4 py-2">{tournament?.organizer || '-'}</td>
+                  <td className="px-4 py-2">{tournament?.category || '-'}</td>
+                  <td className="px-4 py-2">
+                    {tournament?.startDate ? new Date(tournament.startDate).toLocaleDateString() : '-'}
+                  </td>
+                  <td className="px-4 py-2">
+                    {tournament?.endDate ? new Date(tournament.endDate).toLocaleDateString() : '-'}
+                  </td>
+                  <td className="px-4 py-2">{tournament?.location || '-'}</td>
+                  <td className="px-4 py-2">{`${(tournament?.prizePool || 0).toLocaleString()}원`}</td>
                 </tr>
-              )) || []}
+              ))}
             </tbody>
           </Table>
         </div>
@@ -252,6 +273,7 @@ export default function DataScraperPage() {
     }
 
     if (selectedDataType === 'golf-courses' && scrapedData.golfCourses) {
+      const courses = scrapedData.golfCourses.courses || [];
       return (
         <div className="overflow-x-auto">
           <Table>
@@ -266,16 +288,16 @@ export default function DataScraperPage() {
               </tr>
             </thead>
             <tbody>
-              {scrapedData.golfCourses.courses?.map((course: any, index: number) => (
+              {courses.map((course: any, index: number) => (
                 <tr key={index} className="border-b hover:bg-gray-50">
-                  <td className="px-4 py-2">{course.name}</td>
-                  <td className="px-4 py-2">{course.region}</td>
-                  <td className="px-4 py-2">{course.city}</td>
-                  <td className="px-4 py-2">{course.address}</td>
-                  <td className="px-4 py-2">{course.phone || '-'}</td>
-                  <td className="px-4 py-2">{course.source}</td>
+                  <td className="px-4 py-2">{course?.name || '-'}</td>
+                  <td className="px-4 py-2">{course?.region || '-'}</td>
+                  <td className="px-4 py-2">{course?.city || '-'}</td>
+                  <td className="px-4 py-2">{course?.address || '-'}</td>
+                  <td className="px-4 py-2">{course?.phone || '-'}</td>
+                  <td className="px-4 py-2">{course?.source || '-'}</td>
                 </tr>
-              )) || []}
+              ))}
             </tbody>
           </Table>
         </div>
@@ -283,6 +305,7 @@ export default function DataScraperPage() {
     }
 
     if (selectedDataType === 'players' && scrapedData.players) {
+      const players = scrapedData.players.players || [];
       return (
         <div className="overflow-x-auto">
           <Table>
@@ -297,16 +320,16 @@ export default function DataScraperPage() {
               </tr>
             </thead>
             <tbody>
-              {scrapedData.players.players?.map((player: any, index: number) => (
+              {players.map((player: any, index: number) => (
                 <tr key={index} className="border-b hover:bg-gray-50">
-                  <td className="px-4 py-2">{player.name}</td>
-                  <td className="px-4 py-2">{player.association}</td>
-                  <td className="px-4 py-2">{player.birth}</td>
-                  <td className="px-4 py-2">{player.currentRanking || '-'}</td>
-                  <td className="px-4 py-2">{`${(player.totalPrize || 0).toLocaleString()}원`}</td>
-                  <td className="px-4 py-2">{player.isActive ? '활성' : '비활성'}</td>
+                  <td className="px-4 py-2">{player?.name || '-'}</td>
+                  <td className="px-4 py-2">{player?.association || '-'}</td>
+                  <td className="px-4 py-2">{player?.birth || '-'}</td>
+                  <td className="px-4 py-2">{player?.currentRanking || '-'}</td>
+                  <td className="px-4 py-2">{`${(player?.totalPrize || 0).toLocaleString()}원`}</td>
+                  <td className="px-4 py-2">{player?.isActive ? '활성' : '비활성'}</td>
                 </tr>
-              )) || []}
+              ))}
             </tbody>
           </Table>
         </div>
