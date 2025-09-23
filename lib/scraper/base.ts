@@ -21,6 +21,8 @@ export class BaseScraper {
     if (!this.browser) {
       const isVercel = process.env.VERCEL === '1';
       
+      console.log('브라우저 초기화 시작...', { isVercel });
+      
       const launchOptions: any = {
         headless: true,
         args: [
@@ -32,17 +34,41 @@ export class BaseScraper {
           '--no-zygote',
           '--disable-gpu',
           '--disable-web-security',
-          '--disable-features=VizDisplayCompositor'
+          '--disable-features=VizDisplayCompositor',
+          '--disable-background-timer-throttling',
+          '--disable-backgrounding-occluded-windows',
+          '--disable-renderer-backgrounding',
+          '--disable-extensions',
+          '--disable-plugins',
+          '--disable-default-apps',
+          '--disable-sync',
+          '--disable-translate',
+          '--hide-scrollbars',
+          '--mute-audio',
+          '--no-default-browser-check',
+          '--no-pings',
+          '--single-process'
         ]
       };
 
       // Vercel 환경에서 Chromium 경로 설정
       if (isVercel) {
+        console.log('Vercel 환경에서 Chromium 설정...');
         launchOptions.executablePath = '/usr/bin/chromium-browser';
         launchOptions.args.push('--disable-extensions');
+        launchOptions.args.push('--disable-background-timer-throttling');
+        launchOptions.args.push('--disable-backgrounding-occluded-windows');
+        launchOptions.args.push('--disable-renderer-backgrounding');
       }
 
-      this.browser = await puppeteer.launch(launchOptions);
+      try {
+        console.log('Puppeteer 브라우저 실행 중...');
+        this.browser = await puppeteer.launch(launchOptions);
+        console.log('브라우저 초기화 성공');
+      } catch (error) {
+        console.error('브라우저 초기화 실패:', error);
+        throw new Error(`브라우저 초기화 실패: ${error instanceof Error ? error.message : '알 수 없는 오류'}`);
+      }
     }
     return this.browser;
   }
@@ -54,7 +80,7 @@ export class BaseScraper {
     }
   }
 
-  async scrapeWithAxios(url: string): Promise<cheerio.CheerioAPI> {
+  async scrapeWithAxios(url: string): Promise<{ data: string; $: cheerio.Root }> {
     try {
       const response = await axios.get(url, {
         timeout: this.defaultOptions.timeout,
@@ -68,7 +94,10 @@ export class BaseScraper {
         }
       });
 
-      return cheerio.load(response.data) as any;
+      return {
+        data: response.data,
+        $: cheerio.load(response.data)
+      };
     } catch (error) {
       console.error('Axios scraping error:', error);
       throw new Error(`Failed to scrape with axios: ${error}`);

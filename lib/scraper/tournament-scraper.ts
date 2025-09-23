@@ -1,5 +1,6 @@
 import { BaseScraper } from './base';
 import { Tournament } from '@/types';
+import * as cheerio from 'cheerio';
 
 export class TournamentScraper extends BaseScraper {
   private readonly klpgaBaseUrl = 'https://www.klpga.co.kr';
@@ -11,34 +12,55 @@ export class TournamentScraper extends BaseScraper {
       
       const tournaments: Tournament[] = [];
       
-      // KLPGA 투어 일정 페이지
-      const scheduleUrl = `${this.klpgaBaseUrl}/web/tour/schedule.asp`;
-      const page = await this.scrapeWithPuppeteer(scheduleUrl, {
-        waitForSelector: 'body'
-      });
+      // 먼저 Puppeteer로 시도
+      try {
+        const scheduleUrl = `${this.klpgaBaseUrl}/web/tour/schedule.asp`;
+        const page = await this.scrapeWithPuppeteer(scheduleUrl, {
+          waitForSelector: 'body'
+        });
 
-      // 대회 목록 추출 (실제 KLPGA 사이트 구조에 맞춰 수정)
-      const eventItems = await page.$$('.tour-item, .schedule-item, tr');
-      
-      for (const item of eventItems) {
-        try {
-          const tournament = await this.extractKLPGAEvent(item);
-          if (tournament) {
-            tournaments.push(tournament);
+        // 대회 목록 추출 (실제 KLPGA 사이트 구조에 맞춰 수정)
+        const eventItems = await page.$$('.tour-item, .schedule-item, tr');
+        
+        for (const item of eventItems) {
+          try {
+            const tournament = await this.extractKLPGAEvent(item);
+            if (tournament) {
+              tournaments.push(tournament);
+            }
+          } catch (error) {
+            console.error('KLPGA 대회 정보 추출 오류:', error);
           }
-        } catch (error) {
-          console.error('KLPGA 대회 정보 추출 오류:', error);
         }
+
+        await page.close();
+        console.log(`KLPGA Puppeteer 크롤링 완료: ${tournaments.length}개`);
+        
+        if (tournaments.length > 0) {
+          return tournaments;
+        }
+      } catch (puppeteerError) {
+        console.error('KLPGA Puppeteer 크롤링 실패:', puppeteerError);
       }
 
-      await page.close();
-      console.log(`KLPGA 대회 정보 크롤링 완료: ${tournaments.length}개`);
+      // Puppeteer 실패 시 Axios로 시도
+      try {
+        console.log('KLPGA Axios 크롤링 시도...');
+        const response = await this.scrapeWithAxios(`${this.klpgaBaseUrl}/web/tour/schedule.asp`);
+        const tournaments = this.parseKLPGAFromHTML(response.data);
+        console.log(`KLPGA Axios 크롤링 완료: ${tournaments.length}개`);
+        return tournaments;
+      } catch (axiosError) {
+        console.error('KLPGA Axios 크롤링 실패:', axiosError);
+      }
 
-      return tournaments;
+      // 모든 크롤링 방법 실패 시 에러 발생
+      throw new Error('KLPGA 크롤링 실패: Puppeteer와 Axios 모두 실패');
 
     } catch (error) {
       console.error('KLPGA 대회 크롤링 오류:', error);
-      return this.getMockKLPGAEvents();
+      console.error('KLPGA 크롤링 실패 상세:', error instanceof Error ? error.message : '알 수 없는 오류');
+      throw error; // Mock 데이터 반환 대신 에러를 다시 던짐
     }
   }
 
@@ -48,34 +70,55 @@ export class TournamentScraper extends BaseScraper {
       
       const tournaments: Tournament[] = [];
       
-      // KPGA 투어 일정 페이지
-      const scheduleUrl = `${this.kpgaBaseUrl}/tour/schedule.asp`;
-      const page = await this.scrapeWithPuppeteer(scheduleUrl, {
-        waitForSelector: 'body'
-      });
+      // 먼저 Puppeteer로 시도
+      try {
+        const scheduleUrl = `${this.kpgaBaseUrl}/tour/schedule.asp`;
+        const page = await this.scrapeWithPuppeteer(scheduleUrl, {
+          waitForSelector: 'body'
+        });
 
-      // 대회 목록 추출 (실제 KPGA 사이트 구조에 맞춰 수정)
-      const eventItems = await page.$$('.tour-item, .schedule-item, tr');
-      
-      for (const item of eventItems) {
-        try {
-          const tournament = await this.extractKPGAEvent(item);
-          if (tournament) {
-            tournaments.push(tournament);
+        // 대회 목록 추출 (실제 KPGA 사이트 구조에 맞춰 수정)
+        const eventItems = await page.$$('.tour-item, .schedule-item, tr');
+        
+        for (const item of eventItems) {
+          try {
+            const tournament = await this.extractKPGAEvent(item);
+            if (tournament) {
+              tournaments.push(tournament);
+            }
+          } catch (error) {
+            console.error('KPGA 대회 정보 추출 오류:', error);
           }
-        } catch (error) {
-          console.error('KPGA 대회 정보 추출 오류:', error);
         }
+
+        await page.close();
+        console.log(`KPGA Puppeteer 크롤링 완료: ${tournaments.length}개`);
+        
+        if (tournaments.length > 0) {
+          return tournaments;
+        }
+      } catch (puppeteerError) {
+        console.error('KPGA Puppeteer 크롤링 실패:', puppeteerError);
       }
 
-      await page.close();
-      console.log(`KPGA 대회 정보 크롤링 완료: ${tournaments.length}개`);
+      // Puppeteer 실패 시 Axios로 시도
+      try {
+        console.log('KPGA Axios 크롤링 시도...');
+        const response = await this.scrapeWithAxios(`${this.kpgaBaseUrl}/tour/schedule.asp`);
+        const tournaments = this.parseKPGAFromHTML(response.data);
+        console.log(`KPGA Axios 크롤링 완료: ${tournaments.length}개`);
+        return tournaments;
+      } catch (axiosError) {
+        console.error('KPGA Axios 크롤링 실패:', axiosError);
+      }
 
-      return tournaments;
+      // 모든 크롤링 방법 실패 시 에러 발생
+      throw new Error('KPGA 크롤링 실패: Puppeteer와 Axios 모두 실패');
 
     } catch (error) {
       console.error('KPGA 대회 크롤링 오류:', error);
-      return this.getMockKPGAEvents();
+      console.error('KPGA 크롤링 실패 상세:', error instanceof Error ? error.message : '알 수 없는 오류');
+      throw error; // Mock 데이터 반환 대신 에러를 다시 던짐
     }
   }
 
@@ -251,6 +294,114 @@ export class TournamentScraper extends BaseScraper {
         updatedAt: new Date()
       }
     ];
+  }
+
+  // HTML에서 KLPGA 대회 정보 파싱
+  private parseKLPGAFromHTML(html: string): Tournament[] {
+    const $ = cheerio.load(html);
+    const tournaments: Tournament[] = [];
+    
+    try {
+      // KLPGA 사이트 구조에 맞춰 파싱
+      $('.tour-item, .schedule-item, tr').each((index, element) => {
+        try {
+          const $el = $(element);
+          const name = $el.find('.tour-name, .event-name, td:first-child').text().trim();
+          
+          if (name && name.length > 0) {
+            const tournament: Tournament = {
+              id: `klpga_${Date.now()}_${index}`,
+              name: name,
+              description: $el.find('.tour-desc, .event-desc').text().trim() || name,
+              location: $el.find('.tour-location, .event-location').text().trim() || '장소 미정',
+              course: $el.find('.tour-course, .event-course').text().trim() || '코스 미정',
+              startDate: new Date(),
+              endDate: new Date(),
+              registrationStartDate: new Date(),
+              registrationEndDate: new Date(),
+              type: 'pga',
+              category: 'women',
+              entryFee: 0,
+              prizePool: 100000000,
+              maxParticipants: 100,
+              currentParticipants: 0,
+              organizer: 'KLPGA',
+              contactInfo: 'klpga@klpga.co.kr',
+              isActive: true,
+              isRegistrationOpen: true,
+              requirements: ['KLPGA 정회원'],
+              rules: ['KLPGA 규정 준수'],
+              createdAt: new Date(),
+              updatedAt: new Date()
+            };
+            
+            tournaments.push(tournament);
+          }
+        } catch (error) {
+          console.error('KLPGA HTML 파싱 오류:', error);
+        }
+      });
+      
+      console.log(`KLPGA HTML 파싱 완료: ${tournaments.length}개`);
+      return tournaments;
+    } catch (error) {
+      console.error('KLPGA HTML 파싱 실패:', error);
+      return [];
+    }
+  }
+
+  // HTML에서 KPGA 대회 정보 파싱
+  private parseKPGAFromHTML(html: string): Tournament[] {
+    const $ = cheerio.load(html);
+    const tournaments: Tournament[] = [];
+    
+    try {
+      // KPGA 사이트 구조에 맞춰 파싱
+      $('.tour-item, .schedule-item, tr').each((index, element) => {
+        try {
+          const $el = $(element);
+          const name = $el.find('.tour-name, .event-name, td:first-child').text().trim();
+          
+          if (name && name.length > 0) {
+            const tournament: Tournament = {
+              id: `kpga_${Date.now()}_${index}`,
+              name: name,
+              description: $el.find('.tour-desc, .event-desc').text().trim() || name,
+              location: $el.find('.tour-location, .event-location').text().trim() || '장소 미정',
+              course: $el.find('.tour-course, .event-course').text().trim() || '코스 미정',
+              startDate: new Date(),
+              endDate: new Date(),
+              registrationStartDate: new Date(),
+              registrationEndDate: new Date(),
+              type: 'kpga',
+              category: 'men',
+              entryFee: 0,
+              prizePool: 200000000,
+              maxParticipants: 120,
+              currentParticipants: 0,
+              organizer: 'KPGA',
+              contactInfo: 'kpga@kpga.co.kr',
+              isActive: true,
+              isRegistrationOpen: true,
+              requirements: ['KPGA 정회원'],
+              rules: ['KPGA 규정 준수'],
+              createdAt: new Date(),
+              updatedAt: new Date()
+            };
+            
+            tournaments.push(tournament);
+          }
+        } catch (error) {
+          console.error('KPGA HTML 파싱 오류:', error);
+        }
+      });
+      
+      console.log(`KPGA HTML 파싱 완료: ${tournaments.length}개`);
+      return tournaments;
+    } catch (error) {
+      console.error('KPGA HTML 파싱 실패:', error);
+      return [];
+    }
   }
 
   private getMockKPGAEvents(): Tournament[] {

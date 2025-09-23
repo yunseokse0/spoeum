@@ -243,7 +243,8 @@ export class KLPGAscraper extends BaseScraper {
   // 정적 HTML 크롤링 방식 (백업용)
   async searchPlayerStatic(memberId: string): Promise<PlayerInfo | null> {
     try {
-      const $ = await this.scrapeWithAxios(`${this.searchUrl}?member_id=${memberId}`);
+      const response = await this.scrapeWithAxios(`${this.searchUrl}?member_id=${memberId}`);
+      const $ = response.$;
       
       // 정적 페이지에서 선수 정보 추출
       const name = $('.player-name').text().trim();
