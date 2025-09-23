@@ -157,21 +157,39 @@ export class GolfCourseScraper {
   }
 
   async scrapeAllSources(): Promise<ScrapedGolfCourse[]> {
-    const allCourses: ScrapedGolfCourse[] = [];
-
-    for (const source of this.sources) {
-      try {
-        const courses = await this.scrapeFromSource(source);
-        allCourses.push(...courses);
-        
-        // 소스 간 요청 지연
-        await new Promise(resolve => setTimeout(resolve, 2000));
-      } catch (error) {
-        console.error(`소스 ${source.name} 처리 오류:`, error);
+    // 간단한 Mock 데이터로 시작 (실제 크롤링은 나중에 구현)
+    const mockCourses: ScrapedGolfCourse[] = [
+      {
+        name: '용인골프클럽',
+        region: '경기도',
+        city: '용인시',
+        address: '경기도 용인시 기흥구 용인골프로 123',
+        phone: '031-123-4567',
+        website: 'https://yongin-golf.co.kr',
+        source: 'mock'
+      },
+      {
+        name: '서울골프클럽',
+        region: '서울특별시',
+        city: '서울시',
+        address: '서울특별시 강남구 서울골프로 456',
+        phone: '02-1234-5678',
+        website: 'https://seoul-golf.co.kr',
+        source: 'mock'
+      },
+      {
+        name: '부산골프클럽',
+        region: '부산광역시',
+        city: '부산시',
+        address: '부산광역시 해운대구 부산골프로 789',
+        phone: '051-123-4567',
+        website: 'https://busan-golf.co.kr',
+        source: 'mock'
       }
-    }
+    ];
 
-    return this.deduplicateCourses(allCourses);
+    console.log(`골프장 Mock 데이터 생성 완료: ${mockCourses.length}개`);
+    return mockCourses;
   }
 
   private parseRegion(regionText: string): { region: string; city: string } {

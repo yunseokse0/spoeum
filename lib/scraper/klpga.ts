@@ -9,46 +9,44 @@ export class KLPGAscraper extends BaseScraper {
     try {
       console.log(`KLPGA 선수 검색 시작: ${memberId}`);
       
-      // 실제 KLPGA 사이트 구조에 맞춰 수정
-      const searchPage = await this.scrapeWithPuppeteer(this.searchUrl, {
-        waitForSelector: 'form'
-      });
+      // 간단한 Mock 데이터로 시작 (실제 크롤링은 나중에 구현)
+      const mockPlayer: PlayerInfo = {
+        name: `KLPGA 선수 ${memberId}`,
+        association: 'KLPGA' as GolfAssociation,
+        memberId: memberId,
+        birth: '1990-01-01',
+        currentRanking: Math.floor(Math.random() * 100) + 1,
+        totalPrize: Math.floor(Math.random() * 100000000) + 10000000,
+        isActive: true,
+        career: [
+          {
+            year: 2024,
+            title: '2024 KLPGA 챔피언십',
+            result: '우승',
+            prize: 50000000,
+            ranking: 1
+          },
+          {
+            year: 2024,
+            title: '2024 KLPGA 투어',
+            result: '준우승',
+            prize: 30000000,
+            ranking: 2
+          }
+        ],
+        ranking: {
+          current: Math.floor(Math.random() * 100) + 1,
+          best: Math.floor(Math.random() * 50) + 1,
+          previous: Math.floor(Math.random() * 100) + 1
+        }
+      };
 
-      // 검색 폼에 회원번호 입력 (실제 KLPGA 사이트의 input name 확인 필요)
-      await searchPage.type('input[name="member_id"], input[name="memberId"], #member_id', memberId);
-      await searchPage.click('button[type="submit"], input[type="submit"], .search-btn');
-      
-      // 검색 결과 대기
-      await this.delay(3000);
-      
-      // 검색 결과 확인 (실제 KLPGA 사이트의 결과 구조에 맞춰 수정)
-      const searchResults = await searchPage.$$('table tr, .player-list .player-item, .search-result');
-      
-      if (searchResults.length <= 1) { // 헤더만 있는 경우
-        await searchPage.close();
-        console.log('KLPGA: 검색 결과 없음');
-        return null;
-      }
-
-      // 첫 번째 결과에서 선수 링크 찾기
-      let playerLink: string;
-      try {
-        playerLink = await searchResults[1].$eval('a', el => el.href);
-      } catch {
-        // 링크가 없는 경우 직접 상세 페이지 URL 구성
-        const playerName = await searchResults[1].$eval('td:first-child, .player-name', el => el.textContent?.trim() || '');
-        playerLink = `${this.baseUrl}/web/player/player_detail.asp?member_id=${memberId}`;
-      }
-      
-      await searchPage.close();
-
-      // 2단계: 선수 상세 페이지 스크래핑
-      return await this.scrapePlayerDetail(playerLink, memberId);
+      console.log(`KLPGA Mock 선수 데이터 생성 완료: ${mockPlayer.name}`);
+      return mockPlayer;
       
     } catch (error) {
       console.error('KLPGA 선수 검색 오류:', error);
-      // 실패 시 Mock 데이터 반환
-      return this.getMockPlayerData(memberId);
+      return null;
     }
   }
 

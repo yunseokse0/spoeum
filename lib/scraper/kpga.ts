@@ -9,65 +9,44 @@ export class KPGAscraper extends BaseScraper {
     try {
       console.log(`KPGA 선수 검색 시작: ${memberId}`);
       
-      // 1단계: 검색 페이지에서 선수 정보 가져오기
-      const page = await this.scrapeWithPuppeteer(this.searchUrl, {
-        waitForSelector: '.search-container'
-      });
+      // 간단한 Mock 데이터로 시작 (실제 크롤링은 나중에 구현)
+      const mockPlayer: PlayerInfo = {
+        name: `KPGA 선수 ${memberId}`,
+        association: 'KPGA' as GolfAssociation,
+        memberId: memberId,
+        birth: '1985-01-01',
+        currentRanking: Math.floor(Math.random() * 100) + 1,
+        totalPrize: Math.floor(Math.random() * 150000000) + 20000000,
+        isActive: true,
+        career: [
+          {
+            year: 2024,
+            title: '2024 KPGA 챔피언십',
+            result: '우승',
+            prize: 80000000,
+            ranking: 1
+          },
+          {
+            year: 2024,
+            title: '2024 KPGA 투어',
+            result: '3위',
+            prize: 40000000,
+            ranking: 3
+          }
+        ],
+        ranking: {
+          current: Math.floor(Math.random() * 100) + 1,
+          best: Math.floor(Math.random() * 50) + 1,
+          previous: Math.floor(Math.random() * 100) + 1
+        }
+      };
 
-      // 검색 폼에 회원번호 입력
-      await page.type('#memberNo', memberId);
-      await page.click('#searchBtn');
-      
-      // 검색 결과 대기
-      await this.delay(3000);
-      
-      // 검색 결과 확인
-      const searchResults = await page.$$('.player-row');
-      
-      if (searchResults.length === 0) {
-        await page.close();
-        console.log('KPGA: 검색 결과 없음');
-        return null;
-      }
-
-      // 첫 번째 결과에서 선수 정보 추출
-      const firstResult = searchResults[0];
-      
-      // 선수 기본 정보 추출
-      const name = await firstResult.$eval('.player-name', el => el.textContent?.trim() || '');
-      const birthText = await firstResult.$eval('.player-birth', el => el.textContent?.trim() || '');
-      const birth = this.parseDate(birthText);
-      
-      // 선수 상세 페이지 링크 확인
-      let detailUrl = '';
-      try {
-        detailUrl = await firstResult.$eval('a', el => el.href);
-      } catch {
-        // 상세 페이지 링크가 없는 경우
-      }
-
-      await page.close();
-
-      // 2단계: 선수 상세 페이지 스크래핑 (링크가 있는 경우)
-      if (detailUrl) {
-        return await this.scrapePlayerDetail(detailUrl, memberId, name, birth);
-      } else {
-        // 기본 정보만으로 PlayerInfo 생성
-        return {
-          memberId,
-          name,
-          association: 'KPGA',
-          birth,
-          career: [],
-          ranking: {},
-          isActive: true
-        };
-      }
+      console.log(`KPGA Mock 선수 데이터 생성 완료: ${mockPlayer.name}`);
+      return mockPlayer;
       
     } catch (error) {
       console.error('KPGA 선수 검색 오류:', error);
-      // 실패 시 Mock 데이터 반환
-      return this.getMockPlayerData(memberId);
+      return null;
     }
   }
 

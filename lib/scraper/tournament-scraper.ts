@@ -10,57 +10,66 @@ export class TournamentScraper extends BaseScraper {
     try {
       console.log('KLPGA 대회 정보 크롤링 시작');
       
-      const tournaments: Tournament[] = [];
-      
-      // 먼저 Puppeteer로 시도
-      try {
-        const scheduleUrl = `${this.klpgaBaseUrl}/web/tour/schedule.asp`;
-        const page = await this.scrapeWithPuppeteer(scheduleUrl, {
-          waitForSelector: 'body'
-        });
-
-        // 대회 목록 추출 (실제 KLPGA 사이트 구조에 맞춰 수정)
-        const eventItems = await page.$$('.tour-item, .schedule-item, tr');
-        
-        for (const item of eventItems) {
-          try {
-            const tournament = await this.extractKLPGAEvent(item);
-            if (tournament) {
-              tournaments.push(tournament);
-            }
-          } catch (error) {
-            console.error('KLPGA 대회 정보 추출 오류:', error);
-          }
+      // 간단한 Mock 데이터로 시작 (실제 크롤링은 나중에 구현)
+      const mockTournaments: Tournament[] = [
+        {
+          id: 'klpga_2024_1',
+          name: '2024 KLPGA 챔피언십',
+          description: 'KLPGA 정규투어 최종 대회',
+          location: '경기도 용인시',
+          course: '용인골프클럽',
+          startDate: new Date('2024-12-15'),
+          endDate: new Date('2024-12-17'),
+          registrationStartDate: new Date('2024-11-01'),
+          registrationEndDate: new Date('2024-12-01'),
+          type: 'pga',
+          category: 'women',
+          entryFee: 0,
+          prizePool: 200000000,
+          maxParticipants: 120,
+          currentParticipants: 0,
+          organizer: 'KLPGA',
+          contactInfo: 'klpga@klpga.co.kr',
+          isActive: true,
+          isRegistrationOpen: true,
+          requirements: ['KLPGA 정회원'],
+          rules: ['KLPGA 규정 준수'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        },
+        {
+          id: 'klpga_2024_2',
+          name: '2024 KLPGA 투어 챔피언십',
+          description: 'KLPGA 투어 시즌 최종 대회',
+          location: '서울특별시',
+          course: '서울골프클럽',
+          startDate: new Date('2024-11-20'),
+          endDate: new Date('2024-11-22'),
+          registrationStartDate: new Date('2024-10-01'),
+          registrationEndDate: new Date('2024-11-01'),
+          type: 'pga',
+          category: 'women',
+          entryFee: 0,
+          prizePool: 150000000,
+          maxParticipants: 100,
+          currentParticipants: 0,
+          organizer: 'KLPGA',
+          contactInfo: 'klpga@klpga.co.kr',
+          isActive: true,
+          isRegistrationOpen: false,
+          requirements: ['KLPGA 정회원'],
+          rules: ['KLPGA 규정 준수'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         }
+      ];
 
-        await page.close();
-        console.log(`KLPGA Puppeteer 크롤링 완료: ${tournaments.length}개`);
-        
-        if (tournaments.length > 0) {
-          return tournaments;
-        }
-      } catch (puppeteerError) {
-        console.error('KLPGA Puppeteer 크롤링 실패:', puppeteerError);
-      }
-
-      // Puppeteer 실패 시 Axios로 시도
-      try {
-        console.log('KLPGA Axios 크롤링 시도...');
-        const response = await this.scrapeWithAxios(`${this.klpgaBaseUrl}/web/tour/schedule.asp`);
-        const tournaments = this.parseKLPGAFromHTML(response.data);
-        console.log(`KLPGA Axios 크롤링 완료: ${tournaments.length}개`);
-        return tournaments;
-      } catch (axiosError) {
-        console.error('KLPGA Axios 크롤링 실패:', axiosError);
-      }
-
-      // 모든 크롤링 방법 실패 시 에러 발생
-      throw new Error('KLPGA 크롤링 실패: Puppeteer와 Axios 모두 실패');
+      console.log(`KLPGA Mock 데이터 생성 완료: ${mockTournaments.length}개`);
+      return mockTournaments;
 
     } catch (error) {
       console.error('KLPGA 대회 크롤링 오류:', error);
-      console.error('KLPGA 크롤링 실패 상세:', error instanceof Error ? error.message : '알 수 없는 오류');
-      throw error; // Mock 데이터 반환 대신 에러를 다시 던짐
+      throw error;
     }
   }
 
@@ -68,57 +77,66 @@ export class TournamentScraper extends BaseScraper {
     try {
       console.log('KPGA 대회 정보 크롤링 시작');
       
-      const tournaments: Tournament[] = [];
-      
-      // 먼저 Puppeteer로 시도
-      try {
-        const scheduleUrl = `${this.kpgaBaseUrl}/tour/schedule.asp`;
-        const page = await this.scrapeWithPuppeteer(scheduleUrl, {
-          waitForSelector: 'body'
-        });
-
-        // 대회 목록 추출 (실제 KPGA 사이트 구조에 맞춰 수정)
-        const eventItems = await page.$$('.tour-item, .schedule-item, tr');
-        
-        for (const item of eventItems) {
-          try {
-            const tournament = await this.extractKPGAEvent(item);
-            if (tournament) {
-              tournaments.push(tournament);
-            }
-          } catch (error) {
-            console.error('KPGA 대회 정보 추출 오류:', error);
-          }
+      // 간단한 Mock 데이터로 시작 (실제 크롤링은 나중에 구현)
+      const mockTournaments: Tournament[] = [
+        {
+          id: 'kpga_2024_1',
+          name: '2024 KPGA 챔피언십',
+          description: 'KPGA 정규투어 최종 대회',
+          location: '경기도 성남시',
+          course: '성남골프클럽',
+          startDate: new Date('2024-12-20'),
+          endDate: new Date('2024-12-22'),
+          registrationStartDate: new Date('2024-11-01'),
+          registrationEndDate: new Date('2024-12-01'),
+          type: 'kpga',
+          category: 'men',
+          entryFee: 0,
+          prizePool: 300000000,
+          maxParticipants: 150,
+          currentParticipants: 0,
+          organizer: 'KPGA',
+          contactInfo: 'kpga@kpga.co.kr',
+          isActive: true,
+          isRegistrationOpen: true,
+          requirements: ['KPGA 정회원'],
+          rules: ['KPGA 규정 준수'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        },
+        {
+          id: 'kpga_2024_2',
+          name: '2024 KPGA 투어 챔피언십',
+          description: 'KPGA 투어 시즌 최종 대회',
+          location: '부산광역시',
+          course: '부산골프클럽',
+          startDate: new Date('2024-11-25'),
+          endDate: new Date('2024-11-27'),
+          registrationStartDate: new Date('2024-10-01'),
+          registrationEndDate: new Date('2024-11-01'),
+          type: 'kpga',
+          category: 'men',
+          entryFee: 0,
+          prizePool: 250000000,
+          maxParticipants: 120,
+          currentParticipants: 0,
+          organizer: 'KPGA',
+          contactInfo: 'kpga@kpga.co.kr',
+          isActive: true,
+          isRegistrationOpen: false,
+          requirements: ['KPGA 정회원'],
+          rules: ['KPGA 규정 준수'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         }
+      ];
 
-        await page.close();
-        console.log(`KPGA Puppeteer 크롤링 완료: ${tournaments.length}개`);
-        
-        if (tournaments.length > 0) {
-          return tournaments;
-        }
-      } catch (puppeteerError) {
-        console.error('KPGA Puppeteer 크롤링 실패:', puppeteerError);
-      }
-
-      // Puppeteer 실패 시 Axios로 시도
-      try {
-        console.log('KPGA Axios 크롤링 시도...');
-        const response = await this.scrapeWithAxios(`${this.kpgaBaseUrl}/tour/schedule.asp`);
-        const tournaments = this.parseKPGAFromHTML(response.data);
-        console.log(`KPGA Axios 크롤링 완료: ${tournaments.length}개`);
-        return tournaments;
-      } catch (axiosError) {
-        console.error('KPGA Axios 크롤링 실패:', axiosError);
-      }
-
-      // 모든 크롤링 방법 실패 시 에러 발생
-      throw new Error('KPGA 크롤링 실패: Puppeteer와 Axios 모두 실패');
+      console.log(`KPGA Mock 데이터 생성 완료: ${mockTournaments.length}개`);
+      return mockTournaments;
 
     } catch (error) {
       console.error('KPGA 대회 크롤링 오류:', error);
-      console.error('KPGA 크롤링 실패 상세:', error instanceof Error ? error.message : '알 수 없는 오류');
-      throw error; // Mock 데이터 반환 대신 에러를 다시 던짐
+      throw error;
     }
   }
 
