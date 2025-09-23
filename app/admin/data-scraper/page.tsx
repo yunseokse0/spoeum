@@ -168,16 +168,16 @@ export default function DataScraperPage() {
           </div>
           <div className="space-y-2">
             <div className="flex justify-between">
-              <span className="text-sm text-gray-600">KLPGA:</span>
-              <span className="font-medium">{scrapedData.tournaments.klpga?.length || 0}개</span>
+              <span className="text-sm text-gray-600 dark:text-gray-400">KLPGA:</span>
+              <span className="font-medium text-gray-900 dark:text-gray-100">{scrapedData.tournaments.klpga?.length || 0}개</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-sm text-gray-600">KPGA:</span>
-              <span className="font-medium">{scrapedData.tournaments.kpga?.length || 0}개</span>
+              <span className="text-sm text-gray-600 dark:text-gray-400">KPGA:</span>
+              <span className="font-medium text-gray-900 dark:text-gray-100">{scrapedData.tournaments.kpga?.length || 0}개</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-sm text-gray-600">총 대회:</span>
-              <span className="font-medium">{scrapedData.tournaments.total || 0}개</span>
+              <span className="text-sm text-gray-600 dark:text-gray-400">총 대회:</span>
+              <span className="font-medium text-gray-900 dark:text-gray-100">{scrapedData.tournaments.total || 0}개</span>
             </div>
           </div>
           <Button 
@@ -198,16 +198,16 @@ export default function DataScraperPage() {
           </div>
           <div className="space-y-2">
             <div className="flex justify-between">
-              <span className="text-sm text-gray-600">총 골프장:</span>
-              <span className="font-medium">{scrapedData.golfCourses.total || 0}개</span>
+              <span className="text-sm text-gray-600 dark:text-gray-400">총 골프장:</span>
+              <span className="font-medium text-gray-900 dark:text-gray-100">{scrapedData.golfCourses.total || 0}개</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-sm text-gray-600">지역 수:</span>
-              <span className="font-medium">{Object.keys(scrapedData.golfCourses.regions || {}).length}개</span>
+              <span className="text-sm text-gray-600 dark:text-gray-400">지역 수:</span>
+              <span className="font-medium text-gray-900 dark:text-gray-100">{Object.keys(scrapedData.golfCourses.regions || {}).length}개</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-sm text-gray-600">소스 수:</span>
-              <span className="font-medium">{Object.keys(scrapedData.golfCourses.sources || {}).length}개</span>
+              <span className="text-sm text-gray-600 dark:text-gray-400">소스 수:</span>
+              <span className="font-medium text-gray-900 dark:text-gray-100">{Object.keys(scrapedData.golfCourses.sources || {}).length}개</span>
             </div>
           </div>
           <Button 
@@ -228,16 +228,16 @@ export default function DataScraperPage() {
           </div>
           <div className="space-y-2">
             <div className="flex justify-between">
-              <span className="text-sm text-gray-600">총 선수:</span>
-              <span className="font-medium">{scrapedData.players.total || 0}개</span>
+              <span className="text-sm text-gray-600 dark:text-gray-400">총 선수:</span>
+              <span className="font-medium text-gray-900 dark:text-gray-100">{scrapedData.players.total || 0}개</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-sm text-gray-600">협회 수:</span>
-              <span className="font-medium">{scrapedData.players.associations?.length || 0}개</span>
+              <span className="text-sm text-gray-600 dark:text-gray-400">협회 수:</span>
+              <span className="font-medium text-gray-900 dark:text-gray-100">{scrapedData.players.associations?.length || 0}개</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-sm text-gray-600">오류:</span>
-              <span className="font-medium text-red-600">{scrapedData.players.errors?.length || 0}개</span>
+              <span className="text-sm text-gray-600 dark:text-gray-400">오류:</span>
+              <span className="font-medium text-red-600 dark:text-red-400">{scrapedData.players.errors?.length || 0}개</span>
             </div>
           </div>
           <Button 
@@ -258,30 +258,30 @@ export default function DataScraperPage() {
         <div className="overflow-x-auto">
           <Table>
             <thead>
-              <tr>
-                <th className="px-4 py-2 text-left">이름</th>
-                <th className="px-4 py-2 text-left">협회</th>
-                <th className="px-4 py-2 text-left">카테고리</th>
-                <th className="px-4 py-2 text-left">시작일</th>
-                <th className="px-4 py-2 text-left">종료일</th>
-                <th className="px-4 py-2 text-left">장소</th>
-                <th className="px-4 py-2 text-left">상금</th>
+              <tr className="bg-gray-50 dark:bg-gray-800">
+                <th className="px-4 py-2 text-left text-gray-900 dark:text-gray-100">이름</th>
+                <th className="px-4 py-2 text-left text-gray-900 dark:text-gray-100">협회</th>
+                <th className="px-4 py-2 text-left text-gray-900 dark:text-gray-100">카테고리</th>
+                <th className="px-4 py-2 text-left text-gray-900 dark:text-gray-100">시작일</th>
+                <th className="px-4 py-2 text-left text-gray-900 dark:text-gray-100">종료일</th>
+                <th className="px-4 py-2 text-left text-gray-900 dark:text-gray-100">장소</th>
+                <th className="px-4 py-2 text-left text-gray-900 dark:text-gray-100">상금</th>
               </tr>
             </thead>
             <tbody>
               {tournaments.map((tournament: any, index: number) => (
-                <tr key={index} className="border-b hover:bg-gray-50">
-                  <td className="px-4 py-2">{tournament?.name || '-'}</td>
-                  <td className="px-4 py-2">{tournament?.organizer || '-'}</td>
-                  <td className="px-4 py-2">{tournament?.category || '-'}</td>
-                  <td className="px-4 py-2">
+                <tr key={index} className="border-b hover:bg-gray-50 dark:hover:bg-gray-800">
+                  <td className="px-4 py-2 text-gray-900 dark:text-gray-100">{tournament?.name || '-'}</td>
+                  <td className="px-4 py-2 text-gray-900 dark:text-gray-100">{tournament?.organizer || '-'}</td>
+                  <td className="px-4 py-2 text-gray-900 dark:text-gray-100">{tournament?.category || '-'}</td>
+                  <td className="px-4 py-2 text-gray-900 dark:text-gray-100">
                     {tournament?.startDate ? new Date(tournament.startDate).toLocaleDateString() : '-'}
                   </td>
-                  <td className="px-4 py-2">
+                  <td className="px-4 py-2 text-gray-900 dark:text-gray-100">
                     {tournament?.endDate ? new Date(tournament.endDate).toLocaleDateString() : '-'}
                   </td>
-                  <td className="px-4 py-2">{tournament?.location || '-'}</td>
-                  <td className="px-4 py-2">{`${(tournament?.prizePool || 0).toLocaleString()}원`}</td>
+                  <td className="px-4 py-2 text-gray-900 dark:text-gray-100">{tournament?.location || '-'}</td>
+                  <td className="px-4 py-2 text-gray-900 dark:text-gray-100">{`${(tournament?.prizePool || 0).toLocaleString()}원`}</td>
                 </tr>
               ))}
             </tbody>
@@ -296,24 +296,24 @@ export default function DataScraperPage() {
         <div className="overflow-x-auto">
           <Table>
             <thead>
-              <tr>
-                <th className="px-4 py-2 text-left">이름</th>
-                <th className="px-4 py-2 text-left">지역</th>
-                <th className="px-4 py-2 text-left">도시</th>
-                <th className="px-4 py-2 text-left">주소</th>
-                <th className="px-4 py-2 text-left">전화번호</th>
-                <th className="px-4 py-2 text-left">소스</th>
+              <tr className="bg-gray-50 dark:bg-gray-800">
+                <th className="px-4 py-2 text-left text-gray-900 dark:text-gray-100">이름</th>
+                <th className="px-4 py-2 text-left text-gray-900 dark:text-gray-100">지역</th>
+                <th className="px-4 py-2 text-left text-gray-900 dark:text-gray-100">도시</th>
+                <th className="px-4 py-2 text-left text-gray-900 dark:text-gray-100">주소</th>
+                <th className="px-4 py-2 text-left text-gray-900 dark:text-gray-100">전화번호</th>
+                <th className="px-4 py-2 text-left text-gray-900 dark:text-gray-100">소스</th>
               </tr>
             </thead>
             <tbody>
               {courses.map((course: any, index: number) => (
-                <tr key={index} className="border-b hover:bg-gray-50">
-                  <td className="px-4 py-2">{course?.name || '-'}</td>
-                  <td className="px-4 py-2">{course?.region || '-'}</td>
-                  <td className="px-4 py-2">{course?.city || '-'}</td>
-                  <td className="px-4 py-2">{course?.address || '-'}</td>
-                  <td className="px-4 py-2">{course?.phone || '-'}</td>
-                  <td className="px-4 py-2">{course?.source || '-'}</td>
+                <tr key={index} className="border-b hover:bg-gray-50 dark:hover:bg-gray-800">
+                  <td className="px-4 py-2 text-gray-900 dark:text-gray-100">{course?.name || '-'}</td>
+                  <td className="px-4 py-2 text-gray-900 dark:text-gray-100">{course?.region || '-'}</td>
+                  <td className="px-4 py-2 text-gray-900 dark:text-gray-100">{course?.city || '-'}</td>
+                  <td className="px-4 py-2 text-gray-900 dark:text-gray-100">{course?.address || '-'}</td>
+                  <td className="px-4 py-2 text-gray-900 dark:text-gray-100">{course?.phone || '-'}</td>
+                  <td className="px-4 py-2 text-gray-900 dark:text-gray-100">{course?.source || '-'}</td>
                 </tr>
               ))}
             </tbody>
@@ -328,24 +328,24 @@ export default function DataScraperPage() {
         <div className="overflow-x-auto">
           <Table>
             <thead>
-              <tr>
-                <th className="px-4 py-2 text-left">이름</th>
-                <th className="px-4 py-2 text-left">협회</th>
-                <th className="px-4 py-2 text-left">생년월일</th>
-                <th className="px-4 py-2 text-left">현재 랭킹</th>
-                <th className="px-4 py-2 text-left">총 상금</th>
-                <th className="px-4 py-2 text-left">활성 상태</th>
+              <tr className="bg-gray-50 dark:bg-gray-800">
+                <th className="px-4 py-2 text-left text-gray-900 dark:text-gray-100">이름</th>
+                <th className="px-4 py-2 text-left text-gray-900 dark:text-gray-100">협회</th>
+                <th className="px-4 py-2 text-left text-gray-900 dark:text-gray-100">생년월일</th>
+                <th className="px-4 py-2 text-left text-gray-900 dark:text-gray-100">현재 랭킹</th>
+                <th className="px-4 py-2 text-left text-gray-900 dark:text-gray-100">총 상금</th>
+                <th className="px-4 py-2 text-left text-gray-900 dark:text-gray-100">활성 상태</th>
               </tr>
             </thead>
             <tbody>
               {players.map((player: any, index: number) => (
-                <tr key={index} className="border-b hover:bg-gray-50">
-                  <td className="px-4 py-2">{player?.name || '-'}</td>
-                  <td className="px-4 py-2">{player?.association || '-'}</td>
-                  <td className="px-4 py-2">{player?.birth || '-'}</td>
-                  <td className="px-4 py-2">{player?.currentRanking || '-'}</td>
-                  <td className="px-4 py-2">{`${(player?.totalPrize || 0).toLocaleString()}원`}</td>
-                  <td className="px-4 py-2">{player?.isActive ? '활성' : '비활성'}</td>
+                <tr key={index} className="border-b hover:bg-gray-50 dark:hover:bg-gray-800">
+                  <td className="px-4 py-2 text-gray-900 dark:text-gray-100">{player?.name || '-'}</td>
+                  <td className="px-4 py-2 text-gray-900 dark:text-gray-100">{player?.association || '-'}</td>
+                  <td className="px-4 py-2 text-gray-900 dark:text-gray-100">{player?.birth || '-'}</td>
+                  <td className="px-4 py-2 text-gray-900 dark:text-gray-100">{player?.currentRanking || '-'}</td>
+                  <td className="px-4 py-2 text-gray-900 dark:text-gray-100">{`${(player?.totalPrize || 0).toLocaleString()}원`}</td>
+                  <td className="px-4 py-2 text-gray-900 dark:text-gray-100">{player?.isActive ? '활성' : '비활성'}</td>
                 </tr>
               ))}
             </tbody>
@@ -446,7 +446,7 @@ export default function DataScraperPage() {
       {/* 페이지네이션 */}
       {selectedView === 'table' && (
         <div className="flex justify-between items-center">
-          <div className="text-sm text-gray-600">
+          <div className="text-sm text-gray-600 dark:text-gray-400">
             {pagination.offset + 1} - {Math.min(pagination.offset + pagination.limit, pagination.total)} / {pagination.total}
           </div>
           <div className="flex gap-2">
@@ -478,7 +478,7 @@ export default function DataScraperPage() {
       >
         {modalData && (
           <div className="max-h-96 overflow-y-auto">
-            <pre className="text-xs bg-gray-100 p-4 rounded">
+            <pre className="text-xs bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-4 rounded">
               {JSON.stringify(modalData, null, 2)}
             </pre>
           </div>
