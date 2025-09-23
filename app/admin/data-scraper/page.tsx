@@ -77,7 +77,14 @@ export default function DataScraperPage() {
       if (result.success) {
         setScrapedData(result.data);
         setScrapingStats(result.stats);
-        alert(`${selectedDataType} 데이터 크롤링이 완료되었습니다!`);
+        
+        // 실제 데이터인지 Mock 데이터인지 확인
+        const hasRealData = result.data && Object.values(result.data).some((data: any) => data && !data.isMock);
+        if (hasRealData) {
+          alert(`${selectedDataType} 실제 데이터 크롤링이 완료되었습니다!`);
+        } else {
+          alert(`${selectedDataType} Mock 데이터를 사용합니다. (실제 크롤링 실패)`);
+        }
       } else {
         alert(`크롤링 실패: ${result.error}`);
       }
@@ -102,6 +109,14 @@ export default function DataScraperPage() {
         setScrapedData(result.data || {}); // Ensure scrapedData is always an object
         if (result.pagination) {
           setPagination(result.pagination);
+        }
+        
+        // 실제 데이터인지 Mock 데이터인지 확인
+        const hasRealData = result.data && Object.values(result.data).some((data: any) => data && !data.isMock);
+        if (hasRealData) {
+          console.log('실제 데이터 조회 성공');
+        } else {
+          console.log('Mock 데이터 사용 중 (실제 크롤링 실패)');
         }
       } else {
         console.error('데이터 조회 실패:', result.error);

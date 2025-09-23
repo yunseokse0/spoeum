@@ -36,6 +36,7 @@ export async function GET(request: NextRequest) {
         const tournamentScraper = new TournamentScraper();
         
         try {
+          console.log('실제 대회 정보 크롤링 시도 중...');
           const [klpgaEvents, kpgaEvents] = await Promise.all([
             tournamentScraper.scrapeKLPGAEvents(),
             tournamentScraper.scrapeKPGAEvents()
@@ -43,6 +44,8 @@ export async function GET(request: NextRequest) {
           
           const tournaments = [...klpgaEvents, ...kpgaEvents];
           await tournamentScraper.closeBrowser();
+          
+          console.log(`실제 크롤링 성공: ${tournaments.length}개 대회`);
           
           // 페이지네이션 적용
           const paginatedTournaments = tournaments.slice(offset, offset + limit);
@@ -67,7 +70,18 @@ export async function GET(request: NextRequest) {
         } catch (error) {
           console.error('실제 대회 정보 크롤링 오류:', error);
           console.error('에러 상세:', error instanceof Error ? error.message : '알 수 없는 오류');
+          console.error('에러 스택:', error instanceof Error ? error.stack : '스택 없음');
           
+          // forceRealData가 true일 때는 Mock 데이터 사용하지 않음
+          if (forceRealData) {
+            console.log('forceRealData=true이므로 Mock 데이터 사용하지 않음');
+            results.success = false;
+            results.error = `실제 대회 정보 크롤링에 실패했습니다: ${error instanceof Error ? error.message : '알 수 없는 오류'}`;
+            await tournamentScraper.closeBrowser();
+            return NextResponse.json(results, { status: 500 });
+          }
+          
+          console.log('Mock 데이터로 fallback');
           // 실제 크롤링 실패 시 Mock 데이터 사용
           const mockKLPGA = (tournamentScraper as any).getMockKLPGAEvents();
           const mockKPGA = (tournamentScraper as any).getMockKPGAEvents();

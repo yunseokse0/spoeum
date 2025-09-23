@@ -12,6 +12,7 @@ export async function POST(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const dataType = searchParams.get('type') || 'all'; // 'all', 'tournaments', 'golf-courses', 'players'
     const includeMock = searchParams.get('mock') === 'true';
+    const forceRealData = searchParams.get('mock') === 'false';
 
     console.log(`전체 데이터 크롤링 시작: ${dataType}`);
 
@@ -75,26 +76,34 @@ export async function POST(request: NextRequest) {
           console.log(`대회 정보 Mock 데이터 사용: ${mockAll.length}개`);
         }
         
-      } catch (error) {
-        console.error('대회 정보 크롤링 오류:', error);
-        results.stats.errors.push({
-          type: 'tournaments',
-          error: error instanceof Error ? error.message : '대회 정보 크롤링 실패'
-        });
-        
-        // 오류 시에도 Mock 데이터 반환
-        const tournamentScraper = new TournamentScraper();
-        results.data.tournaments = {
-          klpga: (tournamentScraper as any).getMockKLPGAEvents(),
-          kpga: (tournamentScraper as any).getMockKPGAEvents(),
-          all: [
-            ...(tournamentScraper as any).getMockKLPGAEvents(),
-            ...(tournamentScraper as any).getMockKPGAEvents()
-          ],
-          count: 4,
-          isMock: true
-        };
-      }
+        } catch (error) {
+          console.error('대회 정보 크롤링 오류:', error);
+          results.stats.errors.push({
+            type: 'tournaments',
+            error: error instanceof Error ? error.message : '대회 정보 크롤링 실패'
+          });
+          
+          // forceRealData가 true일 때는 Mock 데이터 사용하지 않음
+          if (forceRealData) {
+            console.log('forceRealData=true이므로 Mock 데이터 사용하지 않음');
+            results.success = false;
+            results.error = `실제 대회 정보 크롤링에 실패했습니다: ${error instanceof Error ? error.message : '알 수 없는 오류'}`;
+            return NextResponse.json(results, { status: 500 });
+          }
+          
+          // 오류 시에도 Mock 데이터 반환
+          const tournamentScraper = new TournamentScraper();
+          results.data.tournaments = {
+            klpga: (tournamentScraper as any).getMockKLPGAEvents(),
+            kpga: (tournamentScraper as any).getMockKPGAEvents(),
+            all: [
+              ...(tournamentScraper as any).getMockKLPGAEvents(),
+              ...(tournamentScraper as any).getMockKPGAEvents()
+            ],
+            count: 4,
+            isMock: true
+          };
+        }
     }
 
     // 2. 골프장 정보 크롤링
