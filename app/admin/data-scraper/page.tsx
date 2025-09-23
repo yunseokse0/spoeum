@@ -52,7 +52,8 @@ export default function DataScraperPage() {
   const [modalData, setModalData] = useState<any>(null);
   const [pagination, setPagination] = useState({
     limit: 10,
-    offset: 0
+    offset: 0,
+    total: 0
   });
 
   // 전체 데이터 크롤링 실행
@@ -88,7 +89,9 @@ export default function DataScraperPage() {
       
       if (result.success) {
         setScrapedData(result.data);
-        setPagination(result.pagination);
+        if (result.pagination) {
+          setPagination(result.pagination);
+        }
       } else {
         alert(`데이터 조회 실패: ${result.error}`);
       }
@@ -217,50 +220,96 @@ export default function DataScraperPage() {
   const renderTable = () => {
     if (selectedDataType === 'tournaments' && scrapedData.tournaments) {
       return (
-        <Table
-          headers={['이름', '협회', '카테고리', '시작일', '종료일', '장소', '상금']}
-          data={scrapedData.tournaments.all?.map((tournament: any) => [
-            tournament.name,
-            tournament.organizer,
-            tournament.category,
-            new Date(tournament.startDate).toLocaleDateString(),
-            new Date(tournament.endDate).toLocaleDateString(),
-            tournament.location,
-            `${(tournament.prizePool || 0).toLocaleString()}원`
-          ]) || []}
-        />
+        <div className="overflow-x-auto">
+          <Table>
+            <thead>
+              <tr>
+                <th className="px-4 py-2 text-left">이름</th>
+                <th className="px-4 py-2 text-left">협회</th>
+                <th className="px-4 py-2 text-left">카테고리</th>
+                <th className="px-4 py-2 text-left">시작일</th>
+                <th className="px-4 py-2 text-left">종료일</th>
+                <th className="px-4 py-2 text-left">장소</th>
+                <th className="px-4 py-2 text-left">상금</th>
+              </tr>
+            </thead>
+            <tbody>
+              {scrapedData.tournaments.all?.map((tournament: any, index: number) => (
+                <tr key={index} className="border-b hover:bg-gray-50">
+                  <td className="px-4 py-2">{tournament.name}</td>
+                  <td className="px-4 py-2">{tournament.organizer}</td>
+                  <td className="px-4 py-2">{tournament.category}</td>
+                  <td className="px-4 py-2">{new Date(tournament.startDate).toLocaleDateString()}</td>
+                  <td className="px-4 py-2">{new Date(tournament.endDate).toLocaleDateString()}</td>
+                  <td className="px-4 py-2">{tournament.location}</td>
+                  <td className="px-4 py-2">{`${(tournament.prizePool || 0).toLocaleString()}원`}</td>
+                </tr>
+              )) || []}
+            </tbody>
+          </Table>
+        </div>
       );
     }
 
     if (selectedDataType === 'golf-courses' && scrapedData.golfCourses) {
       return (
-        <Table
-          headers={['이름', '지역', '도시', '주소', '전화번호', '소스']}
-          data={scrapedData.golfCourses.courses?.map((course: any) => [
-            course.name,
-            course.region,
-            course.city,
-            course.address,
-            course.phone || '-',
-            course.source
-          ]) || []}
-        />
+        <div className="overflow-x-auto">
+          <Table>
+            <thead>
+              <tr>
+                <th className="px-4 py-2 text-left">이름</th>
+                <th className="px-4 py-2 text-left">지역</th>
+                <th className="px-4 py-2 text-left">도시</th>
+                <th className="px-4 py-2 text-left">주소</th>
+                <th className="px-4 py-2 text-left">전화번호</th>
+                <th className="px-4 py-2 text-left">소스</th>
+              </tr>
+            </thead>
+            <tbody>
+              {scrapedData.golfCourses.courses?.map((course: any, index: number) => (
+                <tr key={index} className="border-b hover:bg-gray-50">
+                  <td className="px-4 py-2">{course.name}</td>
+                  <td className="px-4 py-2">{course.region}</td>
+                  <td className="px-4 py-2">{course.city}</td>
+                  <td className="px-4 py-2">{course.address}</td>
+                  <td className="px-4 py-2">{course.phone || '-'}</td>
+                  <td className="px-4 py-2">{course.source}</td>
+                </tr>
+              )) || []}
+            </tbody>
+          </Table>
+        </div>
       );
     }
 
     if (selectedDataType === 'players' && scrapedData.players) {
       return (
-        <Table
-          headers={['이름', '협회', '생년월일', '현재 랭킹', '총 상금', '활성 상태']}
-          data={scrapedData.players.players?.map((player: any) => [
-            player.name,
-            player.association,
-            player.birth,
-            player.currentRanking || '-',
-            `${(player.totalPrize || 0).toLocaleString()}원`,
-            player.isActive ? '활성' : '비활성'
-          ]) || []}
-        />
+        <div className="overflow-x-auto">
+          <Table>
+            <thead>
+              <tr>
+                <th className="px-4 py-2 text-left">이름</th>
+                <th className="px-4 py-2 text-left">협회</th>
+                <th className="px-4 py-2 text-left">생년월일</th>
+                <th className="px-4 py-2 text-left">현재 랭킹</th>
+                <th className="px-4 py-2 text-left">총 상금</th>
+                <th className="px-4 py-2 text-left">활성 상태</th>
+              </tr>
+            </thead>
+            <tbody>
+              {scrapedData.players.players?.map((player: any, index: number) => (
+                <tr key={index} className="border-b hover:bg-gray-50">
+                  <td className="px-4 py-2">{player.name}</td>
+                  <td className="px-4 py-2">{player.association}</td>
+                  <td className="px-4 py-2">{player.birth}</td>
+                  <td className="px-4 py-2">{player.currentRanking || '-'}</td>
+                  <td className="px-4 py-2">{`${(player.totalPrize || 0).toLocaleString()}원`}</td>
+                  <td className="px-4 py-2">{player.isActive ? '활성' : '비활성'}</td>
+                </tr>
+              )) || []}
+            </tbody>
+          </Table>
+        </div>
       );
     }
 
