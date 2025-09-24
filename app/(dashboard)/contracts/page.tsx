@@ -23,86 +23,40 @@ import {
   Eye
 } from 'lucide-react';
 
-// 새로운 Contract 타입에 맞는 mock 데이터
-const mockContracts: Contract[] = [
-  {
-    id: '1',
-    tourProId: 'user1',
-    caddyId: 'user2',
-    type: 'tournament',
-    status: 'active',
-    terms: {
-      baseSalary: 800000,
-      tournamentCount: 1,
-      winBonus: { percentage: 10, minAmount: 100000, maxAmount: 1000000 },
-      tournamentBonus: { first: 1000000, second: 500000, third: 300000, top10: 100000, participation: 50000 },
-      expenses: {
-        domestic: { transportation: true, accommodation: true, meals: true },
-        jeju: { transportation: true, accommodation: true, meals: true },
-        overseas: { transportation: true, accommodation: true, meals: true, visa: true }
-      },
-      contractConditions: { duration: 1, penaltyRate: 20, terminationNoticePeriod: 7 }
-    },
-    startDate: new Date('2024-03-15'),
-    endDate: new Date('2024-03-17'),
-    createdAt: new Date('2024-01-10'),
-    updatedAt: new Date('2024-01-10'),
-  },
-  {
-    id: '2',
-    tourProId: 'user2',
-    caddyId: 'user1',
-    type: 'annual',
-    status: 'active',
-    terms: {
-      baseSalary: 5000000,
-      tournamentCount: 24,
-      winBonus: { percentage: 15, minAmount: 500000, maxAmount: 5000000 },
-      tournamentBonus: { first: 2000000, second: 1000000, third: 500000, top10: 200000, participation: 100000 },
-      expenses: {
-        domestic: { transportation: true, accommodation: true, meals: true },
-        jeju: { transportation: true, accommodation: true, meals: true },
-        overseas: { transportation: true, accommodation: true, meals: true, visa: true }
-      },
-      contractConditions: { duration: 12, penaltyRate: 30, terminationNoticePeriod: 30 }
-    },
-    startDate: new Date('2024-01-01'),
-    endDate: new Date('2024-12-31'),
-    createdAt: new Date('2023-12-15'),
-    updatedAt: new Date('2023-12-15'),
-  },
-  {
-    id: '3',
-    amateurId: 'user3',
-    caddyId: 'user1',
-    type: 'training',
-    status: 'completed',
-    terms: {
-      baseSalary: 300000,
-      tournamentCount: 8,
-      winBonus: { percentage: 5, minAmount: 50000, maxAmount: 500000 },
-      tournamentBonus: { first: 500000, second: 300000, third: 200000, top10: 100000, participation: 50000 },
-      expenses: {
-        domestic: { transportation: true, accommodation: false, meals: true },
-        jeju: { transportation: false, accommodation: false, meals: false },
-        overseas: { transportation: false, accommodation: false, meals: false, visa: false }
-      },
-      contractConditions: { duration: 1, penaltyRate: 15, terminationNoticePeriod: 7 }
-    },
-    startDate: new Date('2024-02-01'),
-    endDate: new Date('2024-02-28'),
-    createdAt: new Date('2024-01-20'),
-    updatedAt: new Date('2024-02-28'),
-  },
-];
+// API에서 계약 데이터를 가져오는 함수
+const fetchContracts = async (page: number = 1, limit: number = 10, type?: string, status?: string) => {
+  const params = new URLSearchParams({
+    page: page.toString(),
+    limit: limit.toString(),
+  });
+  
+  if (type) params.append('type', type);
+  if (status) params.append('status', status);
+  
+  const response = await fetch(`/api/contracts?${params}`);
+  const data = await response.json();
+  
+  if (!data.success) {
+    throw new Error(data.error || '계약 데이터를 불러오는데 실패했습니다.');
+  }
+  
+  return data;
+};
 
 export default function ContractsPage() {
   const { isAuthenticated } = useAuthStore();
   const router = useRouter();
-  const [contracts] = useState<Contract[]>(mockContracts);
+  const [contracts, setContracts] = useState<Contract[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFilter, setSelectedFilter] = useState('all');
   const [selectedType, setSelectedType] = useState('all');
+  const [stats, setStats] = useState({
+    total: 0,
+    active: 0,
+    completed: 0,
+    totalEarnings: 0
+  });
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -110,7 +64,35 @@ export default function ContractsPage() {
       router.push(`/login?redirect=${encodeURIComponent(currentPath)}`);
       return;
     }
+    
+    loadContracts();
   }, [isAuthenticated, router]);
+
+  const loadContracts = async () => {
+    try {
+      setIsLoading(true);
+      const data = await fetchContracts(1, 100, selectedType !== 'all' ? selectedType : undefined, selectedFilter !== 'all' ? selectedFilter : undefined);
+      setContracts(data.data);
+      
+      // 통계 계산
+      const activeContracts = data.data.filter((c: Contract) => c.status === 'active').length;
+      const completedContracts = data.data.filter((c: Contract) => c.status === 'completed').length;
+      const totalEarnings = data.data
+        .filter((c: Contract) => c.status === 'completed')
+        .reduce((sum: number, c: Contract) => sum + c.terms.baseSalary, 0);
+      
+      setStats({
+        total: data.data.length,
+        active: activeContracts,
+        completed: completedContracts,
+        totalEarnings
+      });
+    } catch (error) {
+      console.error('계약 데이터 로드 실패:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const filteredContracts = contracts.filter(contract => {
     const matchesSearch = !searchQuery || 
@@ -195,11 +177,7 @@ export default function ContractsPage() {
     return new Intl.NumberFormat('ko-KR').format(amount) + '원';
   };
 
-  const activeContracts = contracts.filter(c => c.status === 'active').length;
-  const completedContracts = contracts.filter(c => c.status === 'completed').length;
-  const totalEarnings = contracts
-    .filter(c => c.status === 'completed')
-    .reduce((sum, c) => sum + c.terms.baseSalary, 0);
+  // 통계는 이미 state에서 관리됨
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-golf-green-50 via-white to-golf-sky-50 dark:from-golf-dark-900 dark:via-golf-dark-800 dark:to-golf-dark-900 pb-20">
@@ -217,7 +195,7 @@ export default function ContractsPage() {
           <Card className="p-3 bg-white/80 backdrop-blur-sm border-golf-green-200 shadow-lg">
             <div className="text-center">
               <div className="text-2xl mb-1">🟢</div>
-              <p className="text-2xl font-display font-bold text-golf-green-600">{activeContracts}</p>
+              <p className="text-2xl font-display font-bold text-golf-green-600">{stats.active}</p>
               <p className="text-xs text-golf-green-500 font-medium">진행중</p>
             </div>
           </Card>
@@ -225,7 +203,7 @@ export default function ContractsPage() {
           <Card className="p-3 bg-white/80 backdrop-blur-sm border-golf-sky-200 shadow-lg">
             <div className="text-center">
               <div className="text-2xl mb-1">✅</div>
-              <p className="text-2xl font-display font-bold text-golf-sky-600">{completedContracts}</p>
+              <p className="text-2xl font-display font-bold text-golf-sky-600">{stats.completed}</p>
               <p className="text-xs text-golf-sky-500 font-medium">완료</p>
             </div>
           </Card>
@@ -233,7 +211,7 @@ export default function ContractsPage() {
           <Card className="p-3 bg-white/80 backdrop-blur-sm border-golf-sand-200 shadow-lg">
             <div className="text-center">
               <div className="text-2xl mb-1">💰</div>
-              <p className="text-lg font-display font-bold text-golf-sand-600">{formatCurrency(totalEarnings)}</p>
+              <p className="text-lg font-display font-bold text-golf-sand-600">{formatCurrency(stats.totalEarnings)}</p>
               <p className="text-xs text-golf-sand-500 font-medium">총 수익</p>
             </div>
           </Card>
@@ -286,7 +264,15 @@ export default function ContractsPage() {
 
         {/* 계약 리스트 */}
         <div className="space-y-3">
-          {filteredContracts.map((contract) => (
+          {isLoading ? (
+            <Card className="bg-white/80 backdrop-blur-sm shadow-lg">
+              <CardContent className="p-8 text-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-golf-green-600 mx-auto mb-4"></div>
+                <p className="text-gray-500">계약 정보를 불러오는 중...</p>
+              </CardContent>
+            </Card>
+          ) : (
+            filteredContracts.map((contract) => (
             <Card key={contract.id} className="bg-white/80 backdrop-blur-sm shadow-lg hover:shadow-xl transition-shadow">
               <CardContent className="p-4">
                 <div className="flex items-start justify-between mb-3">
@@ -343,7 +329,8 @@ export default function ContractsPage() {
                 </div>
               </CardContent>
             </Card>
-          ))}
+            ))
+          )}
         </div>
 
         {filteredContracts.length === 0 && (

@@ -1,11 +1,23 @@
 // 사용자 타입 정의
-export type UserType = 'tour_pro' | 'amateur' | 'agency' | 'caddy' | 'sponsor' | 'admin' | 'superadmin';
+export type UserType = 'tour_pro' | 'amateur' | 'caddy' | 'sponsor' | 'agency';
 
-// 사용자 역할 정의
-export type UserRole = 'user' | 'admin' | 'superadmin';
+// 사용자 상태 정의
+export type UserStatus = 'active' | 'inactive' | 'suspended';
 
 // 계약 타입 정의
-export type ContractType = 'tournament' | 'sponsorship' | 'training' | 'annual';
+export type ContractType = 'tournament' | 'annual' | 'training' | 'sponsorship';
+
+// 계약 상태 정의
+export type ContractStatus = 'pending' | 'active' | 'completed' | 'cancelled';
+
+// 스폰서십 상태 정의
+export type SponsorshipStatus = 'pending' | 'accepted' | 'rejected' | 'expired';
+
+// 결제 상태 정의
+export type PaymentStatus = 'pending' | 'paid' | 'failed' | 'cancelled';
+
+// 알림 타입 정의
+export type NotificationType = 'contract' | 'sponsorship' | 'payment' | 'system';
 
 // 폼 데이터 타입
 export interface LoginFormData {
@@ -173,7 +185,8 @@ export interface CaddyInfo {
   specializations?: string[];
   rating?: number;
   totalContracts?: number;
-  hourlyRate?: number;
+  cutOffRate?: number; // 컷오프시 금액
+  cutPassRate?: number; // 컷통과시 금액
   availableRegions?: string[];
 }
 
@@ -310,7 +323,8 @@ export interface Caddy {
   totalContracts: number;
   isActive: boolean;
   availableRegions: string[];
-  hourlyRate: number;
+  cutOffRate: number; // 컷오프시 금액
+  cutPassRate: number; // 컷통과시 금액
 }
 
 // 스폰서 정보

@@ -29,7 +29,8 @@ const mockCaddyUsers: User[] = [
       specializations: ['장타', '퍼팅', '샷메이킹'],
       rating: 4.8,
       totalContracts: 156,
-      hourlyRate: 80000,
+      cutOffRate: 0, // 컷오프시 금액 (회원가입시 설정)
+      cutPassRate: 0, // 컷통과시 금액 (회원가입시 설정)
       availableRegions: ['제주도', '서울', '경기도']
     }
   },
@@ -57,7 +58,8 @@ const mockCaddyUsers: User[] = [
       specializations: ['코스 관리', '심리 코칭', '기술 분석'],
       rating: 4.9,
       totalContracts: 234,
-      hourlyRate: 100000,
+      cutOffRate: 0, // 컷오프시 금액 (회원가입시 설정)
+      cutPassRate: 0, // 컷통과시 금액 (회원가입시 설정)
       availableRegions: ['서울', '경기도', '인천']
     }
   },
@@ -85,7 +87,8 @@ const mockCaddyUsers: User[] = [
       specializations: ['초보자 지도', '기본기'],
       rating: 4.5,
       totalContracts: 67,
-      hourlyRate: 60000,
+      cutOffRate: 0, // 컷오프시 금액 (회원가입시 설정)
+      cutPassRate: 0, // 컷통과시 금액 (회원가입시 설정)
       availableRegions: ['전국']
     }
   },
@@ -113,7 +116,8 @@ const mockCaddyUsers: User[] = [
       specializations: ['여성 골퍼', '기초 지도'],
       rating: 4.2,
       totalContracts: 23,
-      hourlyRate: 70000,
+      cutOffRate: 0, // 컷오프시 금액 (회원가입시 설정)
+      cutPassRate: 0, // 컷통과시 금액 (회원가입시 설정)
       availableRegions: ['부산', '울산', '경상남도']
     }
   },
@@ -141,7 +145,8 @@ const mockCaddyUsers: User[] = [
       specializations: ['고급 기술', '경기 분석'],
       rating: 4.7,
       totalContracts: 345,
-      hourlyRate: 90000,
+      cutOffRate: 0, // 컷오프시 금액 (회원가입시 설정)
+      cutPassRate: 0, // 컷통과시 금액 (회원가입시 설정)
       availableRegions: ['대구', '경상북도']
     }
   },
@@ -169,7 +174,8 @@ const mockCaddyUsers: User[] = [
       specializations: ['기초 지도'],
       rating: 4.0,
       totalContracts: 12,
-      hourlyRate: 50000,
+      cutOffRate: 0, // 컷오프시 금액 (회원가입시 설정)
+      cutPassRate: 0, // 컷통과시 금액 (회원가입시 설정)
       availableRegions: ['인천', '경기도']
     }
   },
@@ -197,7 +203,8 @@ const mockCaddyUsers: User[] = [
       specializations: ['코스 관리', '날씨 대응'],
       rating: 4.6,
       totalContracts: 89,
-      hourlyRate: 75000,
+      cutOffRate: 0, // 컷오프시 금액 (회원가입시 설정)
+      cutPassRate: 0, // 컷통과시 금액 (회원가입시 설정)
       availableRegions: ['강원도', '경기도']
     }
   }
