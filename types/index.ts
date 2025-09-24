@@ -1,6 +1,9 @@
 // 사용자 타입 정의
 export type UserType = 'tour_pro' | 'amateur' | 'caddy' | 'sponsor' | 'agency';
 
+// 사용자 역할 정의
+export type UserRole = 'user' | 'admin' | 'superadmin';
+
 // 사용자 상태 정의
 export type UserStatus = 'active' | 'inactive' | 'suspended';
 
@@ -10,8 +13,7 @@ export type ContractType = 'tournament' | 'annual' | 'training' | 'sponsorship';
 // 계약 상태 정의
 export type ContractStatus = 'pending' | 'active' | 'completed' | 'cancelled';
 
-// 스폰서십 상태 정의
-export type SponsorshipStatus = 'pending' | 'accepted' | 'rejected' | 'expired';
+// 스폰서십 상태 정의 (아래에서 더 상세한 정의 사용)
 
 // 결제 상태 정의
 export type PaymentStatus = 'pending' | 'paid' | 'failed' | 'cancelled';
