@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
@@ -17,7 +17,7 @@ const USER_TYPE_LABELS = {
   sponsor: '스폰서'
 };
 
-export default function SignupSuccessPage() {
+function SignupSuccessContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { theme } = useThemeStore();
@@ -134,5 +134,17 @@ export default function SignupSuccessPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function SignupSuccessPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    }>
+      <SignupSuccessContent />
+    </Suspense>
   );
 }

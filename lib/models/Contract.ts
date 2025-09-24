@@ -151,7 +151,15 @@ export class ContractModel {
     ];
     
     const result = await executeQuery(query, params);
-    return this.findById(result.insertId);
+    const insertId = (result as any)[0]?.insertId;
+    if (!insertId) {
+      throw new Error('계약 생성에 실패했습니다.');
+    }
+    const contract = await this.findById(insertId);
+    if (!contract) {
+      throw new Error('생성된 계약을 찾을 수 없습니다.');
+    }
+    return contract;
   }
 
   // ID로 계약 조회
@@ -226,7 +234,7 @@ export class ContractModel {
   static async delete(id: string): Promise<boolean> {
     const query = 'DELETE FROM contracts WHERE id = ?';
     const result = await executeQuery(query, [id]);
-    return result.affectedRows > 0;
+    return (result as any)[0]?.affectedRows > 0;
   }
 
   // 계약 목록 조회 (페이지네이션)

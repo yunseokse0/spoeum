@@ -48,7 +48,15 @@ export class UserModel {
     ];
     
     const result = await executeQuery(query, params);
-    return this.findById(result.insertId);
+    const insertId = (result as any)[0]?.insertId;
+    if (!insertId) {
+      throw new Error('사용자 생성에 실패했습니다.');
+    }
+    const user = await this.findById(insertId);
+    if (!user) {
+      throw new Error('생성된 사용자를 찾을 수 없습니다.');
+    }
+    return user;
   }
 
   // ID로 사용자 조회
@@ -106,9 +114,9 @@ export class UserModel {
 
   // 사용자 삭제 (소프트 삭제)
   static async delete(id: string): Promise<boolean> {
-    const query = 'UPDATE users SET status = "inactive" WHERE id = ?';
+    const query = 'UPDATE users SET status = "inactive" WHERE id = ?';  
     const result = await executeQuery(query, [id]);
-    return result.affectedRows > 0;
+    return (result as any)[0]?.affectedRows > 0;
   }
 
   // 사용자 목록 조회 (페이지네이션)

@@ -18,7 +18,7 @@ async function testWorkflow() {
       const golfCourses = await GolfCourseModel.findMany(1, 5);
       console.log(`   ✅ 골프장 데이터 조회 성공: ${golfCourses.courses.length}개`);
     } catch (error) {
-      console.log('   ❌ 골프장 데이터 조회 실패:', error.message);
+      console.log('   ❌ 골프장 데이터 조회 실패:', error instanceof Error ? error.message : '알 수 없는 오류');
     }
 
     // 3. 계약 데이터 테스트
@@ -27,7 +27,7 @@ async function testWorkflow() {
       const contracts = await ContractModel.findMany(1, 5);
       console.log(`   ✅ 계약 데이터 조회 성공: ${contracts.contracts.length}개`);
     } catch (error) {
-      console.log('   ❌ 계약 데이터 조회 실패:', error.message);
+      console.log('   ❌ 계약 데이터 조회 실패:', error instanceof Error ? error.message : '알 수 없는 오류');
     }
 
     // 4. 사용자 데이터 테스트
@@ -36,7 +36,7 @@ async function testWorkflow() {
       const users = await UserModel.findMany(1, 5);
       console.log(`   ✅ 사용자 데이터 조회 성공: ${users.users.length}개`);
     } catch (error) {
-      console.log('   ❌ 사용자 데이터 조회 실패:', error.message);
+      console.log('   ❌ 사용자 데이터 조회 실패:', error instanceof Error ? error.message : '알 수 없는 오류');
     }
 
     // 5. API 엔드포인트 테스트

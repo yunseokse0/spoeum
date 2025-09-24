@@ -66,7 +66,15 @@ export class GolfCourseModel {
     ];
     
     const result = await executeQuery(query, params);
-    return this.findById(result.insertId);
+    const insertId = (result as any)[0]?.insertId;
+    if (!insertId) {
+      throw new Error('골프장 생성에 실패했습니다.');
+    }
+    const golfCourse = await this.findById(insertId);
+    if (!golfCourse) {
+      throw new Error('생성된 골프장을 찾을 수 없습니다.');
+    }
+    return golfCourse;
   }
 
   // ID로 골프장 조회
@@ -128,7 +136,7 @@ export class GolfCourseModel {
   static async delete(id: string): Promise<boolean> {
     const query = 'DELETE FROM golf_courses WHERE id = ?';
     const result = await executeQuery(query, [id]);
-    return result.affectedRows > 0;
+    return (result as any)[0]?.affectedRows > 0;
   }
 
   // 골프장 목록 조회 (페이지네이션)
