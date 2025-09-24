@@ -2,15 +2,15 @@
   "tournaments": {
     "klpga": [
       {
-        "id": "klpga_1758619997457_0",
+        "id": "klpga_1758672732713_0",
         "name": "월",
         "description": "KLPGA 월",
         "location": "장소 미정",
         "course": "코스 미정",
-        "startDate": "2025-09-23T09:33:17.457Z",
-        "endDate": "2025-09-23T09:33:17.457Z",
-        "registrationStartDate": "2025-08-24T09:33:17.457Z",
-        "registrationEndDate": "2025-09-16T09:33:17.457Z",
+        "startDate": "2025-09-24T00:12:12.713Z",
+        "endDate": "2025-09-24T00:12:12.713Z",
+        "registrationStartDate": "2025-08-25T00:12:12.713Z",
+        "registrationEndDate": "2025-09-17T00:12:12.713Z",
         "type": "pga",
         "category": "women",
         "entryFee": 0,
@@ -27,22 +27,22 @@
         "rules": [
           "KLPGA 규정 준수"
         ],
-        "createdAt": "2025-09-23T09:33:17.457Z",
-        "updatedAt": "2025-09-23T09:33:17.457Z"
+        "createdAt": "2025-09-24T00:12:12.713Z",
+        "updatedAt": "2025-09-24T00:12:12.713Z"
       }
     ],
     "kpga": [],
     "all": [
       {
-        "id": "klpga_1758619997457_0",
+        "id": "klpga_1758672732713_0",
         "name": "월",
         "description": "KLPGA 월",
         "location": "장소 미정",
         "course": "코스 미정",
-        "startDate": "2025-09-23T09:33:17.457Z",
-        "endDate": "2025-09-23T09:33:17.457Z",
-        "registrationStartDate": "2025-08-24T09:33:17.457Z",
-        "registrationEndDate": "2025-09-16T09:33:17.457Z",
+        "startDate": "2025-09-24T00:12:12.713Z",
+        "endDate": "2025-09-24T00:12:12.713Z",
+        "registrationStartDate": "2025-08-25T00:12:12.713Z",
+        "registrationEndDate": "2025-09-17T00:12:12.713Z",
         "type": "pga",
         "category": "women",
         "entryFee": 0,
@@ -59,8 +59,8 @@
         "rules": [
           "KLPGA 규정 준수"
         ],
-        "createdAt": "2025-09-23T09:33:17.457Z",
-        "updatedAt": "2025-09-23T09:33:17.457Z"
+        "createdAt": "2025-09-24T00:12:12.713Z",
+        "updatedAt": "2025-09-24T00:12:12.713Z"
       }
     ],
     "count": 1,
@@ -68,6 +68,142 @@
   },
   "golfCourses": {
     "courses": [
+      {
+        "name": "서울골프클럽",
+        "region": "서울특별시",
+        "city": "서울",
+        "address": "서울특별시 강남구 테헤란로 123",
+        "phone": "02-0000-0000",
+        "source": "공공데이터포털"
+      },
+      {
+        "name": "수원골프리조트",
+        "region": "경기도",
+        "city": "경기",
+        "address": "경기도 수원시 영통구 월드컵로 456",
+        "phone": "02-0000-0000",
+        "source": "공공데이터포털"
+      },
+      {
+        "name": "인천골프장",
+        "region": "인천광역시",
+        "city": "인천",
+        "address": "인천광역시 연수구 컨벤시아대로 789",
+        "phone": "02-0000-0000",
+        "source": "공공데이터포털"
+      },
+      {
+        "name": "부산골프클럽",
+        "region": "부산광역시",
+        "city": "부산",
+        "address": "부산광역시 해운대구 센텀중앙로 101",
+        "phone": "02-0000-0000",
+        "source": "공공데이터포털"
+      },
+      {
+        "name": "대구골프리조트",
+        "region": "대구광역시",
+        "city": "대구",
+        "address": "대구광역시 달서구 성서로 202",
+        "phone": "02-0000-0000",
+        "source": "공공데이터포털"
+      },
+      {
+        "name": "광주골프장",
+        "region": "광주광역시",
+        "city": "광주",
+        "address": "광주광역시 서구 상무대로 303",
+        "phone": "02-0000-0000",
+        "source": "공공데이터포털"
+      },
+      {
+        "name": "대전골프클럽",
+        "region": "대전광역시",
+        "city": "대전",
+        "address": "대전광역시 유성구 대학로 404",
+        "phone": "02-0000-0000",
+        "source": "공공데이터포털"
+      },
+      {
+        "name": "울산골프리조트",
+        "region": "울산광역시",
+        "city": "울산",
+        "address": "울산광역시 남구 삼산로 505",
+        "phone": "02-0000-0000",
+        "source": "공공데이터포털"
+      },
+      {
+        "name": "세종골프장",
+        "region": "세종특별자치시",
+        "city": "세종",
+        "address": "세종특별자치시 한누리대로 606",
+        "phone": "02-0000-0000",
+        "source": "공공데이터포털"
+      },
+      {
+        "name": "강릉골프클럽",
+        "region": "강원도",
+        "city": "강원",
+        "address": "강원도 강릉시 경강로 707",
+        "phone": "02-0000-0000",
+        "source": "공공데이터포털"
+      },
+      {
+        "name": "청주골프리조트",
+        "region": "충청북도",
+        "city": "충북",
+        "address": "충청북도 청주시 상당구 상당로 808",
+        "phone": "02-0000-0000",
+        "source": "공공데이터포털"
+      },
+      {
+        "name": "천안골프장",
+        "region": "충청남도",
+        "city": "충남",
+        "address": "충청남도 천안시 동남구 신부동 909",
+        "phone": "02-0000-0000",
+        "source": "공공데이터포털"
+      },
+      {
+        "name": "전주골프클럽",
+        "region": "전라북도",
+        "city": "전북",
+        "address": "전라북도 전주시 덕진구 덕진로 1010",
+        "phone": "02-0000-0000",
+        "source": "공공데이터포털"
+      },
+      {
+        "name": "목포골프리조트",
+        "region": "전라남도",
+        "city": "전남",
+        "address": "전라남도 목포시 해안로 1111",
+        "phone": "02-0000-0000",
+        "source": "공공데이터포털"
+      },
+      {
+        "name": "포항골프장",
+        "region": "경상북도",
+        "city": "경북",
+        "address": "경상북도 포항시 남구 해안로 1212",
+        "phone": "02-0000-0000",
+        "source": "공공데이터포털"
+      },
+      {
+        "name": "창원골프클럽",
+        "region": "경상남도",
+        "city": "경남",
+        "address": "경상남도 창원시 성산구 중앙대로 1313",
+        "phone": "02-0000-0000",
+        "source": "공공데이터포털"
+      },
+      {
+        "name": "제주골프리조트",
+        "region": "제주특별자치도",
+        "city": "제주",
+        "address": "제주특별자치도 제주시 연동 1414",
+        "phone": "02-0000-0000",
+        "source": "공공데이터포털"
+      },
       {
         "name": "다양한 코스에서즐거운 라운드",
         "region": "경상도",
@@ -149,15 +285,6 @@
         "source": "프렌즈 스크린"
       },
       {
-        "name": "서울골프클럽",
-        "region": "서울",
-        "city": "서울시",
-        "address": "서울시 강남구 테헤란로 123",
-        "phone": "02-1234-5678",
-        "website": "https://seoulgc.co.kr",
-        "source": "manual"
-      },
-      {
         "name": "경기골프리조트",
         "region": "경기",
         "city": "성남시",
@@ -194,17 +321,33 @@
         "source": "manual"
       }
     ],
-    "count": 15,
+    "count": 31,
     "regions": [
-      "경상도",
+      "서울특별시",
+      "경기도",
+      "인천광역시",
+      "부산광역시",
+      "대구광역시",
+      "광주광역시",
+      "대전광역시",
+      "울산광역시",
+      "세종특별자치시",
       "강원도",
+      "충청북도",
+      "충청남도",
+      "전라북도",
+      "전라남도",
+      "경상북도",
+      "경상남도",
+      "제주특별자치도",
+      "경상도",
       "미분류",
-      "서울",
       "경기",
       "제주",
       "경남"
     ],
     "sources": [
+      "공공데이터포털",
       "프렌즈 스크린",
       "manual"
     ],
@@ -213,118 +356,934 @@
   "players": {
     "players": [
       {
-        "memberId": "KPGA12345",
-        "name": "KPGA 선수 KPGA12345",
-        "association": "kpga",
-        "birth": "1990-01-01",
+        "memberId": "KLPGA47852105",
+        "name": "박세리",
+        "association": "KLPGA",
+        "birth": "1990-09-27",
         "career": [
           {
-            "title": "2024 KPGA 투어",
+            "year": 2025,
+            "title": "2025 KLPGA 투어",
             "result": "진행중",
-            "prize": 0,
-            "ranking": 0
+            "prize": 17974996,
+            "ranking": 1
           }
         ],
         "ranking": {
-          "current": 0,
-          "best": 0,
-          "worst": 0
+          "current": 1,
+          "best": 1,
+          "worst": 5
         },
-        "currentRanking": 0,
-        "totalPrize": 0,
+        "currentRanking": 1,
+        "totalPrize": 17974996,
         "isActive": true
       },
       {
-        "name": "가와나카 스구카(I)",
+        "memberId": "KLPGA44481336",
+        "name": "김아림",
         "association": "KLPGA",
-        "memberId": "KLPGA1",
-        "birth": "1990-01-01",
-        "currentRanking": 31,
-        "totalPrize": 26550526,
-        "isActive": true,
+        "birth": "1988-12-13",
         "career": [
           {
-            "year": 2024,
-            "title": "2024 KLPGA 챔피언십",
-            "result": "우승",
-            "prize": 50000000,
-            "ranking": 1
-          },
-          {
-            "year": 2024,
-            "title": "2024 KLPGA 투어",
-            "result": "준우승",
-            "prize": 30000000,
+            "year": 2025,
+            "title": "2025 KLPGA 투어",
+            "result": "진행중",
+            "prize": 59389103,
             "ranking": 2
           }
         ],
         "ranking": {
-          "current": 78,
-          "best": 19,
-          "previous": 69
-        }
-      },
-      {
-        "memberId": "KPGA11111",
-        "name": "KPGA 선수 KPGA11111",
-        "association": "kpga",
-        "birth": "1990-01-01",
-        "career": [
-          {
-            "title": "2024 KPGA 투어",
-            "result": "진행중",
-            "prize": 0,
-            "ranking": 0
-          }
-        ],
-        "ranking": {
-          "current": 0,
-          "best": 0,
-          "worst": 0
+          "current": 2,
+          "best": 2,
+          "worst": 11
         },
-        "currentRanking": 0,
-        "totalPrize": 0,
+        "currentRanking": 2,
+        "totalPrize": 59389103,
         "isActive": true
       },
       {
-        "name": "가와나카 스구카(I)",
+        "memberId": "KLPGA50612152",
+        "name": "이민지",
         "association": "KLPGA",
-        "memberId": "KLPGA1",
-        "birth": "1990-01-01",
-        "currentRanking": 36,
-        "totalPrize": 89329171,
-        "isActive": true,
+        "birth": "1983-08-15",
         "career": [
           {
-            "year": 2024,
-            "title": "2024 KLPGA 챔피언십",
-            "result": "우승",
-            "prize": 50000000,
-            "ranking": 1
-          },
+            "year": 2025,
+            "title": "2025 KLPGA 투어",
+            "result": "진행중",
+            "prize": 50569383,
+            "ranking": 3
+          }
+        ],
+        "ranking": {
+          "current": 3,
+          "best": 1,
+          "worst": 8
+        },
+        "currentRanking": 3,
+        "totalPrize": 50569383,
+        "isActive": true
+      },
+      {
+        "memberId": "KLPGA51973812",
+        "name": "최나연",
+        "association": "KLPGA",
+        "birth": "1998-01-19",
+        "career": [
           {
-            "year": 2024,
-            "title": "2024 KLPGA 투어",
-            "result": "준우승",
-            "prize": 30000000,
-            "ranking": 2
+            "year": 2025,
+            "title": "2025 KLPGA 투어",
+            "result": "진행중",
+            "prize": 54415102,
+            "ranking": 4
+          }
+        ],
+        "ranking": {
+          "current": 4,
+          "best": 4,
+          "worst": 4
+        },
+        "currentRanking": 4,
+        "totalPrize": 54415102,
+        "isActive": true
+      },
+      {
+        "memberId": "KLPGA44623252",
+        "name": "김효주",
+        "association": "KLPGA",
+        "birth": "1984-11-22",
+        "career": [
+          {
+            "year": 2025,
+            "title": "2025 KLPGA 투어",
+            "result": "진행중",
+            "prize": 52069880,
+            "ranking": 5
+          }
+        ],
+        "ranking": {
+          "current": 5,
+          "best": 3,
+          "worst": 11
+        },
+        "currentRanking": 5,
+        "totalPrize": 52069880,
+        "isActive": true
+      },
+      {
+        "memberId": "KLPGA47814681",
+        "name": "박민지",
+        "association": "KLPGA",
+        "birth": "1999-04-24",
+        "career": [
+          {
+            "year": 2025,
+            "title": "2025 KLPGA 투어",
+            "result": "진행중",
+            "prize": 57616678,
+            "ranking": 6
+          }
+        ],
+        "ranking": {
+          "current": 6,
+          "best": 2,
+          "worst": 13
+        },
+        "currentRanking": 6,
+        "totalPrize": 57616678,
+        "isActive": true
+      },
+      {
+        "memberId": "KLPGA44454965",
+        "name": "김소영",
+        "association": "KLPGA",
+        "birth": "1981-04-23",
+        "career": [
+          {
+            "year": 2025,
+            "title": "2025 KLPGA 투어",
+            "result": "진행중",
+            "prize": 42826231,
+            "ranking": 7
+          }
+        ],
+        "ranking": {
+          "current": 7,
+          "best": 5,
+          "worst": 15
+        },
+        "currentRanking": 7,
+        "totalPrize": 42826231,
+        "isActive": true
+      },
+      {
+        "memberId": "KLPGA50720756",
+        "name": "이지은",
+        "association": "KLPGA",
+        "birth": "1988-02-25",
+        "career": [
+          {
+            "year": 2025,
+            "title": "2025 KLPGA 투어",
+            "result": "진행중",
+            "prize": 12500732,
+            "ranking": 8
+          }
+        ],
+        "ranking": {
+          "current": 8,
+          "best": 6,
+          "worst": 15
+        },
+        "currentRanking": 8,
+        "totalPrize": 12500732,
+        "isActive": true
+      },
+      {
+        "memberId": "KLPGA50855289",
+        "name": "정유진",
+        "association": "KLPGA",
+        "birth": "1986-10-13",
+        "career": [
+          {
+            "year": 2025,
+            "title": "2025 KLPGA 투어",
+            "result": "진행중",
+            "prize": 54619916,
+            "ranking": 9
+          }
+        ],
+        "ranking": {
+          "current": 9,
+          "best": 5,
+          "worst": 17
+        },
+        "currentRanking": 9,
+        "totalPrize": 54619916,
+        "isActive": true
+      },
+      {
+        "memberId": "KLPGA54139032",
+        "name": "한지민",
+        "association": "KLPGA",
+        "birth": "1985-05-21",
+        "career": [
+          {
+            "year": 2025,
+            "title": "2025 KLPGA 투어",
+            "result": "진행중",
+            "prize": 19567332,
+            "ranking": 10
+          }
+        ],
+        "ranking": {
+          "current": 10,
+          "best": 6,
+          "worst": 13
+        },
+        "currentRanking": 10,
+        "totalPrize": 19567332,
+        "isActive": true
+      },
+      {
+        "memberId": "KLPGA44520065",
+        "name": "김지영",
+        "association": "KLPGA",
+        "birth": "1986-08-17",
+        "career": [
+          {
+            "year": 2025,
+            "title": "2025 KLPGA 투어",
+            "result": "진행중",
+            "prize": 47641253,
+            "ranking": 11
+          }
+        ],
+        "ranking": {
+          "current": 11,
+          "best": 10,
+          "worst": 12
+        },
+        "currentRanking": 11,
+        "totalPrize": 47641253,
+        "isActive": true
+      },
+      {
+        "memberId": "KLPGA47854377",
+        "name": "박서연",
+        "association": "KLPGA",
+        "birth": "1983-08-11",
+        "career": [
+          {
+            "year": 2025,
+            "title": "2025 KLPGA 투어",
+            "result": "진행중",
+            "prize": 45423432,
+            "ranking": 12
+          }
+        ],
+        "ranking": {
+          "current": 12,
+          "best": 9,
+          "worst": 20
+        },
+        "currentRanking": 12,
+        "totalPrize": 45423432,
+        "isActive": true
+      },
+      {
+        "memberId": "KLPGA50660640",
+        "name": "이수진",
+        "association": "KLPGA",
+        "birth": "1996-11-15",
+        "career": [
+          {
+            "year": 2025,
+            "title": "2025 KLPGA 투어",
+            "result": "진행중",
+            "prize": 53495712,
+            "ranking": 13
+          }
+        ],
+        "ranking": {
+          "current": 13,
+          "best": 13,
+          "worst": 14
+        },
+        "currentRanking": 13,
+        "totalPrize": 53495712,
+        "isActive": true
+      },
+      {
+        "memberId": "KLPGA52064757",
+        "name": "최민정",
+        "association": "KLPGA",
+        "birth": "1986-08-04",
+        "career": [
+          {
+            "year": 2025,
+            "title": "2025 KLPGA 투어",
+            "result": "진행중",
+            "prize": 39030987,
+            "ranking": 14
+          }
+        ],
+        "ranking": {
+          "current": 14,
+          "best": 12,
+          "worst": 15
+        },
+        "currentRanking": 14,
+        "totalPrize": 39030987,
+        "isActive": true
+      },
+      {
+        "memberId": "KLPGA44607104",
+        "name": "김하늘",
+        "association": "KLPGA",
+        "birth": "2000-02-26",
+        "career": [
+          {
+            "year": 2025,
+            "title": "2025 KLPGA 투어",
+            "result": "진행중",
+            "prize": 59340297,
+            "ranking": 15
           }
         ],
         "ranking": {
           "current": 15,
-          "best": 45,
-          "previous": 79
-        }
+          "best": 11,
+          "worst": 16
+        },
+        "currentRanking": 15,
+        "totalPrize": 59340297,
+        "isActive": true
+      },
+      {
+        "memberId": "KLPGA47927065",
+        "name": "박지현",
+        "association": "KLPGA",
+        "birth": "1999-03-23",
+        "career": [
+          {
+            "year": 2025,
+            "title": "2025 KLPGA 투어",
+            "result": "진행중",
+            "prize": 26569934,
+            "ranking": 16
+          }
+        ],
+        "ranking": {
+          "current": 16,
+          "best": 16,
+          "worst": 20
+        },
+        "currentRanking": 16,
+        "totalPrize": 26569934,
+        "isActive": true
+      },
+      {
+        "memberId": "KLPGA50687772",
+        "name": "이예린",
+        "association": "KLPGA",
+        "birth": "1983-09-22",
+        "career": [
+          {
+            "year": 2025,
+            "title": "2025 KLPGA 투어",
+            "result": "진행중",
+            "prize": 50962074,
+            "ranking": 17
+          }
+        ],
+        "ranking": {
+          "current": 17,
+          "best": 17,
+          "worst": 22
+        },
+        "currentRanking": 17,
+        "totalPrize": 50962074,
+        "isActive": true
+      },
+      {
+        "memberId": "KLPGA50694065",
+        "name": "정다은",
+        "association": "KLPGA",
+        "birth": "1992-09-10",
+        "career": [
+          {
+            "year": 2025,
+            "title": "2025 KLPGA 투어",
+            "result": "진행중",
+            "prize": 14087737,
+            "ranking": 18
+          }
+        ],
+        "ranking": {
+          "current": 18,
+          "best": 17,
+          "worst": 27
+        },
+        "currentRanking": 18,
+        "totalPrize": 14087737,
+        "isActive": true
+      },
+      {
+        "memberId": "KLPGA54076497",
+        "name": "한소영",
+        "association": "KLPGA",
+        "birth": "1987-09-03",
+        "career": [
+          {
+            "year": 2025,
+            "title": "2025 KLPGA 투어",
+            "result": "진행중",
+            "prize": 27451190,
+            "ranking": 19
+          }
+        ],
+        "ranking": {
+          "current": 19,
+          "best": 19,
+          "worst": 23
+        },
+        "currentRanking": 19,
+        "totalPrize": 27451190,
+        "isActive": true
+      },
+      {
+        "memberId": "KLPGA44411780",
+        "name": "김민지",
+        "association": "KLPGA",
+        "birth": "1998-10-02",
+        "career": [
+          {
+            "year": 2025,
+            "title": "2025 KLPGA 투어",
+            "result": "진행중",
+            "prize": 55989189,
+            "ranking": 20
+          }
+        ],
+        "ranking": {
+          "current": 20,
+          "best": 18,
+          "worst": 20
+        },
+        "currentRanking": 20,
+        "totalPrize": 55989189,
+        "isActive": true
+      },
+      {
+        "memberId": "KPGA51943995",
+        "name": "최경주",
+        "association": "KPGA",
+        "birth": "1981-04-04",
+        "career": [
+          {
+            "year": 2025,
+            "title": "2025 KPGA 투어",
+            "result": "진행중",
+            "prize": 33614196,
+            "ranking": 1
+          }
+        ],
+        "ranking": {
+          "current": 1,
+          "best": 1,
+          "worst": 7
+        },
+        "currentRanking": 1,
+        "totalPrize": 33614196,
+        "isActive": true
+      },
+      {
+        "memberId": "KPGA50228848",
+        "name": "양용모",
+        "association": "KPGA",
+        "birth": "1994-03-11",
+        "career": [
+          {
+            "year": 2025,
+            "title": "2025 KPGA 투어",
+            "result": "진행중",
+            "prize": 66258938,
+            "ranking": 2
+          }
+        ],
+        "ranking": {
+          "current": 2,
+          "best": 1,
+          "worst": 4
+        },
+        "currentRanking": 2,
+        "totalPrize": 66258938,
+        "isActive": true
+      },
+      {
+        "memberId": "KPGA44304108",
+        "name": "김기태",
+        "association": "KPGA",
+        "birth": "1988-03-18",
+        "career": [
+          {
+            "year": 2025,
+            "title": "2025 KPGA 투어",
+            "result": "진행중",
+            "prize": 51450394,
+            "ranking": 3
+          }
+        ],
+        "ranking": {
+          "current": 3,
+          "best": 1,
+          "worst": 3
+        },
+        "currentRanking": 3,
+        "totalPrize": 51450394,
+        "isActive": true
+      },
+      {
+        "memberId": "KPGA47855672",
+        "name": "박상현",
+        "association": "KPGA",
+        "birth": "1986-07-03",
+        "career": [
+          {
+            "year": 2025,
+            "title": "2025 KPGA 투어",
+            "result": "진행중",
+            "prize": 54898776,
+            "ranking": 4
+          }
+        ],
+        "ranking": {
+          "current": 4,
+          "best": 2,
+          "worst": 12
+        },
+        "currentRanking": 4,
+        "totalPrize": 54898776,
+        "isActive": true
+      },
+      {
+        "memberId": "KPGA50664843",
+        "name": "이승우",
+        "association": "KPGA",
+        "birth": "1986-07-19",
+        "career": [
+          {
+            "year": 2025,
+            "title": "2025 KPGA 투어",
+            "result": "진행중",
+            "prize": 62160283,
+            "ranking": 5
+          }
+        ],
+        "ranking": {
+          "current": 5,
+          "best": 4,
+          "worst": 12
+        },
+        "currentRanking": 5,
+        "totalPrize": 62160283,
+        "isActive": true
+      },
+      {
+        "memberId": "KPGA50862961",
+        "name": "정재훈",
+        "association": "KPGA",
+        "birth": "1983-07-23",
+        "career": [
+          {
+            "year": 2025,
+            "title": "2025 KPGA 투어",
+            "result": "진행중",
+            "prize": 85406839,
+            "ranking": 6
+          }
+        ],
+        "ranking": {
+          "current": 6,
+          "best": 5,
+          "worst": 9
+        },
+        "currentRanking": 6,
+        "totalPrize": 85406839,
+        "isActive": true
+      },
+      {
+        "memberId": "KPGA44616404",
+        "name": "김현수",
+        "association": "KPGA",
+        "birth": "1981-09-18",
+        "career": [
+          {
+            "year": 2025,
+            "title": "2025 KPGA 투어",
+            "result": "진행중",
+            "prize": 68250404,
+            "ranking": 7
+          }
+        ],
+        "ranking": {
+          "current": 7,
+          "best": 6,
+          "worst": 14
+        },
+        "currentRanking": 7,
+        "totalPrize": 68250404,
+        "isActive": true
+      },
+      {
+        "memberId": "KPGA47921165",
+        "name": "박준호",
+        "association": "KPGA",
+        "birth": "2000-04-11",
+        "career": [
+          {
+            "year": 2025,
+            "title": "2025 KPGA 투어",
+            "result": "진행중",
+            "prize": 46187141,
+            "ranking": 8
+          }
+        ],
+        "ranking": {
+          "current": 8,
+          "best": 6,
+          "worst": 17
+        },
+        "currentRanking": 8,
+        "totalPrize": 46187141,
+        "isActive": true
+      },
+      {
+        "memberId": "KPGA50550915",
+        "name": "이동훈",
+        "association": "KPGA",
+        "birth": "1984-05-04",
+        "career": [
+          {
+            "year": 2025,
+            "title": "2025 KPGA 투어",
+            "result": "진행중",
+            "prize": 90640358,
+            "ranking": 9
+          }
+        ],
+        "ranking": {
+          "current": 9,
+          "best": 9,
+          "worst": 14
+        },
+        "currentRanking": 9,
+        "totalPrize": 90640358,
+        "isActive": true
+      },
+      {
+        "memberId": "KPGA52063224",
+        "name": "최민수",
+        "association": "KPGA",
+        "birth": "1982-08-10",
+        "career": [
+          {
+            "year": 2025,
+            "title": "2025 KPGA 투어",
+            "result": "진행중",
+            "prize": 71468581,
+            "ranking": 10
+          }
+        ],
+        "ranking": {
+          "current": 10,
+          "best": 6,
+          "worst": 10
+        },
+        "currentRanking": 10,
+        "totalPrize": 71468581,
+        "isActive": true
+      },
+      {
+        "memberId": "KPGA44580584",
+        "name": "김태현",
+        "association": "KPGA",
+        "birth": "1995-02-02",
+        "career": [
+          {
+            "year": 2025,
+            "title": "2025 KPGA 투어",
+            "result": "진행중",
+            "prize": 96083652,
+            "ranking": 11
+          }
+        ],
+        "ranking": {
+          "current": 11,
+          "best": 7,
+          "worst": 18
+        },
+        "currentRanking": 11,
+        "totalPrize": 96083652,
+        "isActive": true
+      },
+      {
+        "memberId": "KPGA47927261",
+        "name": "박지훈",
+        "association": "KPGA",
+        "birth": "1993-04-08",
+        "career": [
+          {
+            "year": 2025,
+            "title": "2025 KPGA 투어",
+            "result": "진행중",
+            "prize": 29367049,
+            "ranking": 12
+          }
+        ],
+        "ranking": {
+          "current": 12,
+          "best": 11,
+          "worst": 18
+        },
+        "currentRanking": 12,
+        "totalPrize": 29367049,
+        "isActive": true
+      },
+      {
+        "memberId": "KPGA50718636",
+        "name": "이준호",
+        "association": "KPGA",
+        "birth": "1981-09-12",
+        "career": [
+          {
+            "year": 2025,
+            "title": "2025 KPGA 투어",
+            "result": "진행중",
+            "prize": 77640517,
+            "ranking": 13
+          }
+        ],
+        "ranking": {
+          "current": 13,
+          "best": 9,
+          "worst": 21
+        },
+        "currentRanking": 13,
+        "totalPrize": 77640517,
+        "isActive": true
+      },
+      {
+        "memberId": "KPGA50764913",
+        "name": "정민수",
+        "association": "KPGA",
+        "birth": "1990-05-13",
+        "career": [
+          {
+            "year": 2025,
+            "title": "2025 KPGA 투어",
+            "result": "진행중",
+            "prize": 71939302,
+            "ranking": 14
+          }
+        ],
+        "ranking": {
+          "current": 14,
+          "best": 12,
+          "worst": 22
+        },
+        "currentRanking": 14,
+        "totalPrize": 71939302,
+        "isActive": true
+      },
+      {
+        "memberId": "KPGA44350347",
+        "name": "김동현",
+        "association": "KPGA",
+        "birth": "1982-07-24",
+        "career": [
+          {
+            "year": 2025,
+            "title": "2025 KPGA 투어",
+            "result": "진행중",
+            "prize": 56518591,
+            "ranking": 15
+          }
+        ],
+        "ranking": {
+          "current": 15,
+          "best": 14,
+          "worst": 22
+        },
+        "currentRanking": 15,
+        "totalPrize": 56518591,
+        "isActive": true
+      },
+      {
+        "memberId": "KPGA47867372",
+        "name": "박승우",
+        "association": "KPGA",
+        "birth": "1999-03-28",
+        "career": [
+          {
+            "year": 2025,
+            "title": "2025 KPGA 투어",
+            "result": "진행중",
+            "prize": 69467825,
+            "ranking": 16
+          }
+        ],
+        "ranking": {
+          "current": 16,
+          "best": 15,
+          "worst": 18
+        },
+        "currentRanking": 16,
+        "totalPrize": 69467825,
+        "isActive": true
+      },
+      {
+        "memberId": "KPGA50816776",
+        "name": "이현수",
+        "association": "KPGA",
+        "birth": "1984-08-13",
+        "career": [
+          {
+            "year": 2025,
+            "title": "2025 KPGA 투어",
+            "result": "진행중",
+            "prize": 58269483,
+            "ranking": 17
+          }
+        ],
+        "ranking": {
+          "current": 17,
+          "best": 16,
+          "worst": 20
+        },
+        "currentRanking": 17,
+        "totalPrize": 58269483,
+        "isActive": true
+      },
+      {
+        "memberId": "KPGA50659201",
+        "name": "정기태",
+        "association": "KPGA",
+        "birth": "1991-09-25",
+        "career": [
+          {
+            "year": 2025,
+            "title": "2025 KPGA 투어",
+            "result": "진행중",
+            "prize": 92502183,
+            "ranking": 18
+          }
+        ],
+        "ranking": {
+          "current": 18,
+          "best": 14,
+          "worst": 23
+        },
+        "currentRanking": 18,
+        "totalPrize": 92502183,
+        "isActive": true
+      },
+      {
+        "memberId": "KPGA44452771",
+        "name": "김상현",
+        "association": "KPGA",
+        "birth": "1985-08-25",
+        "career": [
+          {
+            "year": 2025,
+            "title": "2025 KPGA 투어",
+            "result": "진행중",
+            "prize": 87596461,
+            "ranking": 19
+          }
+        ],
+        "ranking": {
+          "current": 19,
+          "best": 18,
+          "worst": 23
+        },
+        "currentRanking": 19,
+        "totalPrize": 87596461,
+        "isActive": true
+      },
+      {
+        "memberId": "KPGA47895540",
+        "name": "박용모",
+        "association": "KPGA",
+        "birth": "1992-03-10",
+        "career": [
+          {
+            "year": 2025,
+            "title": "2025 KPGA 투어",
+            "result": "진행중",
+            "prize": 85164771,
+            "ranking": 20
+          }
+        ],
+        "ranking": {
+          "current": 20,
+          "best": 19,
+          "worst": 20
+        },
+        "currentRanking": 20,
+        "totalPrize": 85164771,
+        "isActive": true
       }
     ],
-    "count": 4,
+    "count": 40,
     "errors": [],
     "associations": [
-      "kpga",
-      "KLPGA"
+      "KLPGA",
+      "KPGA"
     ],
     "isMock": false
   },
-  "lastUpdated": "2025-09-23T09:33:50.735Z",
-  "version": 21
+  "lastUpdated": "2025-09-24T00:12:45.857Z",
+  "version": 32
 }

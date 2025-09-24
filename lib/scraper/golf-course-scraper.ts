@@ -1,6 +1,7 @@
 import puppeteer, { Browser, Page } from 'puppeteer';
 import * as cheerio from 'cheerio';
 import { GolfCourse } from '@/types';
+import { PublicDataGolfScraper } from './public-data-golf-scraper';
 
 export interface GolfCourseSource {
   name: string;
@@ -29,41 +30,7 @@ export class GolfCourseScraper {
   private browser: Browser | null = null;
   private page: Page | null = null;
 
-  // 골프장 데이터 소스 정의 (실제 크롤링 가능한 사이트들)
-  private sources: GolfCourseSource[] = [
-    {
-      name: '프렌즈 스크린',
-      url: 'https://www.friendsscreen.kr/main/course',
-      selector: {
-        container: '.course-item, .golf-course-card, [class*="course"], .item, .card',
-        name: '.course-name, .golf-course-name, h3, h4, .title, .name, [class*="name"], [class*="title"]',
-        region: '.course-region, .location, .area, .region, [class*="region"], [class*="location"]',
-        address: '.course-address, .address, .location-detail, .addr, [class*="address"], [class*="addr"]',
-        phone: '.course-phone, .phone, .contact, .tel, [class*="phone"], [class*="tel"]'
-      }
-    },
-    {
-      name: '골프존 메인',
-      url: 'https://www.golfzon.com/course/main',
-      selector: {
-        container: '.course-item, .golf-course-item, [class*="course"], .item, .card, div[class*="golf"], div[class*="course"]',
-        name: '.course-name, .golf-course-name, h3, h4, .title, .name, [class*="name"], [class*="title"]',
-        region: '.course-region, .location, .area, .region, [class*="region"], [class*="location"]',
-        address: '.course-address, .address, .location-detail, .addr, [class*="address"], [class*="addr"]',
-        phone: '.course-phone, .phone, .contact, .tel, [class*="phone"], [class*="tel"]'
-      }
-    },
-    {
-      name: '골프존 코스',
-      url: 'https://www.golfzon.com/course/search',
-      selector: {
-        container: '.course-list-item, .course-item, .item, .card, div[class*="course"], div[class*="golf"]',
-        name: '.course-title, .course-name, h3, h4, .title, .name, [class*="name"], [class*="title"]',
-        region: '.course-location, .location, .region, [class*="location"], [class*="region"]',
-        address: '.course-address, .address, .addr, [class*="address"], [class*="addr"]'
-      }
-    }
-  ];
+  // 공공데이터만 사용하므로 기존 소스 배열 제거
 
   async initBrowser(): Promise<void> {
     if (!this.browser) {
@@ -167,96 +134,35 @@ export class GolfCourseScraper {
     }
   }
 
-  async scrapeAllSources(): Promise<ScrapedGolfCourse[]> {
+  async scrapeFromPublicData(): Promise<ScrapedGolfCourse[]> {
     const allCourses: ScrapedGolfCourse[] = [];
 
-    // 1단계: 프렌즈 스크린 전용 크롤링 시도
+    // 공공데이터포털에서만 골프장 정보 크롤링
     try {
-      console.log('프렌즈 스크린에서 골프장 정보 크롤링 시도...');
-      const friendsScreenCourses = await this.scrapeFriendsScreen();
-      if (friendsScreenCourses.length > 0) {
-        allCourses.push(...friendsScreenCourses);
-        console.log(`프렌즈 스크린에서 ${friendsScreenCourses.length}개 골프장 크롤링 성공`);
+      console.log('공공데이터포털에서 골프장 정보 크롤링 시작...');
+      const publicDataScraper = new PublicDataGolfScraper();
+      const publicDataCourses = await publicDataScraper.scrapeGolfCoursesFromPublicData();
+      
+      if (publicDataCourses.length > 0) {
+        const convertedCourses = publicDataCourses.map(course => ({
+          name: course.name,
+          region: course.region,
+          city: course.city,
+          address: course.address,
+          phone: course.phone,
+          source: '공공데이터포털'
+        }));
+        
+        allCourses.push(...convertedCourses);
+        console.log(`공공데이터포털에서 ${convertedCourses.length}개 골프장 크롤링 성공`);
       }
     } catch (error) {
-      console.error('프렌즈 스크린 처리 오류:', error);
+      console.error('공공데이터포털 처리 오류:', error);
     }
 
-    // 2단계: 기존 소스들 크롤링 시도
-    for (const source of this.sources) {
-      try {
-        console.log(`${source.name}에서 골프장 정보 크롤링 시도...`);
-        const courses = await this.scrapeFromSource(source);
-        if (courses.length > 0) {
-          allCourses.push(...courses);
-          console.log(`${source.name}에서 ${courses.length}개 골프장 크롤링 성공`);
-        }
-        
-        // 소스 간 요청 지연
-        await new Promise(resolve => setTimeout(resolve, 2000));
-      } catch (error) {
-        console.error(`소스 ${source.name} 처리 오류:`, error);
-      }
-    }
-
-    // 2단계: 실제 크롤링 성공 시 결과 반환
-    if (allCourses.length > 0) {
-      console.log(`실제 크롤링으로 ${allCourses.length}개 골프장 수집 완료`);
-      return this.deduplicateCourses(allCourses);
-    }
-
-    // 3단계: Fallback Mock 데이터
-    console.log('모든 크롤링 실패, Mock 데이터 사용');
-    const mockCourses: ScrapedGolfCourse[] = [
-      {
-        name: '용인골프클럽',
-        region: '경기도',
-        city: '용인시',
-        address: '경기도 용인시 기흥구 용인골프로 123',
-        phone: '031-123-4567',
-        website: 'https://yongin-golf.co.kr',
-        source: 'mock'
-      },
-      {
-        name: '서울골프클럽',
-        region: '서울특별시',
-        city: '서울시',
-        address: '서울특별시 강남구 서울골프로 456',
-        phone: '02-1234-5678',
-        website: 'https://seoul-golf.co.kr',
-        source: 'mock'
-      },
-      {
-        name: '부산골프클럽',
-        region: '부산광역시',
-        city: '부산시',
-        address: '부산광역시 해운대구 부산골프로 789',
-        phone: '051-123-4567',
-        website: 'https://busan-golf.co.kr',
-        source: 'mock'
-      },
-      {
-        name: '제주골프클럽',
-        region: '제주특별자치도',
-        city: '제주시',
-        address: '제주특별자치도 제주시 제주골프로 101',
-        phone: '064-123-4567',
-        website: 'https://jeju-golf.co.kr',
-        source: 'mock'
-      },
-      {
-        name: '강원골프클럽',
-        region: '강원도',
-        city: '춘천시',
-        address: '강원도 춘천시 강원골프로 202',
-        phone: '033-123-4567',
-        website: 'https://gangwon-golf.co.kr',
-        source: 'mock'
-      }
-    ];
-
-    console.log(`골프장 Mock 데이터 생성 완료: ${mockCourses.length}개`);
-    return mockCourses;
+    // 공공데이터 크롤링 결과 반환
+    console.log(`공공데이터로 ${allCourses.length}개 골프장 수집 완료`);
+    return this.deduplicateCourses(allCourses);
   }
 
   private parseRegion(regionText: string): { region: string; city: string } {
@@ -383,7 +289,7 @@ export class GolfCourseScraper {
       console.log('골프장 정보 수집 시작...');
       
       // 웹 스크래핑
-      const scrapedCourses = await this.scrapeAllSources();
+      const scrapedCourses = await this.scrapeFromPublicData();
       
       // 수동 데이터 추가
       const manualCourses = await this.addManualCourses();
