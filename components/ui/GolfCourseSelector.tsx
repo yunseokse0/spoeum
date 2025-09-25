@@ -78,6 +78,7 @@ export function GolfCourseSelector({
       return;
     }
 
+    console.log('골프장 검색 시작:', query);
     setLoading(true);
     try {
       const params = new URLSearchParams({
@@ -85,12 +86,17 @@ export function GolfCourseSelector({
         limit: '20'
       });
 
+      console.log('검색 URL:', `/api/golf-courses/search?${params}`);
       const response = await fetch(`/api/golf-courses/search?${params}`);
       const data = await response.json();
       
+      console.log('검색 응답:', data);
+      
       if (data.success) {
         setCourses(data.data.courses);
+        console.log('검색된 골프장 수:', data.data.courses.length);
       } else {
+        console.error('검색 실패:', data.error);
         setCourses([]);
       }
     } catch (error) {
@@ -185,7 +191,7 @@ export function GolfCourseSelector({
 
       {/* 드롭다운 */}
       {isOpen && (
-        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-80 overflow-hidden">
+        <div className="absolute z-50 w-full mt-1 bg-white border-2 border-gray-400 rounded-lg shadow-xl max-h-80 overflow-hidden">
           {/* 검색 결과 */}
           <div className="max-h-60 overflow-y-auto">
             {loading ? (
@@ -203,13 +209,13 @@ export function GolfCourseSelector({
                   <div className="flex items-start">
                     <MapPin className="h-4 w-4 text-gray-400 mt-0.5 mr-3 flex-shrink-0" />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 truncate">
+                      <p className="text-sm font-medium text-black truncate">
                         {course.name}
                       </p>
-                      <p className="text-xs text-gray-500 truncate">
+                      <p className="text-xs text-gray-700 truncate">
                         {course.region} {course.city}
                       </p>
-                      <p className="text-xs text-gray-400 truncate">
+                      <p className="text-xs text-gray-600 truncate">
                         {course.address}
                       </p>
                     </div>
@@ -217,14 +223,14 @@ export function GolfCourseSelector({
                 </button>
               ))
             ) : searchQuery.length >= 1 ? (
-              <div className="p-4 text-center text-gray-500">
-                <p>검색 결과가 없습니다.</p>
-                <p className="text-xs mt-1">다른 검색어를 시도해보세요.</p>
+              <div className="p-4 text-center text-black">
+                <p className="font-medium">검색 결과가 없습니다.</p>
+                <p className="text-sm mt-1 text-gray-600">다른 검색어를 시도해보세요.</p>
               </div>
             ) : (
-              <div className="p-4 text-center text-gray-500">
-                <p>골프장 이름을 입력하세요.</p>
-                <p className="text-xs mt-1">최소 1글자 이상 입력해주세요.</p>
+              <div className="p-4 text-center text-black">
+                <p className="font-medium">골프장 이름을 입력하세요.</p>
+                <p className="text-sm mt-1 text-gray-600">최소 1글자 이상 입력해주세요.</p>
               </div>
             )}
           </div>
