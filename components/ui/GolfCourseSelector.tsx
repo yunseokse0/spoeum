@@ -31,18 +31,12 @@ export function GolfCourseSelector({
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [courses, setCourses] = useState<GolfCourse[]>([]);
-  const [regions, setRegions] = useState<{region: string, count: number}[]>([]);
-  const [selectedRegion, setSelectedRegion] = useState('');
   const [loading, setLoading] = useState(false);
   const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(null);
   
   const dropdownRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // 지역 목록 로드
-  useEffect(() => {
-    loadRegions();
-  }, []);
 
   // 검색 쿼리 변경 시 디바운스 적용
   useEffect(() => {
@@ -52,7 +46,7 @@ export function GolfCourseSelector({
 
     const timeout = setTimeout(() => {
       if (searchQuery.length >= 1) {
-        searchCourses(searchQuery, selectedRegion);
+        searchCourses(searchQuery);
       } else {
         setCourses([]);
       }
@@ -63,7 +57,7 @@ export function GolfCourseSelector({
     return () => {
       if (timeout) clearTimeout(timeout);
     };
-  }, [searchQuery, selectedRegion]);
+  }, [searchQuery]);
 
   // 외부 클릭 시 드롭다운 닫기
   useEffect(() => {
@@ -77,24 +71,8 @@ export function GolfCourseSelector({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const loadRegions = async () => {
-    try {
-      const response = await fetch('/api/golf-courses/search', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'getRegions' })
-      });
-      
-      const data = await response.json();
-      if (data.success) {
-        setRegions(data.data.regions);
-      }
-    } catch (error) {
-      console.error('지역 목록 로드 오류:', error);
-    }
-  };
 
-  const searchCourses = async (query: string, region: string = '') => {
+  const searchCourses = async (query: string) => {
     if (!query.trim()) {
       setCourses([]);
       return;
@@ -106,10 +84,6 @@ export function GolfCourseSelector({
         q: query,
         limit: '20'
       });
-      
-      if (region) {
-        params.append('region', region);
-      }
 
       const response = await fetch(`/api/golf-courses/search?${params}`);
       const data = await response.json();
@@ -137,13 +111,27 @@ export function GolfCourseSelector({
     onChange(null);
     setSearchQuery('');
     setCourses([]);
-    setSelectedRegion('');
   };
 
   const handleInputFocus = () => {
     setIsOpen(true);
     if (searchQuery.length >= 1) {
-      searchCourses(searchQuery, selectedRegion);
+      searchCourses(searchQuery);
+    }
+  };
+
+  const handleInputClick = () => {
+    setIsOpen(true);
+    if (searchQuery.length >= 1) {
+      searchCourses(searchQuery);
+    }
+  };
+
+  // 드롭다운 토글
+  const toggleDropdown = () => {
+    setIsOpen(!isOpen);
+    if (!isOpen && searchQuery.length >= 1) {
+      searchCourses(searchQuery);
     }
   };
 
@@ -161,6 +149,7 @@ export function GolfCourseSelector({
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           onFocus={handleInputFocus}
+          onClick={handleInputClick}
           placeholder={placeholder}
           disabled={disabled}
           className={`
@@ -182,7 +171,7 @@ export function GolfCourseSelector({
         
         <button
           type="button"
-          onClick={() => setIsOpen(!isOpen)}
+          onClick={toggleDropdown}
           className="absolute inset-y-0 right-0 pr-3 flex items-center"
         >
           <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
@@ -197,37 +186,6 @@ export function GolfCourseSelector({
       {/* 드롭다운 */}
       {isOpen && (
         <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-80 overflow-hidden">
-          {/* 지역 필터 */}
-          {regions.length > 0 && (
-            <div className="p-3 border-b border-gray-200">
-              <div className="flex flex-wrap gap-2">
-                <button
-                  onClick={() => setSelectedRegion('')}
-                  className={`px-3 py-1 text-xs rounded-full border ${
-                    selectedRegion === '' 
-                      ? 'bg-blue-100 text-blue-800 border-blue-300' 
-                      : 'bg-gray-100 text-gray-700 border-gray-300'
-                  }`}
-                >
-                  전체
-                </button>
-                {regions.slice(0, 8).map((region) => (
-                  <button
-                    key={region.region}
-                    onClick={() => setSelectedRegion(region.region)}
-                    className={`px-3 py-1 text-xs rounded-full border ${
-                      selectedRegion === region.region 
-                        ? 'bg-blue-100 text-blue-800 border-blue-300' 
-                        : 'bg-gray-100 text-gray-700 border-gray-300'
-                    }`}
-                  >
-                    {region.region} ({region.count})
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
           {/* 검색 결과 */}
           <div className="max-h-60 overflow-y-auto">
             {loading ? (
