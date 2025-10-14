@@ -347,3 +347,74 @@ CREATE TABLE payments (
     INDEX idx_status (status),
     INDEX idx_payment_type (payment_type)
 );
+
+-- 대회 결과 테이블
+CREATE TABLE tournament_results (
+    id VARCHAR(36) PRIMARY KEY DEFAULT (UUID()),
+    tournament_id VARCHAR(36) NOT NULL,
+    player_name VARCHAR(100) NOT NULL,
+    player_id VARCHAR(36), -- users 테이블과 연결 (선택)
+    rank INT NOT NULL,
+    score INT,
+    prize_amount DECIMAL(15, 2) DEFAULT 0.00,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (tournament_id) REFERENCES tournaments(id) ON DELETE CASCADE,
+    FOREIGN KEY (player_id) REFERENCES users(id) ON DELETE SET NULL,
+    INDEX idx_tournament (tournament_id),
+    INDEX idx_player (player_id),
+    INDEX idx_rank (rank)
+);
+
+-- 캐디 정산 규칙 테이블
+CREATE TABLE payout_rules (
+    id VARCHAR(36) PRIMARY KEY DEFAULT (UUID()),
+    rule_name VARCHAR(100) NOT NULL,
+    min_rank INT NOT NULL,
+    max_rank INT NOT NULL,
+    rate_percent DECIMAL(5, 2) NOT NULL,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    INDEX idx_rank_range (min_rank, max_rank),
+    INDEX idx_active (is_active)
+);
+
+-- 캐디 정산 테이블
+CREATE TABLE caddy_payouts (
+    id VARCHAR(36) PRIMARY KEY DEFAULT (UUID()),
+    tournament_id VARCHAR(36) NOT NULL,
+    result_id VARCHAR(36) NOT NULL,
+    player_name VARCHAR(100) NOT NULL,
+    player_id VARCHAR(36),
+    caddy_name VARCHAR(100) NOT NULL,
+    caddy_id VARCHAR(36),
+    rank INT NOT NULL,
+    prize_amount DECIMAL(15, 2) NOT NULL,
+    payout_rate DECIMAL(5, 2) NOT NULL,
+    payout_amount DECIMAL(15, 2) NOT NULL,
+    paid_status BOOLEAN DEFAULT FALSE,
+    paid_date TIMESTAMP NULL,
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (tournament_id) REFERENCES tournaments(id) ON DELETE CASCADE,
+    FOREIGN KEY (result_id) REFERENCES tournament_results(id) ON DELETE CASCADE,
+    FOREIGN KEY (player_id) REFERENCES users(id) ON DELETE SET NULL,
+    FOREIGN KEY (caddy_id) REFERENCES users(id) ON DELETE SET NULL,
+    
+    INDEX idx_tournament (tournament_id),
+    INDEX idx_player (player_id),
+    INDEX idx_caddy (caddy_id),
+    INDEX idx_paid_status (paid_status)
+);
+
+-- 기본 정산 규칙 데이터
+INSERT INTO payout_rules (rule_name, min_rank, max_rank, rate_percent) VALUES
+('우승~10위', 1, 10, 10.00),
+('11위~30위', 11, 30, 7.00),
+('31위~50위', 31, 50, 5.00),
+('컷통과', 51, 999, 3.00);

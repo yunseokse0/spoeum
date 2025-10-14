@@ -189,6 +189,7 @@ export default function AdminPage() {
     { id: 'dashboard', label: '대시보드', icon: BarChart3 },
     { id: 'users', label: '회원 관리', icon: Users },
     { id: 'payments', label: '결제 관리', icon: DollarSign },
+    { id: 'caddy-payouts', label: '캐디 정산', icon: DollarSign },
     { id: 'notifications', label: '알림 관리', icon: Bell },
   ];
 
@@ -494,6 +495,123 @@ export default function AdminPage() {
               <p className="text-gray-600 dark:text-gray-400">
                 결제 관리 기능이 곧 추가됩니다.
               </p>
+            </CardBody>
+          </Card>
+        )}
+        {activeTab === 'caddy-payouts' && (
+          <Card>
+            <CardBody className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 flex items-center">
+                    <DollarSign className="h-7 w-7 mr-3 text-green-500" />
+                    캐디 정산 관리
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    대회 결과 기반 캐디 수당 자동 계산 시스템
+                  </p>
+                </div>
+                <Button
+                  onClick={() => router.push('/admin/caddy-payouts')}
+                  className="bg-green-600 hover:bg-green-700 text-white"
+                >
+                  정산 관리 페이지로 이동 →
+                </Button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div className="p-6 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl border border-green-200 dark:border-green-700">
+                  <h4 className="text-lg font-semibold mb-3 text-green-900 dark:text-green-100">
+                    🎯 주요 기능
+                  </h4>
+                  <ul className="space-y-2 text-sm text-green-800 dark:text-green-200">
+                    <li className="flex items-start">
+                      <CheckCircle className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0" />
+                      <span>KPGA/KLPGA 대회 결과 자동 수집 (Gemini AI)</span>
+                    </li>
+                    <li className="flex items-start">
+                      <CheckCircle className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0" />
+                      <span>상금 기반 캐디 수당 자동 계산</span>
+                    </li>
+                    <li className="flex items-start">
+                      <CheckCircle className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0" />
+                      <span>순위별 지급 비율 자동 적용</span>
+                    </li>
+                    <li className="flex items-start">
+                      <CheckCircle className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0" />
+                      <span>정산 내역 관리 및 승인</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="p-6 bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 rounded-xl border border-blue-200 dark:border-blue-700">
+                  <h4 className="text-lg font-semibold mb-3 text-blue-900 dark:text-blue-100">
+                    💰 정산 규칙
+                  </h4>
+                  <div className="space-y-2 text-sm text-blue-800 dark:text-blue-200">
+                    <div className="flex justify-between items-center p-2 bg-white/50 dark:bg-gray-800/50 rounded">
+                      <span>1위 ~ 10위</span>
+                      <span className="font-semibold text-green-600">상금의 10%</span>
+                    </div>
+                    <div className="flex justify-between items-center p-2 bg-white/50 dark:bg-gray-800/50 rounded">
+                      <span>11위 ~ 30위</span>
+                      <span className="font-semibold text-green-600">상금의 7%</span>
+                    </div>
+                    <div className="flex justify-between items-center p-2 bg-white/50 dark:bg-gray-800/50 rounded">
+                      <span>31위 ~ 50위</span>
+                      <span className="font-semibold text-green-600">상금의 5%</span>
+                    </div>
+                    <div className="flex justify-between items-center p-2 bg-white/50 dark:bg-gray-800/50 rounded">
+                      <span>51위 이상</span>
+                      <span className="font-semibold text-green-600">상금의 3%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-6 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-xl border border-purple-200 dark:border-purple-700">
+                <h4 className="text-lg font-semibold mb-3 text-purple-900 dark:text-purple-100">
+                  🔄 프로세스
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
+                  <div className="flex items-start">
+                    <div className="w-8 h-8 rounded-full bg-purple-500 text-white flex items-center justify-center mr-3 flex-shrink-0 font-bold">
+                      1
+                    </div>
+                    <div>
+                      <p className="font-semibold text-purple-900 dark:text-purple-100">대회 선택</p>
+                      <p className="text-xs text-purple-700 dark:text-purple-200 mt-1">완료된 대회 선택</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start">
+                    <div className="w-8 h-8 rounded-full bg-purple-500 text-white flex items-center justify-center mr-3 flex-shrink-0 font-bold">
+                      2
+                    </div>
+                    <div>
+                      <p className="font-semibold text-purple-900 dark:text-purple-100">정산 계산</p>
+                      <p className="text-xs text-purple-700 dark:text-purple-200 mt-1">자동 계산 실행</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start">
+                    <div className="w-8 h-8 rounded-full bg-purple-500 text-white flex items-center justify-center mr-3 flex-shrink-0 font-bold">
+                      3
+                    </div>
+                    <div>
+                      <p className="font-semibold text-purple-900 dark:text-purple-100">내역 확인</p>
+                      <p className="text-xs text-purple-700 dark:text-purple-200 mt-1">정산 금액 확인</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start">
+                    <div className="w-8 h-8 rounded-full bg-purple-500 text-white flex items-center justify-center mr-3 flex-shrink-0 font-bold">
+                      4
+                    </div>
+                    <div>
+                      <p className="font-semibold text-purple-900 dark:text-purple-100">정산 완료</p>
+                      <p className="text-xs text-purple-700 dark:text-purple-200 mt-1">개별 승인 처리</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </CardBody>
           </Card>
         )}
