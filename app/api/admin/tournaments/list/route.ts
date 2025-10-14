@@ -4,7 +4,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 export const dynamic = 'force-dynamic';
 
 // Gemini API 초기화
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || process.env.geminiAPI || '');
 
 // KPGA/KLPGA 대회 목록 조회 - Gemini API 사용
 export async function GET(request: NextRequest) {
@@ -14,9 +14,14 @@ export async function GET(request: NextRequest) {
     const association = searchParams.get('association') || 'KLPGA';
 
     console.log(`Gemini API로 대회 목록 조회: ${year}년 ${association}`);
+    console.log('환경변수 확인:', {
+      GEMINI_API_KEY: process.env.GEMINI_API_KEY ? '설정됨' : '설정되지 않음',
+      geminiAPI: process.env.geminiAPI ? '설정됨' : '설정되지 않음'
+    });
 
     // Gemini API 키 확인
-    if (!process.env.GEMINI_API_KEY) {
+    const apiKey = process.env.GEMINI_API_KEY || process.env.geminiAPI;
+    if (!apiKey) {
       console.error('Gemini API 키가 설정되지 않았습니다.');
       return NextResponse.json({
         success: false,
@@ -26,7 +31,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Gemini API를 통한 대회 정보 조회 (최대 5번 호출)
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
     
     const allTournaments: any[] = [];
     const maxAttempts = 5;
@@ -139,6 +144,60 @@ ${association === 'KLPGA' ? `
     }
 
     const tournaments = allTournaments;
+    
+    // 대회가 하나도 없으면 기본 Mock 데이터 반환
+    if (tournaments.length === 0) {
+      console.log('Gemini API에서 대회를 가져오지 못해 기본 데이터 반환');
+      const fallbackTournaments = [
+        {
+          id: `${year}-${association.toLowerCase()}-001`,
+          name: `${year} ${association} 시즌 개막전`,
+          association: association,
+          start_date: `${year}-03-15`,
+          end_date: `${year}-03-18`,
+          location: '제주',
+          golf_course: '제주 핀크스 골프클럽',
+          prize_money: 1000000000,
+          max_participants: 120,
+          status: 'upcoming',
+          description: `${association} 투어 ${year}년 시즌 개막전`
+        },
+        {
+          id: `${year}-${association.toLowerCase()}-002`,
+          name: `${year} ${association} 챔피언십`,
+          association: association,
+          start_date: `${year}-10-15`,
+          end_date: `${year}-10-18`,
+          location: '경기',
+          golf_course: '스카이72 골프클럽',
+          prize_money: 1500000000,
+          max_participants: 144,
+          status: 'upcoming',
+          description: `${association} 최고 권위 대회`
+        },
+        {
+          id: `${year}-${association.toLowerCase()}-003`,
+          name: `${year} ${association} 마스터즈`,
+          association: association,
+          start_date: `${year}-11-20`,
+          end_date: `${year}-11-23`,
+          location: '인천',
+          golf_course: '나인브릿지',
+          prize_money: 2000000000,
+          max_participants: 156,
+          status: 'upcoming',
+          description: `${association} 마스터즈 대회`
+        }
+      ];
+      
+      return NextResponse.json({
+        success: true,
+        data: fallbackTournaments,
+        year,
+        association,
+        message: `기본 데이터: ${fallbackTournaments.length}개의 대회를 표시합니다.`
+      });
+    }
     
     return NextResponse.json({
       success: true,
