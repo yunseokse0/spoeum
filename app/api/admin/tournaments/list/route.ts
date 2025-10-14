@@ -32,50 +32,55 @@ export async function GET(request: NextRequest) {
     const model = genAI.getGenerativeModel({ model: "gemini-pro" });
     
     const prompt = `
-${year}년 ${association} 골프 대회 일정과 정보를 정확히 알려주세요.
-반드시 다음 JSON 형태로만 응답해주세요:
+당신은 한국 골프 대회 전문가입니다. ${year}년 ${association} 골프 대회 정보를 정확히 제공해주세요.
+
+**응답 형식**: 반드시 아래 JSON 형식으로만 응답하세요. 다른 설명이나 텍스트는 절대 포함하지 마세요.
 
 {
   "tournaments": [
     {
-      "id": "unique-id-001",
-      "name": "정확한 대회명",
+      "id": "고유식별자",
+      "name": "대회명",
       "association": "${association}",
-      "start_date": "2025-MM-DD",
-      "end_date": "2025-MM-DD",
-      "location": "시/도",
-      "golf_course": "정확한 골프장 이름 (예: 제주 핀크스 골프클럽, 스카이72 골프클럽)",
-      "prize_money": 숫자만입력,
+      "start_date": "${year}-MM-DD",
+      "end_date": "${year}-MM-DD",
+      "location": "시/도명",
+      "golf_course": "골프장 정확한 이름",
+      "prize_money": 숫자,
       "max_participants": 숫자,
       "status": "upcoming",
-      "description": "대회 설명"
+      "description": "대회 간단 설명"
     }
   ]
 }
 
-중요한 요구사항:
-1. start_date와 end_date는 반드시 "2025-MM-DD" 형식으로 입력 (예: "2025-11-15")
-2. golf_course는 구체적인 골프장 이름을 입력 (예: "제주 핀크스 골프클럽", "스카이72 골프클럽", "나인브릿지")
-3. prize_money는 숫자만 입력 (예: 1000000000, 1500000000)
-4. location은 시/도 단위로 입력 (예: "제주", "인천", "경기")
-5. 실제 ${association} 공식 대회 정보를 바탕으로 최대 8개의 대회 정보를 제공
-6. JSON 형식만 응답하고 다른 텍스트는 포함하지 마세요
+**필수 요구사항**:
+1. **날짜 형식**: start_date와 end_date는 반드시 "${year}-MM-DD" 형식 (예: "${year}-11-15")
+2. **골프장 이름**: golf_course는 구체적이고 정확한 골프장 이름 (예: "제주 핀크스 골프클럽", "스카이72 골프클럽", "나인브릿지", "레이크우드 컨트리클럽")
+3. **상금**: prize_money는 숫자만 (예: 1000000000, 1500000000, 2000000000)
+4. **지역**: location은 시/도 단위 (예: "제주", "인천", "경기", "부산", "강원")
+5. **참가자 수**: max_participants는 현실적인 숫자 (예: 120, 144, 156)
+6. **대회 수**: 최대 8개의 실제 ${association} 대회 정보 제공
 
-예시:
+**실제 대회 예시** (참고용):
+- KLPGA: 한화클래식, BMW 레이디스 챔피언십, 롯데 챔피언십, 신한동해오픈
+- KPGA: 제네시스 챔피언십, 코리안 오픈, GS칼텍스 매경오픈, 현대해상 오픈
+
+**응답 예시**:
 {
   "tournaments": [
     {
-      "id": "2025-klpga-001",
-      "name": "2025 KLPGA 시즌 개막전",
-      "association": "KLPGA",
-      "start_date": "2025-11-15",
-      "end_date": "2025-11-18",
+      "id": "${year.toLowerCase()}-${association.toLowerCase()}-001",
+      "name": "${year} ${association} 시즌 개막전",
+      "association": "${association}",
+      "start_date": "${year}-03-15",
+      "end_date": "${year}-03-18",
       "location": "제주",
       "golf_course": "제주 핀크스 골프클럽",
       "prize_money": 1000000000,
       "max_participants": 120,
       "status": "upcoming",
-      "description": "KLPGA 투어 2025년 시즌 개막전"
+      "description": "${association} 투어 ${year}년 시즌 개막전"
     }
   ]
 }
