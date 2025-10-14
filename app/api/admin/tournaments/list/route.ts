@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Gemini API를 통한 대회 정보 조회
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
     
     const prompt = `
 당신은 한국 골프 대회 전문가입니다. ${year}년 ${association}에서 주최하는 **모든 공식 대회**의 완전한 정보를 제공해주세요.
