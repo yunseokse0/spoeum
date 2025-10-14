@@ -289,13 +289,13 @@ export default function CaddySignupPage() {
                     <select
                       value={formData.experience}
                       onChange={(e) => handleInputChange('experience', e.target.value)}
-                      className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 ${
-                        errors.experience ? 'border-red-500 bg-red-50' : 'border-gray-300 hover:border-purple-300'
+                      className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 text-gray-900 dark:text-white bg-white dark:bg-gray-800 ${
+                        errors.experience ? 'border-red-500 bg-red-50 dark:bg-red-900/20' : 'border-gray-300 hover:border-purple-300'
                       }`}
                     >
-                      <option value="">경력을 선택하세요</option>
+                      <option value="" className="text-gray-900 dark:text-white">경력을 선택하세요</option>
                       {experienceOptions.map(option => (
-                        <option key={option.value} value={option.value}>
+                        <option key={option.value} value={option.value} className="text-gray-900 dark:text-white">
                           {option.label}
                         </option>
                       ))}
