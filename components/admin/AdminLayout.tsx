@@ -181,7 +181,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-golf-green-50 via-white to-golf-sky-50 dark:from-golf-dark-900 dark:via-golf-dark-800 dark:to-golf-dark-900">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
       {/* 모바일 사이드바 오버레이 */}
       {sidebarOpen && (
         <div 
@@ -192,9 +192,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
       {/* 사이드바 */}
       <div className={`
-        fixed inset-y-0 left-0 z-50 w-64 bg-white/95 dark:bg-golf-dark-800/95 backdrop-blur-sm shadow-lg transform transition-transform duration-300 ease-in-out border-r border-golf-green-200 dark:border-golf-dark-700
+        fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-800 shadow-lg transform transition-transform duration-300 ease-in-out border-r border-gray-200 dark:border-gray-700
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-        lg:translate-x-0 lg:static lg:inset-0
+        lg:translate-x-0 lg:static lg:inset-0 lg:flex lg:flex-col
       `}>
         {/* 사이드바 헤더 */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
@@ -239,7 +239,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         </div>
 
         {/* 메뉴 */}
-        <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+        <nav className="flex-1 p-4 space-y-2 overflow-y-auto lg:flex lg:flex-col">
           {adminMenuItems.map((item) => {
             const isActive = pathname === item.href;
             const Icon = item.icon;
@@ -285,9 +285,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       </div>
 
       {/* 메인 컨텐츠 */}
-      <div className="lg:pl-64">
+      <div className="flex-1 flex flex-col min-w-0">
         {/* 상단바 */}
-        <header className="bg-white/95 dark:bg-golf-dark-800/95 backdrop-blur-sm shadow-sm border-b border-golf-green-200 dark:border-golf-dark-700">
+        <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between px-4 py-3">
             <div className="flex items-center space-x-4">
               <button
@@ -334,7 +334,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         </header>
 
         {/* 페이지 컨텐츠 */}
-        <main className="p-6">
+        <main className="flex-1 p-6 overflow-auto">
           {children}
         </main>
       </div>
