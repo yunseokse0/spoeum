@@ -24,6 +24,8 @@ interface Tournament {
   start_date: string;
   end_date: string;
   status: string;
+  location?: string;
+  prize_money?: number;
 }
 
 interface Payout {
@@ -47,21 +49,47 @@ export default function CaddyPayoutsPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isCalculating, setIsCalculating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  // 년도/협회 선택 상태
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
+  const [selectedAssociation, setSelectedAssociation] = useState<'KLPGA' | 'KPGA'>('KLPGA');
+  const [activeTab, setActiveTab] = useState<'completed' | 'upcoming'>('completed');
+  
+  // 년도 옵션 생성
+  const years = Array.from({ length: 5 }, (_, i) => (new Date().getFullYear() - i).toString());
 
   // 대회 목록 로드
   useEffect(() => {
     loadTournaments();
-  }, []);
+  }, [selectedYear, selectedAssociation, activeTab]);
 
   const loadTournaments = async () => {
+    setIsLoading(true);
+    setError(null);
     try {
-      const res = await fetch('/api/admin/tournaments/results');
+      let apiUrl = '';
+      
+      if (activeTab === 'completed') {
+        // 완료된 대회 목록 (저장된 결과가 있는 대회)
+        apiUrl = '/api/admin/tournaments/results';
+      } else {
+        // 예정된 대회 목록
+        apiUrl = `/api/admin/tournaments/upcoming?year=${selectedYear}&association=${selectedAssociation}`;
+      }
+      
+      const res = await fetch(apiUrl);
       const data = await res.json();
+      
       if (data.success) {
         setTournaments(data.data || []);
+      } else {
+        setError(data.error || '대회 목록을 불러올 수 없습니다.');
       }
     } catch (err) {
+      setError('대회 목록 로드 중 오류가 발생했습니다.');
       console.error('대회 목록 로드 실패:', err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -174,23 +202,132 @@ export default function CaddyPayoutsPage() {
               <Trophy className="h-5 w-5 mr-2 text-yellow-500" />
               대회 선택
             </h2>
-            <select
-              value={selectedTournament?.id || ''}
-              onChange={(e) => {
-                const tournament = tournaments.find(t => t.id === e.target.value);
-                if (tournament) handleTournamentSelect(tournament);
-              }}
-              className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500"
-            >
-              <option value="">대회를 선택하세요</option>
-              {tournaments.map(t => (
-                <option key={t.id} value={t.id}>
-                  [{t.association}] {t.name} ({t.start_date})
-                </option>
-              ))}
-            </select>
+            
+            {/* 탭 선택 */}
+            <div className="flex space-x-1 mb-4 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+              <button
+                onClick={() => setActiveTab('completed')}
+                className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                  activeTab === 'completed'
+                    ? 'bg-white dark:bg-gray-700 text-green-600 dark:text-green-400 shadow-sm'
+                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+                }`}
+              >
+                완료된 대회
+              </button>
+              <button
+                onClick={() => setActiveTab('upcoming')}
+                className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                  activeTab === 'upcoming'
+                    ? 'bg-white dark:bg-gray-700 text-green-600 dark:text-green-400 shadow-sm'
+                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+                }`}
+              >
+                예정된 대회
+              </button>
+            </div>
 
-            {selectedTournament && (
+            {/* 년도/협회 선택 (예정된 대회일 때만) */}
+            {activeTab === 'upcoming' && (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    년도 선택
+                  </label>
+                  <select
+                    value={selectedYear}
+                    onChange={(e) => setSelectedYear(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    disabled={isLoading}
+                  >
+                    {years.map((year) => (
+                      <option key={year} value={year}>
+                        {year}년
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    협회 선택
+                  </label>
+                  <div className="flex space-x-4">
+                    <label className="flex items-center space-x-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="association"
+                        value="KLPGA"
+                        checked={selectedAssociation === 'KLPGA'}
+                        onChange={(e) => setSelectedAssociation(e.target.value as 'KLPGA')}
+                        className="w-4 h-4 text-green-600"
+                        disabled={isLoading}
+                      />
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        KLPGA (여자)
+                      </span>
+                    </label>
+                    <label className="flex items-center space-x-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="association"
+                        value="KPGA"
+                        checked={selectedAssociation === 'KPGA'}
+                        onChange={(e) => setSelectedAssociation(e.target.value as 'KPGA')}
+                        className="w-4 h-4 text-green-600"
+                        disabled={isLoading}
+                      />
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        KPGA (남자)
+                      </span>
+                    </label>
+                  </div>
+                </div>
+                <div className="flex items-end">
+                  <Button
+                    onClick={loadTournaments}
+                    disabled={isLoading}
+                    className="w-full bg-green-600 hover:bg-green-700"
+                  >
+                    {isLoading ? (
+                      <>
+                        <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                        검색 중...
+                      </>
+                    ) : (
+                      <>
+                        <Trophy className="w-4 h-4 mr-2" />
+                        대회 검색
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* 대회 목록 */}
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                {activeTab === 'completed' ? '완료된 대회' : '예정된 대회'} 선택
+              </label>
+              <select
+                value={selectedTournament?.id || ''}
+                onChange={(e) => {
+                  const tournament = tournaments.find(t => t.id === e.target.value);
+                  if (tournament) handleTournamentSelect(tournament);
+                }}
+                className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                disabled={isLoading}
+              >
+                <option value="">대회를 선택하세요</option>
+                {tournaments.map(t => (
+                  <option key={t.id} value={t.id}>
+                    [{t.association}] {t.name} ({t.start_date})
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {selectedTournament && activeTab === 'completed' && (
               <div className="mt-4 flex gap-3">
                 <Button
                   onClick={handleCalculate}
@@ -216,6 +353,17 @@ export default function CaddyPayoutsPage() {
                   <RefreshCw className="h-4 w-4 mr-2" />
                   새로고침
                 </Button>
+              </div>
+            )}
+            
+            {selectedTournament && activeTab === 'upcoming' && (
+              <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                <div className="flex items-center text-blue-600 dark:text-blue-400">
+                  <AlertCircle className="h-5 w-5 mr-2" />
+                  <span className="text-sm font-medium">
+                    예정된 대회는 아직 정산할 수 없습니다. 대회 완료 후 결과가 입력되면 정산이 가능합니다.
+                  </span>
+                </div>
               </div>
             )}
           </CardBody>
@@ -297,7 +445,7 @@ export default function CaddyPayoutsPage() {
         )}
 
         {/* 정산 테이블 */}
-        {selectedTournament && (
+        {selectedTournament && activeTab === 'completed' && (
           <Card>
             <CardBody className="p-6">
               <div className="flex items-center justify-between mb-4">
