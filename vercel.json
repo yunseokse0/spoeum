@@ -5,15 +5,6 @@
   "functions": {
     "app/api/**/*.ts": {
       "maxDuration": 60
-    },
-    "app/api/data/scrape-all/route.ts": {
-      "maxDuration": 300
-    },
-    "app/api/tournaments/scrape/route.ts": {
-      "maxDuration": 180
-    },
-    "app/api/golf-courses/sync/route.ts": {
-      "maxDuration": 180
     }
   },
   "env": {
@@ -23,11 +14,5 @@
     "DATABASE_URL": "postgresql://localhost:5432/spoeum",
     "PG_API_KEY": "",
     "PG_API_SECRET": ""
-  },
-  "build": {
-    "env": {
-      "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD": "true",
-      "PUPPETEER_EXECUTABLE_PATH": "/usr/bin/chromium-browser"
-    }
   }
 }

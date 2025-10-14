@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
-import { GolfCourseSelector, GolfCourse } from '@/components/ui/GolfCourseSelector';
 import { GolfLogoWithText } from '@/components/ui/GolfLogo';
 import { useThemeStore } from '@/store/useThemeStore';
 import { ArrowLeft, User, Mail, Phone, MapPin, Briefcase, Star, CheckCircle, Sparkles, Shield, Clock, Trophy, Target, Heart, DollarSign, FileText } from 'lucide-react';
@@ -24,7 +23,7 @@ export default function CaddySignupPage() {
     cutOffRate: '', // 컷오프시 금액
     cutPassRate: '', // 컷통과시 금액
     bio: '',
-    golfCourse: null as GolfCourse | null
+    golfCourse: '' // 골프장 이름 (문자열)
   });
   
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -89,7 +88,7 @@ export default function CaddySignupPage() {
     }
     
     if (!formData.bio.trim()) newErrors.bio = '자기소개를 입력해주세요.';
-    if (!formData.golfCourse) newErrors.golfCourse = '소속 골프장을 선택해주세요.';
+    if (!formData.golfCourse.trim()) newErrors.golfCourse = '소속 골프장을 입력해주세요.';
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -256,33 +255,20 @@ export default function CaddySignupPage() {
                       <MapPin className="h-4 w-4 mr-1 text-green-500" />
                       소속 골프장 *
                     </label>
-                    <GolfCourseSelector
+                    <input
+                      type="text"
                       value={formData.golfCourse}
-                      onChange={(course) => handleInputChange('golfCourse', course)}
-                      placeholder="골프장을 검색하세요..."
-                      error={errors.golfCourse}
+                      onChange={(e) => handleInputChange('golfCourse', e.target.value)}
+                      className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 ${
+                        errors.golfCourse ? 'border-red-500 bg-red-50' : 'border-gray-300 hover:border-green-300'
+                      }`}
+                      placeholder="소속 골프장 이름을 입력하세요..."
                     />
+                    {errors.golfCourse && <p className="text-red-500 text-sm mt-1 flex items-center"><span className="w-1 h-1 bg-red-500 rounded-full mr-2"></span>{errors.golfCourse}</p>}
                     <p className="text-xs text-gray-500 mt-1 flex items-center">
                       <Target className="h-3 w-3 mr-1" />
-                      검색하여 골프장을 선택하거나 새로 추가할 수 있습니다
+                      예: 한양컨트리클럽, 제주오라컨트리클럽 등
                     </p>
-                    {formData.golfCourse && (
-                      <div className="mt-3 p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl border border-green-200 dark:border-green-700">
-                        <div className="flex items-center">
-                          <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-green-500 to-emerald-500 flex items-center justify-center mr-3">
-                            <MapPin className="h-4 w-4 text-white" />
-                          </div>
-                          <div>
-                            <p className="text-sm font-semibold text-green-800 dark:text-green-200">
-                              {formData.golfCourse.name}
-                            </p>
-                            <p className="text-xs text-green-600 dark:text-green-400">
-                              {formData.golfCourse.region} {formData.golfCourse.city}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    )}
                   </div>
                 </div>
 
