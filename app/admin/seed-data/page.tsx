@@ -15,7 +15,7 @@ import {
   FileText,
   Users
 } from 'lucide-react';
-import { useAuthStore } from '@/store/useAuthStore';
+import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { useRouter } from 'next/navigation';
 import api from '@/lib/api';
 import toast from 'react-hot-toast';
@@ -37,7 +37,7 @@ export default function AdminSeedDataPage() {
   const [status, setStatus] = useState<SeedDataStatus | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSeeding, setIsSeeding] = useState(false);
-  const { user: currentUser } = useAuthStore();
+  const { user: currentUser, isAuthenticated, isLoading } = useAdminAuth();
   const router = useRouter();
 
   useEffect(() => {

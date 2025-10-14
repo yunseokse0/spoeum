@@ -17,7 +17,7 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useAuthStore } from '@/store/useAuthStore';
+import { useAdminAuth } from '@/hooks/useAdminAuth';
 import api from '@/lib/api';
 import toast from 'react-hot-toast';
 
@@ -44,17 +44,19 @@ export default function AdminMembersPage() {
     pending: 0
   });
   const [isLoading, setIsLoading] = useState(true);
-  const { user: currentUser } = useAuthStore();
+  const { user: currentUser, isAuthenticated, isLoading } = useAdminAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!currentUser || (currentUser.role !== 'admin' && currentUser.role !== 'superadmin')) {
+    if (isLoading) return;
+    
+    if (!isAuthenticated || !currentUser || (currentUser.role !== 'admin' && currentUser.role !== 'superadmin')) {
       router.push('/admin/login');
       return;
     }
 
     fetchMemberStats();
-  }, [currentUser, router]);
+  }, [currentUser, isAuthenticated, isLoading, router]);
 
   const fetchMemberStats = async () => {
     try {

@@ -29,7 +29,7 @@ import {
   Plus
 } from 'lucide-react';
 import { formatCurrency, formatDate, formatRelativeTime } from '@/lib/utils';
-import { useAuthStore } from '@/store/useAuthStore';
+import { useAdminAuth } from '@/hooks/useAdminAuth';
 
 // 임시 관리자 데이터
 const mockDashboardStats = {
@@ -108,7 +108,7 @@ const mockRecentTransactions = [
 
 export default function AdminPage() {
   const router = useRouter();
-  const { userType, isAuthenticated } = useAuthStore();
+  const { user, isAuthenticated, isLoading } = useAdminAuth();
   const [activeTab, setActiveTab] = useState('dashboard');
 
   // 관리자 페이지 접근 제한 제거 - 자유롭게 접근 가능

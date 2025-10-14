@@ -76,7 +76,7 @@ import {
 import { User as UserType, GolfAssociation, Gender, MemberStatus } from '@/types';
 import api from '@/lib/api';
 import toast from 'react-hot-toast';
-import { useAuthStore } from '@/store/useAuthStore';
+import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { useRouter } from 'next/navigation';
 
 interface TourProUser extends UserType {
@@ -104,17 +104,19 @@ export default function AdminProMembersPage() {
   const [selectedUser, setSelectedUser] = useState<TourProUser | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const { user: currentUser } = useAuthStore();
+  const { user: currentUser, isAuthenticated, isLoading } = useAdminAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!currentUser || (currentUser.role !== 'admin' && currentUser.role !== 'superadmin')) {
+    if (isLoading) return;
+    
+    if (!isAuthenticated || !currentUser || (currentUser.role !== 'admin' && currentUser.role !== 'superadmin')) {
       router.push('/admin/login');
       return;
     }
 
     fetchProMembers();
-  }, [currentUser, router]);
+  }, [currentUser, isAuthenticated, isLoading, router]);
 
   useEffect(() => {
     filterUsers();

@@ -72,7 +72,9 @@ export async function GET(request: NextRequest) {
       console.log(`=== Gemini API 호출 시도 ${attempt}/${maxAttempts} ===`);
       
       const prompt = `
-당신은 한국 골프 대회 전문가입니다. ${year}년 ${association}에서 주최하는 **공식 대회** 정보를 제공해주세요.
+당신은 한국 골프 대회 전문가입니다. ${year}년 ${association}에서 주최하는 **모든 공식 대회** 정보를 제공해주세요.
+
+**중요**: ${association}의 ${year}년 **전체 시즌 대회**를 모두 찾아주세요. **반드시 20개 이상의 대회**를 제공해야 합니다.
 
 **호출 번호**: ${attempt}/${maxAttempts}
 
@@ -99,8 +101,14 @@ export async function GET(request: NextRequest) {
 **${association} 대회 예시** (참고용):
 ${association === 'KLPGA' ? `
 - 한화클래식, BMW 레이디스 챔피언십, 롯데 챔피언십, 신한동해오픈, KLPGA 챔피언십, 하이트진로 챔피언십, 롯데 오픈
+- KB금융스타 챔피언십, SK네트웍스 챔피언십, OK금융그룹 챔피언십, NH투자증권 챔피언십, KG모빌리언스 챔피언십
+- KLPGA 투어 챔피언십, 현대해상 오픈, 삼성생명 챔피언십, 신세계 챔피언십, CJ 오픈, KB금융그룹 챔피언십
+- KLPGA 프리미어, KLPGA 메이저, KLPGA 투어, KLPGA 챔피언십, KLPGA 오픈
 ` : `
 - 제네시스 챔피언십, 코리안 오픈, GS칼텍스 매경오픈, 현대해상 오픈, KPGA 코리안 투어 챔피언십, KPGA 챔피언십
+- SK텔레콤 오픈, DGB금융그룹 챔피언십, KB금융스타 챔피언십, SK텔레콤 챔피언십, DGB금융그룹 챔피언십
+- KPGA 투어 챔피언십, KPGA 메이저, KPGA 투어, KPGA 오픈, KPGA 프리미어, KPGA 그랜드슬램
+- 코리안 투어 챔피언십, 코리안 투어 오픈, 코리안 투어 메이저, 코리안 투어 프리미어
 `}
 
 **필수 요구사항**:
@@ -109,7 +117,7 @@ ${association === 'KLPGA' ? `
 3. **상금**: 실제 상금 규모 (5억원~25억원 범위)
 4. **참가자**: 현실적인 참가자 수 (120~156명)
 5. **지역**: 골프장이 위치한 시/도
-6. **대회 수**: 각 호출마다 2-3개의 서로 다른 대회 정보 제공
+6. **대회 수**: 각 호출마다 **5-8개의 서로 다른 대회** 정보 제공
 
 **중복 방지**: 이전에 제공한 대회와 중복되지 않는 새로운 대회 정보를 제공하세요.
 `;
@@ -159,7 +167,7 @@ ${association === 'KLPGA' ? `
         console.log(`${attempt}번째 호출에서 ${newTournaments.length}개의 새 대회 추가. 총 ${allTournaments.length}개`);
         
         // 충분한 대회를 수집했으면 중단
-        if (allTournaments.length >= 8) {
+        if (allTournaments.length >= 25) { // 20개 + 여유분 5개
           console.log('충분한 대회 수집 완료, API 호출 중단');
           break;
         }
