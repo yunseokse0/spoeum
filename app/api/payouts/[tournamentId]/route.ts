@@ -17,7 +17,67 @@ export async function GET(
       }, { status: 400 });
     }
 
-    // 정산 내역 조회
+    // Vercel 환경에서는 mock 데이터 반환
+    if (process.env.NODE_ENV === 'production' || process.env.VERCEL) {
+      const mockPayouts = [
+        {
+          id: 'payout-1',
+          tournament_id: tournamentId,
+          player_name: '김선수',
+          player_id: 'player-1',
+          caddy_name: '이캐디',
+          caddy_id: 'caddy-1',
+          rank: 1,
+          prize_amount: 30000000,
+          payout_rate: 0.10,
+          payout_amount: 3000000,
+          paid_status: false,
+          paid_date: null,
+          created_at: new Date().toISOString(),
+          tournament_name: '2024 한화클래식'
+        },
+        {
+          id: 'payout-2',
+          tournament_id: tournamentId,
+          player_name: '박선수',
+          player_id: 'player-2',
+          caddy_name: '최캐디',
+          caddy_id: 'caddy-2',
+          rank: 2,
+          prize_amount: 20000000,
+          payout_rate: 0.10,
+          payout_amount: 2000000,
+          paid_status: false,
+          paid_date: null,
+          created_at: new Date().toISOString(),
+          tournament_name: '2024 한화클래식'
+        },
+        {
+          id: 'payout-3',
+          tournament_id: tournamentId,
+          player_name: '정선수',
+          player_id: 'player-3',
+          caddy_name: '한캐디',
+          caddy_id: 'caddy-3',
+          rank: 3,
+          prize_amount: 15000000,
+          payout_rate: 0.10,
+          payout_amount: 1500000,
+          paid_status: true,
+          paid_date: new Date().toISOString(),
+          created_at: new Date().toISOString(),
+          tournament_name: '2024 한화클래식'
+        }
+      ];
+
+      return NextResponse.json({
+        success: true,
+        payouts: mockPayouts,
+        message: `${mockPayouts.length}건의 정산 내역을 찾았습니다.`
+      });
+    }
+
+    // 로컬 환경에서는 실제 데이터베이스 조회
     const payouts = await executeQuery(
       `
         SELECT 
