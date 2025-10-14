@@ -32,29 +32,53 @@ export async function GET(request: NextRequest) {
     const model = genAI.getGenerativeModel({ model: "gemini-pro" });
     
     const prompt = `
-${year}년 ${association} 골프 대회 일정과 정보를 알려주세요.
-다음 정보를 포함한 JSON 형태로 응답해주세요:
+${year}년 ${association} 골프 대회 일정과 정보를 정확히 알려주세요.
+반드시 다음 JSON 형태로만 응답해주세요:
 
 {
   "tournaments": [
     {
-      "id": "고유ID",
-      "name": "대회명",
+      "id": "unique-id-001",
+      "name": "정확한 대회명",
       "association": "${association}",
-      "start_date": "YYYY-MM-DD",
-      "end_date": "YYYY-MM-DD", 
-      "location": "장소",
-      "golf_course": "골프장명",
-      "prize_money": 상금숫자,
-      "max_participants": 참가자수,
+      "start_date": "2025-MM-DD",
+      "end_date": "2025-MM-DD",
+      "location": "시/도",
+      "golf_course": "정확한 골프장 이름 (예: 제주 핀크스 골프클럽, 스카이72 골프클럽)",
+      "prize_money": 숫자만입력,
+      "max_participants": 숫자,
       "status": "upcoming",
       "description": "대회 설명"
     }
   ]
 }
 
-실제 ${association} 공식 대회 정보를 바탕으로 최대 10개의 대회 정보를 제공해주세요.
-상금은 숫자로만 표시하고, 날짜는 YYYY-MM-DD 형식으로 해주세요.
+중요한 요구사항:
+1. start_date와 end_date는 반드시 "2025-MM-DD" 형식으로 입력 (예: "2025-11-15")
+2. golf_course는 구체적인 골프장 이름을 입력 (예: "제주 핀크스 골프클럽", "스카이72 골프클럽", "나인브릿지")
+3. prize_money는 숫자만 입력 (예: 1000000000, 1500000000)
+4. location은 시/도 단위로 입력 (예: "제주", "인천", "경기")
+5. 실제 ${association} 공식 대회 정보를 바탕으로 최대 8개의 대회 정보를 제공
+6. JSON 형식만 응답하고 다른 텍스트는 포함하지 마세요
+
+예시:
+{
+  "tournaments": [
+    {
+      "id": "2025-klpga-001",
+      "name": "2025 KLPGA 시즌 개막전",
+      "association": "KLPGA",
+      "start_date": "2025-11-15",
+      "end_date": "2025-11-18",
+      "location": "제주",
+      "golf_course": "제주 핀크스 골프클럽",
+      "prize_money": 1000000000,
+      "max_participants": 120,
+      "status": "upcoming",
+      "description": "KLPGA 투어 2025년 시즌 개막전"
+    }
+  ]
+}
 `;
 
     const result = await model.generateContent(prompt);

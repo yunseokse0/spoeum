@@ -80,19 +80,31 @@ export default function TournamentsPage() {
         const res = await fetch('/api/admin/tournaments/results');
         const data = await res.json();
         if (data.success) {
-          allTournaments = (data.data || []).map((tournament: any) => ({
-            id: tournament.id,
-            name: tournament.name,
-            association: tournament.association,
-            start_date: tournament.start_date,
-            end_date: tournament.end_date,
-            location: tournament.location || '미정',
-            prize_money: tournament.prize_money || 0,
-            max_participants: tournament.max_participants || 0,
-            status: 'completed' as const,
-            description: tournament.description || '',
-            created_at: tournament.created_at
-          }));
+          allTournaments = (data.data || []).map((tournament: any) => {
+            const isValidDate = (dateStr: string) => {
+              if (!dateStr) return false;
+              const date = new Date(dateStr);
+              return !isNaN(date.getTime()) && dateStr.match(/^\d{4}-\d{2}-\d{2}$/);
+            };
+
+            const startDate = isValidDate(tournament.start_date) ? tournament.start_date : `${selectedYear}-12-01`;
+            const endDate = isValidDate(tournament.end_date) ? tournament.end_date : `${selectedYear}-12-04`;
+            const golfCourse = tournament.golf_course || tournament.location || '미정';
+
+            return {
+              id: tournament.id,
+              name: tournament.name,
+              association: tournament.association,
+              start_date: startDate,
+              end_date: endDate,
+              location: golfCourse,
+              prize_money: parseInt(tournament.prize_money) || 0,
+              max_participants: parseInt(tournament.max_participants) || 0,
+              status: 'completed' as const,
+              description: tournament.description || '',
+              created_at: tournament.created_at
+            };
+          });
         }
       } else if (activeTab === 'upcoming') {
         // 예정된 대회
@@ -123,33 +135,58 @@ export default function TournamentsPage() {
         const completedData = await completedRes.json();
         const upcomingData = await upcomingRes.json();
 
-        const completedTournaments = (completedData.data || []).map((tournament: any) => ({
-          id: tournament.id,
-          name: tournament.name,
-          association: tournament.association,
-          start_date: tournament.start_date,
-          end_date: tournament.end_date,
-          location: tournament.location || '미정',
-          prize_money: tournament.prize_money || 0,
-          max_participants: tournament.max_participants || 0,
-          status: 'completed' as const,
-          description: tournament.description || '',
-          created_at: tournament.created_at
-        }));
+        const completedTournaments = (completedData.data || []).map((tournament: any) => {
+          const isValidDate = (dateStr: string) => {
+            if (!dateStr) return false;
+            const date = new Date(dateStr);
+            return !isNaN(date.getTime()) && dateStr.match(/^\d{4}-\d{2}-\d{2}$/);
+          };
 
-        const upcomingTournaments = (upcomingData.data || []).map((tournament: any) => ({
-          id: tournament.id,
-          name: tournament.name,
-          association: tournament.association,
-          start_date: tournament.start_date,
-          end_date: tournament.end_date,
-          location: tournament.location || '미정',
-          prize_money: tournament.prize_money || 0,
-          max_participants: tournament.max_participants || 0,
-          status: 'upcoming' as const,
-          description: tournament.description || '',
-          created_at: tournament.created_at
-        }));
+          const startDate = isValidDate(tournament.start_date) ? tournament.start_date : `${selectedYear}-12-01`;
+          const endDate = isValidDate(tournament.end_date) ? tournament.end_date : `${selectedYear}-12-04`;
+          const golfCourse = tournament.golf_course || tournament.location || '미정';
+
+          return {
+            id: tournament.id,
+            name: tournament.name,
+            association: tournament.association,
+            start_date: startDate,
+            end_date: endDate,
+            location: golfCourse,
+            prize_money: parseInt(tournament.prize_money) || 0,
+            max_participants: parseInt(tournament.max_participants) || 0,
+            status: 'completed' as const,
+            description: tournament.description || '',
+            created_at: tournament.created_at
+          };
+        });
+
+        const upcomingTournaments = (upcomingData.data || []).map((tournament: any) => {
+          // 날짜 검증
+          const isValidDate = (dateStr: string) => {
+            if (!dateStr) return false;
+            const date = new Date(dateStr);
+            return !isNaN(date.getTime()) && dateStr.match(/^\d{4}-\d{2}-\d{2}$/);
+          };
+
+          const startDate = isValidDate(tournament.start_date) ? tournament.start_date : `${selectedYear}-12-01`;
+          const endDate = isValidDate(tournament.end_date) ? tournament.end_date : `${selectedYear}-12-04`;
+          const golfCourse = tournament.golf_course || tournament.location || '미정';
+
+          return {
+            id: tournament.id,
+            name: tournament.name,
+            association: tournament.association,
+            start_date: startDate,
+            end_date: endDate,
+            location: golfCourse,
+            prize_money: parseInt(tournament.prize_money) || 0,
+            max_participants: parseInt(tournament.max_participants) || 0,
+            status: 'upcoming' as const,
+            description: tournament.description || '',
+            created_at: tournament.created_at
+          };
+        });
 
         allTournaments = [...completedTournaments, ...upcomingTournaments];
       }
@@ -174,19 +211,36 @@ export default function TournamentsPage() {
       const data = await res.json();
       
       if (data.success) {
-        const fetchedTournaments = (data.data || []).map((tournament: any) => ({
-          id: tournament.id,
-          name: tournament.name,
-          association: tournament.association,
-          start_date: tournament.start_date,
-          end_date: tournament.end_date,
-          location: tournament.location || '미정',
-          prize_money: tournament.prize_money || 0,
-          max_participants: tournament.max_participants || 0,
-          status: 'upcoming' as const,
-          description: tournament.description || '',
-          created_at: new Date().toISOString()
-        }));
+        const fetchedTournaments = (data.data || []).map((tournament: any) => {
+          // 날짜 검증 및 수정
+          const isValidDate = (dateStr: string) => {
+            if (!dateStr) return false;
+            const date = new Date(dateStr);
+            return !isNaN(date.getTime()) && dateStr.match(/^\d{4}-\d{2}-\d{2}$/);
+          };
+
+          // 날짜가 유효하지 않으면 기본값 설정
+          const startDate = isValidDate(tournament.start_date) ? tournament.start_date : `${selectedYear}-12-01`;
+          const endDate = isValidDate(tournament.end_date) ? tournament.end_date : `${selectedYear}-12-04`;
+
+          // 골프장 정보 처리
+          const golfCourse = tournament.golf_course || tournament.location || '미정';
+          const location = tournament.location || '미정';
+
+          return {
+            id: tournament.id,
+            name: tournament.name,
+            association: tournament.association,
+            start_date: startDate,
+            end_date: endDate,
+            location: golfCourse, // 골프장 이름을 location으로 사용
+            prize_money: parseInt(tournament.prize_money) || 0,
+            max_participants: parseInt(tournament.max_participants) || 0,
+            status: 'upcoming' as const,
+            description: tournament.description || '',
+            created_at: new Date().toISOString()
+          };
+        });
         
         // 기존 대회와 합치기 (중복 제거)
         const existingIds = tournaments.map((t: Tournament) => t.id);
