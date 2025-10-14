@@ -1,67 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { executeQuery } from '@/lib/database/connection';
 
 export const dynamic = 'force-dynamic';
-
-// 임시 Mock 데이터베이스 함수 (실제 배포 시에는 실제 DB 연결 필요)
-const mockExecuteQuery = async (query: string, params: any[] = []): Promise<any[]> => {
-  console.log('Mock DB Query:', query, params);
-  
-  // Mock 응답 데이터
-  if (query.includes('INSERT INTO tournaments')) {
-    return [{ insertId: 'mock-tournament-id-123' }];
-  }
-  
-  if (query.includes('SELECT id FROM users')) {
-    return []; // 빈 배열 (선수가 없다고 가정)
-  }
-  
-  if (query.includes('INSERT INTO users')) {
-    return [{ insertId: 'mock-player-id-456' }];
-  }
-  
-  if (query.includes('SELECT') && query.includes('FROM tournaments')) {
-    // 대회 목록 Mock 데이터
-    return [
-      {
-        id: 'tournament-1',
-        name: '2024 KLPGA 챔피언십',
-        association: 'KLPGA',
-        start_date: '2024-10-15',
-        end_date: '2024-10-18',
-        location: '여주',
-        prize_money: 1000000000,
-        status: 'completed',
-        results_count: 15
-      }
-    ];
-  }
-  
-  if (query.includes('SELECT') && query.includes('FROM tournament_results')) {
-    // 대회 결과 Mock 데이터
-    return [
-      {
-        id: 'result-1',
-        tournament_id: 'tournament-1',
-        player_id: 'player-1',
-        player_name: '김효주',
-        rank: 1,
-        score: -14,
-        prize_amount: 200000000
-      },
-      {
-        id: 'result-2',
-        tournament_id: 'tournament-1',
-        player_id: 'player-2',
-        player_name: '박민지',
-        rank: 2,
-        score: -12,
-        prize_amount: 120000000
-      }
-    ];
-  }
-  
-  return [];
-};
 
 interface TournamentResult {
   player_name: string;
@@ -91,7 +31,7 @@ export async function POST(request: NextRequest) {
     console.log(`대회 결과 저장 시작: ${tournament_name}, ${results.length}명`);
 
     // 1. 대회 정보 저장 (tournaments 테이블)
-    const tournamentInsert = await mockExecuteQuery(
+    const tournamentInsert = await executeQuery(
       `
         INSERT INTO tournaments (
           name,
@@ -132,7 +72,7 @@ export async function POST(request: NextRequest) {
     for (const result of results) {
       try {
         // 먼저 선수가 있는지 확인 (선수명으로 검색)
-        const playerCheck = await mockExecuteQuery(
+        const playerCheck = await executeQuery(
           `
             SELECT id FROM users 
             WHERE name = ? AND user_type = 'tour_pro'
@@ -145,7 +85,7 @@ export async function POST(request: NextRequest) {
         
         // 선수가 없으면 임시 선수 계정 생성
         if (Array.isArray(playerCheck) && playerCheck.length === 0) {
-          const playerInsert = await mockExecuteQuery(
+          const playerInsert = await executeQuery(
             `
               INSERT INTO users (
                 email, 
@@ -176,7 +116,7 @@ export async function POST(request: NextRequest) {
         }
 
         // 대회 결과 저장
-        await mockExecuteQuery(
+        await executeQuery(
           `
             INSERT INTO tournament_results (
               tournament_id,
@@ -233,7 +173,7 @@ export async function GET(request: NextRequest) {
 
     if (!tournamentId) {
       // 모든 대회 목록 조회
-      const tournaments = await mockExecuteQuery(
+      const tournaments = await executeQuery(
         `
           SELECT 
             t.id,
@@ -267,7 +207,7 @@ export async function GET(request: NextRequest) {
     }
 
     // 특정 대회의 결과 조회 (30위까지)
-    const results = await mockExecuteQuery(
+    const results = await executeQuery(
       `
         SELECT 
           tr.id,
