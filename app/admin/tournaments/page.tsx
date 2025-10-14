@@ -44,65 +44,153 @@ export default function TournamentsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [filterAssociation, setFilterAssociation] = useState<string>('all');
+  const [activeTab, setActiveTab] = useState<'all' | 'completed' | 'upcoming'>('all');
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
+  const [selectedAssociation, setSelectedAssociation] = useState<'KLPGA' | 'KPGA'>('KLPGA');
+  const [isFetching, setIsFetching] = useState(false);
+  
+  // 년도 옵션 생성
+  const years = Array.from({ length: 5 }, (_, i) => (new Date().getFullYear() - i).toString());
 
   // 대회 목록 로드
   useEffect(() => {
     loadTournaments();
-  }, []);
+  }, [activeTab, selectedYear, selectedAssociation]);
 
   const loadTournaments = async () => {
     setIsLoading(true);
     setError(null);
     try {
-      // Mock 데이터 (실제로는 API 호출)
-      const mockTournaments: Tournament[] = [
-        {
-          id: '1',
-          name: '2024 KLPGA 챔피언십',
-          association: 'KLPGA',
-          start_date: '2024-10-15',
-          end_date: '2024-10-18',
-          location: '여주 골프클럽',
-          prize_money: 1000000000,
-          max_participants: 144,
-          status: 'completed',
-          description: 'KLPGA 정규 투어 최종전',
-          created_at: '2024-01-15T00:00:00Z'
-        },
-        {
-          id: '2',
-          name: '2024 KPGA 투어 챔피언십',
-          association: 'KPGA',
-          start_date: '2024-11-20',
-          end_date: '2024-11-23',
-          location: '서울 골프클럽',
-          prize_money: 1200000000,
-          max_participants: 144,
-          status: 'upcoming',
-          description: 'KPGA 정규 투어 최종전',
-          created_at: '2024-02-20T00:00:00Z'
-        },
-        {
-          id: '3',
-          name: '2025 KLPGA 시즌 오픈',
-          association: 'KLPGA',
-          start_date: '2025-03-15',
-          end_date: '2025-03-18',
-          location: '제주 골프클럽',
-          prize_money: 800000000,
-          max_participants: 120,
-          status: 'upcoming',
-          description: '2025년 시즌 첫 번째 대회',
-          created_at: '2024-12-01T00:00:00Z'
+      let apiUrl = '';
+      let allTournaments: Tournament[] = [];
+
+      if (activeTab === 'completed') {
+        // 완료된 대회 (저장된 결과가 있는 대회)
+        const res = await fetch('/api/admin/tournaments/results');
+        const data = await res.json();
+        if (data.success) {
+          allTournaments = (data.data || []).map((tournament: any) => ({
+            id: tournament.id,
+            name: tournament.name,
+            association: tournament.association,
+            start_date: tournament.start_date,
+            end_date: tournament.end_date,
+            location: tournament.location || '미정',
+            prize_money: tournament.prize_money || 0,
+            max_participants: tournament.max_participants || 0,
+            status: 'completed' as const,
+            description: tournament.description || '',
+            created_at: tournament.created_at
+          }));
         }
-      ];
+      } else if (activeTab === 'upcoming') {
+        // 예정된 대회
+        const res = await fetch(`/api/admin/tournaments/upcoming?year=${selectedYear}&association=${selectedAssociation}`);
+        const data = await res.json();
+        if (data.success) {
+          allTournaments = (data.data || []).map((tournament: any) => ({
+            id: tournament.id,
+            name: tournament.name,
+            association: tournament.association,
+            start_date: tournament.start_date,
+            end_date: tournament.end_date,
+            location: tournament.location || '미정',
+            prize_money: tournament.prize_money || 0,
+            max_participants: tournament.max_participants || 0,
+            status: 'upcoming' as const,
+            description: tournament.description || '',
+            created_at: tournament.created_at
+          }));
+        }
+      } else {
+        // 전체 대회 (완료된 대회 + 예정된 대회)
+        const [completedRes, upcomingRes] = await Promise.all([
+          fetch('/api/admin/tournaments/results'),
+          fetch(`/api/admin/tournaments/upcoming?year=${selectedYear}&association=${selectedAssociation}`)
+        ]);
+
+        const completedData = await completedRes.json();
+        const upcomingData = await upcomingRes.json();
+
+        const completedTournaments = (completedData.data || []).map((tournament: any) => ({
+          id: tournament.id,
+          name: tournament.name,
+          association: tournament.association,
+          start_date: tournament.start_date,
+          end_date: tournament.end_date,
+          location: tournament.location || '미정',
+          prize_money: tournament.prize_money || 0,
+          max_participants: tournament.max_participants || 0,
+          status: 'completed' as const,
+          description: tournament.description || '',
+          created_at: tournament.created_at
+        }));
+
+        const upcomingTournaments = (upcomingData.data || []).map((tournament: any) => ({
+          id: tournament.id,
+          name: tournament.name,
+          association: tournament.association,
+          start_date: tournament.start_date,
+          end_date: tournament.end_date,
+          location: tournament.location || '미정',
+          prize_money: tournament.prize_money || 0,
+          max_participants: tournament.max_participants || 0,
+          status: 'upcoming' as const,
+          description: tournament.description || '',
+          created_at: tournament.created_at
+        }));
+
+        allTournaments = [...completedTournaments, ...upcomingTournaments];
+      }
       
-      setTournaments(mockTournaments);
+      setTournaments(allTournaments);
     } catch (err) {
       setError('대회 목록을 불러오는 중 오류가 발생했습니다.');
       console.error('대회 목록 로드 실패:', err);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  // Gemini를 통한 대회 가져오기
+  const handleFetchTournaments = async () => {
+    setIsFetching(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/admin/tournaments/list?year=${selectedYear}&association=${selectedAssociation}`, {
+        method: 'GET'
+      });
+      const data = await res.json();
+      
+      if (data.success) {
+        const fetchedTournaments = (data.data || []).map((tournament: any) => ({
+          id: tournament.id,
+          name: tournament.name,
+          association: tournament.association,
+          start_date: tournament.start_date,
+          end_date: tournament.end_date,
+          location: tournament.location || '미정',
+          prize_money: tournament.prize_money || 0,
+          max_participants: tournament.max_participants || 0,
+          status: 'upcoming' as const,
+          description: tournament.description || '',
+          created_at: new Date().toISOString()
+        }));
+        
+        // 기존 대회와 합치기 (중복 제거)
+        const existingIds = tournaments.map(t => t.id);
+        const newTournaments = fetchedTournaments.filter(t => !existingIds.includes(t.id));
+        setTournaments(prev => [...prev, ...newTournaments]);
+        
+        alert(`✅ ${newTournaments.length}개의 새 대회를 가져왔습니다.`);
+      } else {
+        setError(data.error || '대회 가져오기에 실패했습니다.');
+      }
+    } catch (err) {
+      setError('대회 가져오기 중 오류가 발생했습니다.');
+      console.error('대회 가져오기 실패:', err);
+    } finally {
+      setIsFetching(false);
     }
   };
 
@@ -161,13 +249,32 @@ export default function TournamentsPage() {
               골프 대회 등록, 수정 및 관리
             </p>
           </div>
-          <Button
-            onClick={() => {/* 대회 등록 모달 열기 */}}
-            className="bg-blue-600 hover:bg-blue-700"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            대회 등록
-          </Button>
+          <div className="flex gap-3">
+            <Button
+              onClick={handleFetchTournaments}
+              disabled={isFetching}
+              className="bg-green-600 hover:bg-green-700"
+            >
+              {isFetching ? (
+                <>
+                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                  가져오는 중...
+                </>
+              ) : (
+                <>
+                  <Trophy className="h-4 w-4 mr-2" />
+                  대회 가져오기
+                </>
+              )}
+            </Button>
+            <Button
+              onClick={() => {/* 대회 등록 모달 열기 */}}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              대회 등록
+            </Button>
+          </div>
         </div>
 
         {/* 통계 카드 */}
@@ -235,9 +342,120 @@ export default function TournamentsPage() {
           </Card>
         </div>
 
-        {/* 검색 및 필터 */}
+        {/* 탭 선택 */}
         <Card>
           <CardBody className="p-6">
+            <div className="flex space-x-1 mb-4 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+              <button
+                onClick={() => setActiveTab('all')}
+                className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                  activeTab === 'all'
+                    ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm'
+                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+                }`}
+              >
+                전체 대회
+              </button>
+              <button
+                onClick={() => setActiveTab('completed')}
+                className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                  activeTab === 'completed'
+                    ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm'
+                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+                }`}
+              >
+                완료된 대회
+              </button>
+              <button
+                onClick={() => setActiveTab('upcoming')}
+                className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                  activeTab === 'upcoming'
+                    ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm'
+                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+                }`}
+              >
+                예정된 대회
+              </button>
+            </div>
+
+            {/* 년도/협회 선택 (예정된 대회 또는 전체 대회일 때) */}
+            {(activeTab === 'upcoming' || activeTab === 'all') && (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    년도 선택
+                  </label>
+                  <select
+                    value={selectedYear}
+                    onChange={(e) => setSelectedYear(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    disabled={isLoading}
+                  >
+                    {years.map((year) => (
+                      <option key={year} value={year}>
+                        {year}년
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    협회 선택
+                  </label>
+                  <div className="flex space-x-4">
+                    <label className="flex items-center space-x-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="association"
+                        value="KLPGA"
+                        checked={selectedAssociation === 'KLPGA'}
+                        onChange={(e) => setSelectedAssociation(e.target.value as 'KLPGA')}
+                        className="w-4 h-4 text-blue-600"
+                        disabled={isLoading}
+                      />
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        KLPGA (여자)
+                      </span>
+                    </label>
+                    <label className="flex items-center space-x-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="association"
+                        value="KPGA"
+                        checked={selectedAssociation === 'KPGA'}
+                        onChange={(e) => setSelectedAssociation(e.target.value as 'KPGA')}
+                        className="w-4 h-4 text-blue-600"
+                        disabled={isLoading}
+                      />
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        KPGA (남자)
+                      </span>
+                    </label>
+                  </div>
+                </div>
+                <div className="flex items-end">
+                  <Button
+                    onClick={loadTournaments}
+                    disabled={isLoading}
+                    className="w-full bg-blue-600 hover:bg-blue-700"
+                  >
+                    {isLoading ? (
+                      <>
+                        <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                        검색 중...
+                      </>
+                    ) : (
+                      <>
+                        <Trophy className="w-4 h-4 mr-2" />
+                        대회 검색
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* 검색 및 필터 */}
             <div className="flex flex-col md:flex-row gap-4">
               <div className="flex-1">
                 <div className="relative">
@@ -247,7 +465,7 @@ export default function TournamentsPage() {
                     placeholder="대회명 또는 장소로 검색..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                   />
                 </div>
               </div>
@@ -255,7 +473,7 @@ export default function TournamentsPage() {
                 <select
                   value={filterStatus}
                   onChange={(e) => setFilterStatus(e.target.value)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 >
                   <option value="all">전체 상태</option>
                   <option value="upcoming">예정</option>
@@ -266,7 +484,7 @@ export default function TournamentsPage() {
                 <select
                   value={filterAssociation}
                   onChange={(e) => setFilterAssociation(e.target.value)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 >
                   <option value="all">전체 협회</option>
                   <option value="KLPGA">KLPGA</option>
