@@ -3,10 +3,11 @@ import { cn } from '@/lib/utils';
 
 interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
   variant?: 'default' | 'secondary' | 'destructive' | 'success' | 'warning' | 'outline' | 'blue' | 'pink' | 'green' | 'purple' | 'indigo' | 'yellow';
+  leftIcon?: React.ReactNode;
 }
 
 const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
-  ({ className, variant = 'default', ...props }, ref) => {
+  ({ className, variant = 'default', leftIcon, children, ...props }, ref) => {
     const variantClasses = {
       default: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100',
       secondary: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100',
@@ -31,7 +32,10 @@ const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
           className
         )}
         {...props}
-      />
+      >
+        {leftIcon && <span className="mr-1">{leftIcon}</span>}
+        {children}
+      </div>
     );
   }
 );
