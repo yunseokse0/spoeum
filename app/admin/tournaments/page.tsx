@@ -186,8 +186,8 @@ export default function TournamentsPage() {
         }));
         
         // 기존 대회와 합치기 (중복 제거)
-        const existingIds = tournaments.map(t => t.id);
-        const newTournaments = fetchedTournaments.filter(t => !existingIds.includes(t.id));
+        const existingIds = tournaments.map((t: Tournament) => t.id);
+        const newTournaments = fetchedTournaments.filter((t: any) => !existingIds.includes(t.id));
         setTournaments(prev => [...prev, ...newTournaments]);
         
         alert(`✅ ${newTournaments.length}개의 새 대회를 가져왔습니다.`);
