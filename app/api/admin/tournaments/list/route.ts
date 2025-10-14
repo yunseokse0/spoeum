@@ -58,6 +58,32 @@ export async function GET(request: NextRequest) {
           max_participants: 120,
           status: 'upcoming',
           description: `${association} 투어 대회`
+        },
+        {
+          id: `${association.toLowerCase()}-${year}-4`,
+          name: `${year} ${association} 투어`,
+          association,
+          start_date: `${year}-06-15`,
+          end_date: `${year}-06-18`,
+          location: '경상남도',
+          golf_course: '거제 드비치 골프클럽',
+          prize_money: 1800000000,
+          max_participants: 128,
+          status: 'upcoming',
+          description: `${association} 투어 대회`
+        },
+        {
+          id: `${association.toLowerCase()}-${year}-5`,
+          name: `${year} ${association} 프리미어`,
+          association,
+          start_date: `${year}-07-20`,
+          end_date: `${year}-07-23`,
+          location: '경기도',
+          golf_course: '남촌 컨트리클럽',
+          prize_money: 2200000000,
+          max_participants: 156,
+          status: 'upcoming',
+          description: `${association} 프리미어 대회`
         }
       ];
 
@@ -144,7 +170,7 @@ export async function GET(request: NextRequest) {
       "start_date": "${year}-MM-DD",
       "end_date": "${year}-MM-DD",
       "location": "시/도명",
-      "golf_course": "정확한 골프장 이름",
+      "golf_course": "실제 골프장명 (예: 스카이72 골프클럽, 핀크스 골프클럽, 제주CC 등)",
       "prize_money": 숫자,
       "max_participants": 숫자,
       "status": "upcoming",
@@ -168,7 +194,7 @@ ${association === 'KLPGA' ? `
 
 **필수 요구사항**:
 1. **날짜**: ${year}-MM-DD 형식 (예: ${year}-03-15)
-2. **골프장**: 구체적인 골프장 이름 (예: "제주 핀크스 골프클럽", "스카이72 골프클럽")
+2. **골프장**: 반드시 실제 존재하는 골프장명 사용 (예: "제주 핀크스 골프클럽", "스카이72 골프클럽", "롯데 스카이힐", "오크밸리 컨트리클럽", "남촌 컨트리클럽", "거제 드비치 골프클럽")
 3. **상금**: 실제 상금 규모 (5억원~25억원 범위)
 4. **참가자**: 현실적인 참가자 수 (120~156명)
 5. **지역**: 골프장이 위치한 시/도
