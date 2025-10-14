@@ -1,36 +1,121 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 export const dynamic = 'force-dynamic';
 
-// KPGA/KLPGA 대회 목록 조회
-// 실제 환경에서는 KPGA/KLPGA 웹사이트에서 크롤링하거나 공식 API를 사용
+// Gemini API 초기화
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
+
+// KPGA/KLPGA 대회 목록 조회 - Gemini API 사용
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const year = searchParams.get('year') || new Date().getFullYear().toString();
     const association = searchParams.get('association') || 'KLPGA';
 
-    console.log(`대회 목록 조회: ${year}년 ${association}`);
+    console.log(`Gemini API로 대회 목록 조회: ${year}년 ${association}`);
 
-    // Mock 데이터 (실제로는 크롤링 또는 API 호출)
-    const mockTournaments = generateMockTournaments(year, association as 'KPGA' | 'KLPGA');
+    // Gemini API 키 확인
+    if (!process.env.GEMINI_API_KEY) {
+      console.log('Gemini API 키가 없어 Mock 데이터 사용');
+      const mockTournaments = generateMockTournaments(year, association as 'KPGA' | 'KLPGA');
+      return NextResponse.json({
+        success: true,
+        data: mockTournaments,
+        year,
+        association,
+        message: `Mock 데이터: ${mockTournaments.length}개의 대회를 찾았습니다.`
+      });
+    }
 
+    // Gemini API를 통한 대회 정보 조회
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    
+    const prompt = `
+${year}년 ${association} 골프 대회 일정과 정보를 알려주세요.
+다음 정보를 포함한 JSON 형태로 응답해주세요:
+
+{
+  "tournaments": [
+    {
+      "id": "고유ID",
+      "name": "대회명",
+      "association": "${association}",
+      "start_date": "YYYY-MM-DD",
+      "end_date": "YYYY-MM-DD", 
+      "location": "장소",
+      "golf_course": "골프장명",
+      "prize_money": 상금숫자,
+      "max_participants": 참가자수,
+      "status": "upcoming",
+      "description": "대회 설명"
+    }
+  ]
+}
+
+실제 ${association} 공식 대회 정보를 바탕으로 최대 10개의 대회 정보를 제공해주세요.
+상금은 숫자로만 표시하고, 날짜는 YYYY-MM-DD 형식으로 해주세요.
+`;
+
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
+    
+    console.log('Gemini API 응답:', text);
+
+    // JSON 파싱
+    let geminiData;
+    try {
+      // JSON 부분만 추출
+      const jsonMatch = text.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        geminiData = JSON.parse(jsonMatch[0]);
+      } else {
+        throw new Error('JSON 형식을 찾을 수 없습니다');
+      }
+    } catch (parseError) {
+      console.error('JSON 파싱 오류:', parseError);
+      console.log('원본 응답:', text);
+      
+      // 파싱 실패 시 Mock 데이터 사용
+      const mockTournaments = generateMockTournaments(year, association as 'KPGA' | 'KLPGA');
+      return NextResponse.json({
+        success: true,
+        data: mockTournaments,
+        year,
+        association,
+        message: `Gemini 파싱 실패로 Mock 데이터 사용: ${mockTournaments.length}개의 대회를 찾았습니다.`
+      });
+    }
+
+    const tournaments = geminiData.tournaments || [];
+    
     return NextResponse.json({
       success: true,
-      data: mockTournaments,
+      data: tournaments,
       year,
       association,
-      message: `${mockTournaments.length}개의 대회를 찾았습니다.`
+      message: `Gemini API: ${tournaments.length}개의 대회를 찾았습니다.`
     });
 
   } catch (error) {
     console.error('대회 목록 조회 오류:', error);
     
+    // 오류 발생 시 Mock 데이터 반환
+    const { searchParams } = new URL(request.url);
+    const year = searchParams.get('year') || new Date().getFullYear().toString();
+    const association = searchParams.get('association') || 'KLPGA';
+    
+    const mockTournaments = generateMockTournaments(year, association as 'KPGA' | 'KLPGA');
+    
     return NextResponse.json({
-      success: false,
-      error: error instanceof Error ? error.message : '알 수 없는 오류',
-      data: []
-    }, { status: 500 });
+      success: true,
+      data: mockTournaments,
+      year,
+      association,
+      message: `오류로 인해 Mock 데이터 사용: ${mockTournaments.length}개의 대회를 찾았습니다.`,
+      error: error instanceof Error ? error.message : '알 수 없는 오류'
+    });
   }
 }
 

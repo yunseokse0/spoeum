@@ -14,6 +14,7 @@
     "db:test": "tsx -e \"import { testConnection } from './lib/database/connection'; testConnection().then(console.log)\""
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "@hookform/resolvers": "^3.10.0",
     "@reduxjs/toolkit": "^1.9.7",
     "@tailwindcss/aspect-ratio": "^0.4.2",
