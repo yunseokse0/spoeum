@@ -6,6 +6,7 @@ import { Card, CardBody } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { TournamentResultsModal } from '@/components/admin/TournamentResultsModal';
+import { FullScreenLoader } from '@/components/ui/FullScreenLoader';
 import { 
   Trophy, 
   Plus,
@@ -49,6 +50,7 @@ export default function TournamentsPage() {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
   const [selectedAssociation, setSelectedAssociation] = useState<'KLPGA' | 'KPGA'>('KLPGA');
   const [isSearching, setIsSearching] = useState(false);
+  const [searchProgress, setSearchProgress] = useState(0);
   const [selectedTournament, setSelectedTournament] = useState<Tournament | null>(null);
   const [tournamentResults, setTournamentResults] = useState<any[]>([]);
   const [isLoadingResults, setIsLoadingResults] = useState(false);
@@ -205,11 +207,25 @@ export default function TournamentsPage() {
   // Gemini를 통한 대회 검색
   const handleSearchTournaments = async () => {
     setIsSearching(true);
+    setSearchProgress(0);
     setError(null);
+    
     try {
+      // 프로그레스 업데이트 시뮬레이션
+      const progressInterval = setInterval(() => {
+        setSearchProgress(prev => {
+          if (prev >= 90) return prev;
+          return prev + Math.random() * 15;
+        });
+      }, 200);
+
       const res = await fetch(`/api/admin/tournaments/list?year=${selectedYear}&association=${selectedAssociation}`, {
         method: 'GET'
       });
+      
+      clearInterval(progressInterval);
+      setSearchProgress(100);
+      
       const data = await res.json();
       
       if (data.success) {
@@ -258,6 +274,7 @@ export default function TournamentsPage() {
       console.error('대회 검색 실패:', err);
     } finally {
       setIsSearching(false);
+      setSearchProgress(0);
     }
   };
 
@@ -409,6 +426,13 @@ export default function TournamentsPage() {
 
   return (
     <AdminLayout>
+      {/* 전체 화면 로딩 오버레이 */}
+      <FullScreenLoader 
+        isVisible={isSearching} 
+        message="Gemini AI로 대회 정보를 검색 중입니다..."
+        progress={searchProgress}
+      />
+      
       <div className="space-y-6">
         {/* 헤더 */}
         <div className="flex items-center justify-between">
@@ -604,17 +628,8 @@ export default function TournamentsPage() {
                     disabled={isSearching}
                     className="w-full bg-blue-600 hover:bg-blue-700"
                   >
-                    {isSearching ? (
-                      <>
-                        <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                        Gemini 검색 중...
-                      </>
-                    ) : (
-                      <>
-                        <Trophy className="w-4 h-4 mr-2" />
-                        대회 검색
-                      </>
-                    )}
+                    <Trophy className="w-4 h-4 mr-2" />
+                    대회 검색
                   </Button>
                 </div>
               </div>
