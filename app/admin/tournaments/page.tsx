@@ -47,7 +47,10 @@ export default function TournamentsPage() {
   const [activeTab, setActiveTab] = useState<'all' | 'completed' | 'upcoming' | 'input'>('all');
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
   const [selectedAssociation, setSelectedAssociation] = useState<'KLPGA' | 'KPGA'>('KLPGA');
-  const [isFetching, setIsFetching] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
+  const [selectedTournament, setSelectedTournament] = useState<Tournament | null>(null);
+  const [tournamentResults, setTournamentResults] = useState<any[]>([]);
+  const [isLoadingResults, setIsLoadingResults] = useState(false);
   
   // 데이터 입력 관련 상태
   const [tournamentName, setTournamentName] = useState('');
@@ -160,9 +163,9 @@ export default function TournamentsPage() {
     }
   };
 
-  // Gemini를 통한 대회 가져오기
-  const handleFetchTournaments = async () => {
-    setIsFetching(true);
+  // Gemini를 통한 대회 검색
+  const handleSearchTournaments = async () => {
+    setIsSearching(true);
     setError(null);
     try {
       const res = await fetch(`/api/admin/tournaments/list?year=${selectedYear}&association=${selectedAssociation}`, {
@@ -190,15 +193,15 @@ export default function TournamentsPage() {
         const newTournaments = fetchedTournaments.filter((t: any) => !existingIds.includes(t.id));
         setTournaments(prev => [...prev, ...newTournaments]);
         
-        alert(`✅ ${newTournaments.length}개의 새 대회를 가져왔습니다.`);
+        alert(`✅ ${newTournaments.length}개의 새 대회를 검색했습니다.`);
       } else {
-        setError(data.error || '대회 가져오기에 실패했습니다.');
+        setError(data.error || '대회 검색에 실패했습니다.');
       }
     } catch (err) {
-      setError('대회 가져오기 중 오류가 발생했습니다.');
-      console.error('대회 가져오기 실패:', err);
+      setError('대회 검색 중 오류가 발생했습니다.');
+      console.error('대회 검색 실패:', err);
     } finally {
-      setIsFetching(false);
+      setIsSearching(false);
     }
   };
 
@@ -275,6 +278,34 @@ export default function TournamentsPage() {
     }
   };
 
+  // 대회 결과 조회
+  const handleViewTournamentResults = async (tournament: Tournament) => {
+    if (tournament.status !== 'completed') {
+      alert('완료된 대회만 결과를 조회할 수 있습니다.');
+      return;
+    }
+
+    setSelectedTournament(tournament);
+    setIsLoadingResults(true);
+    setError(null);
+
+    try {
+      const res = await fetch(`/api/admin/tournaments/results?tournament_id=${tournament.id}`);
+      const data = await res.json();
+
+      if (data.success) {
+        setTournamentResults(data.data || []);
+      } else {
+        setError(data.error || '대회 결과를 불러올 수 없습니다.');
+      }
+    } catch (err) {
+      setError('대회 결과 조회 중 오류가 발생했습니다.');
+      console.error('대회 결과 조회 실패:', err);
+    } finally {
+      setIsLoadingResults(false);
+    }
+  };
+
   // 필터링된 대회 목록
   const filteredTournaments = tournaments.filter(tournament => {
     const matchesSearch = tournament.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -331,23 +362,6 @@ export default function TournamentsPage() {
             </p>
           </div>
           <div className="flex gap-3">
-            <Button
-              onClick={handleFetchTournaments}
-              disabled={isFetching}
-              className="bg-green-600 hover:bg-green-700"
-            >
-              {isFetching ? (
-                <>
-                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                  가져오는 중...
-                </>
-              ) : (
-                <>
-                  <Trophy className="h-4 w-4 mr-2" />
-                  대회 가져오기
-                </>
-              )}
-            </Button>
             <Button
               onClick={() => {/* 대회 등록 모달 열기 */}}
               className="bg-blue-600 hover:bg-blue-700"
@@ -526,14 +540,14 @@ export default function TournamentsPage() {
                 </div>
                 <div className="flex items-end">
                   <Button
-                    onClick={loadTournaments}
-                    disabled={isLoading}
+                    onClick={handleSearchTournaments}
+                    disabled={isSearching}
                     className="w-full bg-blue-600 hover:bg-blue-700"
                   >
-                    {isLoading ? (
+                    {isSearching ? (
                       <>
                         <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                        검색 중...
+                        Gemini 검색 중...
                       </>
                     ) : (
                       <>
@@ -738,6 +752,30 @@ export default function TournamentsPage() {
               </h2>
             </div>
 
+            {/* 대회 목록 탭 */}
+            <div className="flex space-x-1 mb-6 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+              <button
+                onClick={() => setActiveTab('completed')}
+                className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                  activeTab === 'completed'
+                    ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm'
+                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+                }`}
+              >
+                완료된 대회
+              </button>
+              <button
+                onClick={() => setActiveTab('upcoming')}
+                className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                  activeTab === 'upcoming'
+                    ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm'
+                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+                }`}
+              >
+                예정된 대회
+              </button>
+            </div>
+
             {isLoading ? (
               <div className="text-center py-12">
                 <RefreshCw className="h-8 w-8 animate-spin mx-auto text-gray-400 mb-4" />
@@ -769,9 +807,17 @@ export default function TournamentsPage() {
                     {filteredTournaments.map((tournament) => (
                       <tr key={tournament.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
                         <td className="px-4 py-3">
-                          <div>
+                          <div 
+                            className={`${tournament.status === 'completed' ? 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg p-2 -m-2' : ''}`}
+                            onClick={() => tournament.status === 'completed' ? handleViewTournamentResults(tournament) : undefined}
+                          >
                             <p className="font-medium text-gray-900 dark:text-white">
                               {tournament.name}
+                              {tournament.status === 'completed' && (
+                                <span className="ml-2 text-xs text-blue-600 dark:text-blue-400">
+                                  (클릭하여 결과 보기)
+                                </span>
+                              )}
                             </p>
                             <p className="text-sm text-gray-500 dark:text-gray-400">
                               {tournament.description}
@@ -844,6 +890,87 @@ export default function TournamentsPage() {
             )}
           </CardBody>
         </Card>
+        )}
+
+        {/* 대회 결과 섹션 */}
+        {selectedTournament && tournamentResults.length > 0 && (
+          <Card>
+            <CardBody className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold flex items-center">
+                  <Trophy className="h-5 w-5 mr-2 text-yellow-500" />
+                  {selectedTournament.name} - 대회 결과
+                </h2>
+                <Button
+                  onClick={() => {
+                    setSelectedTournament(null);
+                    setTournamentResults([]);
+                  }}
+                  variant="outline"
+                  size="sm"
+                >
+                  닫기
+                </Button>
+              </div>
+
+              {isLoadingResults ? (
+                <div className="text-center py-8">
+                  <RefreshCw className="h-6 w-6 animate-spin mx-auto text-gray-400 mb-4" />
+                  <p className="text-gray-600 dark:text-gray-400">결과를 불러오는 중...</p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="bg-gray-100 dark:bg-gray-800">
+                      <tr>
+                        <th className="px-4 py-3 text-center text-sm font-semibold">순위</th>
+                        <th className="px-4 py-3 text-left text-sm font-semibold">선수명</th>
+                        <th className="px-4 py-3 text-right text-sm font-semibold">스코어</th>
+                        <th className="px-4 py-3 text-right text-sm font-semibold">상금</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                      {tournamentResults.slice(0, 30).map((result, index) => (
+                        <tr key={result.id || index} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+                          <td className="px-4 py-3 text-center">
+                            <span className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-semibold ${
+                              result.rank === 1 ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' :
+                              result.rank === 2 ? 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200' :
+                              result.rank === 3 ? 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200' :
+                              'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+                            }`}>
+                              {result.rank}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-white">
+                            {result.player_name}
+                          </td>
+                          <td className="px-4 py-3 text-sm text-right">
+                            <span className={`font-medium ${
+                              result.score < 0 ? 'text-green-600 dark:text-green-400' : 
+                              result.score > 0 ? 'text-red-600 dark:text-red-400' : 
+                              'text-gray-600 dark:text-gray-400'
+                            }`}>
+                              {result.score > 0 ? `+${result.score}` : result.score}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 text-sm text-right font-medium text-gray-900 dark:text-white">
+                            {result.prize_amount ? result.prize_amount.toLocaleString() : '-'}원
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  
+                  {tournamentResults.length > 30 && (
+                    <div className="mt-4 text-center text-sm text-gray-500 dark:text-gray-400">
+                      상위 30위까지만 표시됩니다. (총 {tournamentResults.length}명 참가)
+                    </div>
+                  )}
+                </div>
+              )}
+            </CardBody>
+          </Card>
         )}
       </div>
     </AdminLayout>

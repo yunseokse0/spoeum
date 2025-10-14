@@ -169,7 +169,7 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const tournamentId = searchParams.get('tournamentId');
+    const tournamentId = searchParams.get('tournament_id');
 
     if (!tournamentId) {
       // 모든 대회 목록 조회
