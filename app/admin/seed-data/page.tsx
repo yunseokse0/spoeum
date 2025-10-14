@@ -35,9 +35,9 @@ interface SeedDataStatus {
 
 export default function AdminSeedDataPage() {
   const [status, setStatus] = useState<SeedDataStatus | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [isSeeding, setIsSeeding] = useState(false);
   const { user: currentUser, isAuthenticated, isLoading } = useAdminAuth();
+  const [isDataLoading, setIsDataLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
@@ -61,7 +61,7 @@ export default function AdminSeedDataPage() {
       console.error('Failed to fetch seed data status:', error);
       toast.error('시드 데이터 상태 조회 중 오류가 발생했습니다.');
     } finally {
-      setIsLoading(false);
+      setIsDataLoading(false);
     }
   };
 
@@ -83,7 +83,7 @@ export default function AdminSeedDataPage() {
     }
   };
 
-  if (isLoading) {
+  if (isDataLoading) {
     return (
       <AdminLayout>
         <div className="flex justify-center items-center h-full">

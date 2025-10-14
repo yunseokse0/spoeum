@@ -103,8 +103,8 @@ export default function AdminProMembersPage() {
   const [filterStatus, setFilterStatus] = useState<MemberStatus | 'all'>('all');
   const [selectedUser, setSelectedUser] = useState<TourProUser | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
   const { user: currentUser, isAuthenticated, isLoading } = useAdminAuth();
+  const [isDataLoading, setIsDataLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
@@ -134,7 +134,7 @@ export default function AdminProMembersPage() {
       console.error('Failed to fetch pro members:', error);
       toast.error('투어프로 회원 정보를 가져오는 중 오류가 발생했습니다.');
     } finally {
-      setIsLoading(false);
+      setIsDataLoading(false);
     }
   };
 
@@ -200,7 +200,7 @@ export default function AdminProMembersPage() {
     return association === 'KLPGA' ? 'pink' : 'blue';
   };
 
-  if (isLoading) {
+  if (isDataLoading) {
     return (
       <AdminLayout>
         <div className="flex justify-center items-center h-full">

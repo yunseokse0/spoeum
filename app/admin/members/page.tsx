@@ -43,8 +43,8 @@ export default function AdminMembersPage() {
     active: 0,
     pending: 0
   });
-  const [isLoading, setIsLoading] = useState(true);
   const { user: currentUser, isAuthenticated, isLoading } = useAdminAuth();
+  const [isDataLoading, setIsDataLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
@@ -90,7 +90,7 @@ export default function AdminMembersPage() {
         pending: 35
       });
     } finally {
-      setIsLoading(false);
+      setIsDataLoading(false);
     }
   };
 
@@ -147,7 +147,7 @@ export default function AdminMembersPage() {
     }
   ];
 
-  if (isLoading) {
+  if (isDataLoading) {
     return (
       <AdminLayout>
         <div className="flex justify-center items-center h-full">

@@ -105,8 +105,8 @@ export default function AdminCaddyMembersPage() {
   const [filterFreelancer, setFilterFreelancer] = useState<'all' | 'freelancer' | 'club'>('all');
   const [selectedUser, setSelectedUser] = useState<CaddyUser | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
   const { user: currentUser, isAuthenticated, isLoading } = useAdminAuth();
+  const [isDataLoading, setIsDataLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
@@ -136,7 +136,7 @@ export default function AdminCaddyMembersPage() {
       console.error('Failed to fetch caddy members:', error);
       toast.error('캐디 회원 정보를 가져오는 중 오류가 발생했습니다.');
     } finally {
-      setIsLoading(false);
+      setIsDataLoading(false);
     }
   };
 
@@ -224,7 +224,7 @@ export default function AdminCaddyMembersPage() {
     }
   };
 
-  if (isLoading) {
+  if (isDataLoading) {
     return (
       <AdminLayout>
         <div className="flex justify-center items-center h-full">

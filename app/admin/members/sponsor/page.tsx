@@ -101,8 +101,8 @@ export default function AdminSponsorMembersPage() {
   const [filterVerification, setFilterVerification] = useState<'all' | 'verified' | 'unverified'>('all');
   const [selectedUser, setSelectedUser] = useState<SponsorUser | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
   const { user: currentUser, isAuthenticated, isLoading } = useAdminAuth();
+  const [isDataLoading, setIsDataLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
@@ -132,7 +132,7 @@ export default function AdminSponsorMembersPage() {
       console.error('Failed to fetch sponsor members:', error);
       toast.error('스폰서 회원 정보를 가져오는 중 오류가 발생했습니다.');
     } finally {
-      setIsLoading(false);
+      setIsDataLoading(false);
     }
   };
 
@@ -240,7 +240,7 @@ export default function AdminSponsorMembersPage() {
     }
   };
 
-  if (isLoading) {
+  if (isDataLoading) {
     return (
       <AdminLayout>
         <div className="flex justify-center items-center h-full">

@@ -93,8 +93,8 @@ export default function AdminAmateurMembersPage() {
   const [filterStatus, setFilterStatus] = useState<MemberStatus | 'all'>('all');
   const [selectedUser, setSelectedUser] = useState<AmateurUser | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
   const { user: currentUser, isAuthenticated, isLoading } = useAdminAuth();
+  const [isDataLoading, setIsDataLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
@@ -124,7 +124,7 @@ export default function AdminAmateurMembersPage() {
       console.error('Failed to fetch amateur members:', error);
       toast.error('아마추어 회원 정보를 가져오는 중 오류가 발생했습니다.');
     } finally {
-      setIsLoading(false);
+      setIsDataLoading(false);
     }
   };
 
@@ -185,7 +185,7 @@ export default function AdminAmateurMembersPage() {
     }
   };
 
-  if (isLoading) {
+  if (isDataLoading) {
     return (
       <AdminLayout>
         <div className="flex justify-center items-center h-full">
