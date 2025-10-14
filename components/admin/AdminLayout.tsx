@@ -23,7 +23,8 @@ import {
   User,
   Home,
   ChevronRight,
-  Bot
+  Bot,
+  DollarSign
 } from 'lucide-react';
 
 interface AdminLayoutProps {
@@ -92,6 +93,12 @@ const adminMenuItems = [
     href: '/admin/tournament-results',
     icon: Trophy,
     description: '저장된 대회 결과'
+  },
+  {
+    title: '캐디 정산',
+    href: '/admin/caddy-payouts',
+    icon: DollarSign,
+    description: '캐디 수당 계산 및 관리'
   },
   {
     title: '알림관리',

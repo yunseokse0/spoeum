@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardBody } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
+import { AdminLayout } from '@/components/admin/AdminLayout';
 import { 
   DollarSign, 
   Trophy, 
@@ -54,10 +55,10 @@ export default function CaddyPayoutsPage() {
 
   const loadTournaments = async () => {
     try {
-      const res = await fetch('/api/tournaments');
+      const res = await fetch('/api/admin/tournaments/results');
       const data = await res.json();
       if (data.success) {
-        setTournaments(data.tournaments || []);
+        setTournaments(data.data || []);
       }
     } catch (err) {
       console.error('대회 목록 로드 실패:', err);
@@ -151,26 +152,18 @@ export default function CaddyPayoutsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="container mx-auto px-4 py-8">
+    <AdminLayout>
+      <div className="space-y-6">
         {/* 헤더 */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center">
-                <DollarSign className="h-8 w-8 mr-3 text-green-500" />
-                캐디 정산 관리
-              </h1>
-              <p className="text-gray-600 dark:text-gray-400 mt-2">
-                대회 결과 기반 캐디 수당 자동 계산 시스템
-              </p>
-            </div>
-            <Button
-              onClick={() => router.push('/admin')}
-              variant="outline"
-            >
-              ← 관리자 홈
-            </Button>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center">
+              <DollarSign className="h-8 w-8 mr-3 text-green-500" />
+              캐디 정산 관리
+            </h1>
+            <p className="text-gray-600 dark:text-gray-400 mt-2">
+              대회 결과 기반 캐디 수당 자동 계산 시스템
+            </p>
           </div>
         </div>
 
@@ -428,7 +421,7 @@ export default function CaddyPayoutsPage() {
           </CardBody>
         </Card>
       </div>
-    </div>
+    </AdminLayout>
   );
 }
 
