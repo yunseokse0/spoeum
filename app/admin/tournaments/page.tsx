@@ -202,9 +202,18 @@ export default function TournamentsPage() {
     }
   };
 
-  // 대회 검색 버튼 클릭 시 안내 팝업 표시
-  const handleSearchTournaments = () => {
-    setShowInfoModal(true);
+  // 대회 검색 버튼 클릭 시 대회 가져오기
+  const handleSearchTournaments = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      await loadTournaments();
+    } catch (err) {
+      setError('대회 가져오는 중 오류가 발생했습니다.');
+      console.error('대회 검색 실패:', err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // Gemini를 통한 데이터 파싱
@@ -447,47 +456,51 @@ export default function TournamentsPage() {
         {/* 탭 선택 */}
         <Card>
           <CardBody className="p-6">
-            <div className="flex space-x-1 mb-4 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
-              <button
-                onClick={() => setActiveTab('all')}
-                className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-                  activeTab === 'all'
-                    ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm'
-                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
-                }`}
-              >
-                전체 대회
-              </button>
-              <button
-                onClick={() => setActiveTab('completed')}
-                className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-                  activeTab === 'completed'
-                    ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm'
-                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
-                }`}
-              >
-                완료된 대회
-              </button>
-              <button
-                onClick={() => setActiveTab('upcoming')}
-                className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-                  activeTab === 'upcoming'
-                    ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm'
-                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
-                }`}
-              >
-                예정된 대회
-              </button>
-              <button
-                onClick={() => setActiveTab('input')}
-                className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-                  activeTab === 'input'
-                    ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm'
-                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
-                }`}
-              >
-                데이터 입력
-              </button>
+            <div className="mb-4">
+              <div className="border-b border-gray-200 dark:border-gray-700">
+                <nav className="-mb-px flex space-x-8">
+                  <button
+                    onClick={() => setActiveTab('all')}
+                    className={`whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
+                      activeTab === 'all'
+                        ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                        : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
+                    }`}
+                  >
+                    전체 대회
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('completed')}
+                    className={`whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
+                      activeTab === 'completed'
+                        ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                        : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
+                    }`}
+                  >
+                    완료된 대회
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('upcoming')}
+                    className={`whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
+                      activeTab === 'upcoming'
+                        ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                        : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
+                    }`}
+                  >
+                    예정된 대회
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('input')}
+                    className={`whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
+                      activeTab === 'input'
+                        ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                        : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
+                    }`}
+                  >
+                    데이터 입력
+                  </button>
+                </nav>
+              </div>
             </div>
 
             {/* 년도/협회 선택 (예정된 대회 또는 전체 대회일 때) */}
@@ -548,10 +561,20 @@ export default function TournamentsPage() {
                 <div className="flex items-end">
                   <Button
                     onClick={handleSearchTournaments}
-                    className="w-full bg-blue-600 hover:bg-blue-700"
+                    disabled={isLoading}
+                    className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
                   >
-                    <Trophy className="w-4 h-4 mr-2" />
-                    대회 검색
+                    {isLoading ? (
+                      <>
+                        <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                        대회 가져오는중
+                      </>
+                    ) : (
+                      <>
+                        <Trophy className="w-4 h-4 mr-2" />
+                        대회 검색
+                      </>
+                    )}
                   </Button>
                 </div>
               </div>
@@ -750,33 +773,37 @@ export default function TournamentsPage() {
             </div>
 
             {/* 대회 목록 탭 */}
-            <div className="flex space-x-1 mb-6 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
-              <button
-                onClick={() => setActiveTab('completed')}
-                className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-                  activeTab === 'completed'
-                    ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm'
-                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
-                }`}
-              >
-                완료된 대회
-              </button>
-              <button
-                onClick={() => setActiveTab('upcoming')}
-                className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-                  activeTab === 'upcoming'
-                    ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm'
-                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
-                }`}
-              >
-                예정된 대회
-              </button>
+            <div className="mb-6">
+              <div className="border-b border-gray-200 dark:border-gray-700">
+                <nav className="-mb-px flex space-x-8">
+                  <button
+                    onClick={() => setActiveTab('completed')}
+                    className={`whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
+                      activeTab === 'completed'
+                        ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                        : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
+                    }`}
+                  >
+                    완료된 대회
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('upcoming')}
+                    className={`whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
+                      activeTab === 'upcoming'
+                        ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                        : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
+                    }`}
+                  >
+                    예정된 대회
+                  </button>
+                </nav>
+              </div>
             </div>
 
             {isLoading ? (
               <div className="text-center py-12">
                 <RefreshCw className="h-8 w-8 animate-spin mx-auto text-gray-400 mb-4" />
-                <p className="text-gray-600 dark:text-gray-400">대회 목록을 불러오는 중...</p>
+                <p className="text-gray-600 dark:text-gray-400">대회 가져오는중...</p>
               </div>
             ) : filteredTournaments.length === 0 ? (
               <div className="text-center py-12">
