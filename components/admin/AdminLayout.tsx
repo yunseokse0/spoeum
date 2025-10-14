@@ -22,7 +22,8 @@ import {
   LogOut,
   User,
   Home,
-  ChevronRight
+  ChevronRight,
+  Bot
 } from 'lucide-react';
 
 interface AdminLayoutProps {
@@ -79,6 +80,18 @@ const adminMenuItems = [
     href: '/admin/tournaments',
     icon: Trophy,
     description: '골프 대회 관리'
+  },
+  {
+    title: '대회 데이터 입력',
+    href: '/admin/gemini-tournament',
+    icon: Bot,
+    description: '자동 검증 및 저장'
+  },
+  {
+    title: '대회결과 조회',
+    href: '/admin/tournament-results',
+    icon: Trophy,
+    description: '저장된 대회 결과'
   },
   {
     title: '알림관리',
