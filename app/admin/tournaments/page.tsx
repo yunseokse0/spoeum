@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Card, CardBody } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { AdminLayout } from '@/components/admin/AdminLayout';
+import { TournamentResultsModal } from '@/components/admin/TournamentResultsModal';
 import { 
   Trophy, 
   Plus,
@@ -51,6 +52,7 @@ export default function TournamentsPage() {
   const [selectedTournament, setSelectedTournament] = useState<Tournament | null>(null);
   const [tournamentResults, setTournamentResults] = useState<any[]>([]);
   const [isLoadingResults, setIsLoadingResults] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   
   // 데이터 입력 관련 상태
   const [tournamentName, setTournamentName] = useState('');
@@ -352,6 +354,7 @@ export default function TournamentsPage() {
 
       if (data.success) {
         setTournamentResults(data.data || []);
+        setIsModalOpen(true);
       } else {
         setError(data.error || '대회 결과를 불러올 수 없습니다.');
       }
@@ -947,86 +950,18 @@ export default function TournamentsPage() {
         </Card>
         )}
 
-        {/* 대회 결과 섹션 */}
-        {selectedTournament && tournamentResults.length > 0 && (
-          <Card>
-            <CardBody className="p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold flex items-center">
-                  <Trophy className="h-5 w-5 mr-2 text-yellow-500" />
-                  {selectedTournament.name} - 대회 결과
-                </h2>
-                <Button
-                  onClick={() => {
-                    setSelectedTournament(null);
-                    setTournamentResults([]);
-                  }}
-                  variant="outline"
-                  size="sm"
-                >
-                  닫기
-                </Button>
-              </div>
-
-              {isLoadingResults ? (
-                <div className="text-center py-8">
-                  <RefreshCw className="h-6 w-6 animate-spin mx-auto text-gray-400 mb-4" />
-                  <p className="text-gray-600 dark:text-gray-400">결과를 불러오는 중...</p>
-                </div>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead className="bg-gray-100 dark:bg-gray-800">
-                      <tr>
-                        <th className="px-4 py-3 text-center text-sm font-semibold">순위</th>
-                        <th className="px-4 py-3 text-left text-sm font-semibold">선수명</th>
-                        <th className="px-4 py-3 text-right text-sm font-semibold">스코어</th>
-                        <th className="px-4 py-3 text-right text-sm font-semibold">상금</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                      {tournamentResults.slice(0, 30).map((result, index) => (
-                        <tr key={result.id || index} className="hover:bg-gray-50 dark:hover:bg-gray-800">
-                          <td className="px-4 py-3 text-center">
-                            <span className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-semibold ${
-                              result.rank === 1 ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' :
-                              result.rank === 2 ? 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200' :
-                              result.rank === 3 ? 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200' :
-                              'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
-                            }`}>
-                              {result.rank}
-                            </span>
-                          </td>
-                          <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-white">
-                            {result.player_name}
-                          </td>
-                          <td className="px-4 py-3 text-sm text-right">
-                            <span className={`font-medium ${
-                              result.score < 0 ? 'text-green-600 dark:text-green-400' : 
-                              result.score > 0 ? 'text-red-600 dark:text-red-400' : 
-                              'text-gray-600 dark:text-gray-400'
-                            }`}>
-                              {result.score > 0 ? `+${result.score}` : result.score}
-                            </span>
-                          </td>
-                          <td className="px-4 py-3 text-sm text-right font-medium text-gray-900 dark:text-white">
-                            {result.prize_amount ? result.prize_amount.toLocaleString() : '-'}원
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                  
-                  {tournamentResults.length > 30 && (
-                    <div className="mt-4 text-center text-sm text-gray-500 dark:text-gray-400">
-                      상위 30위까지만 표시됩니다. (총 {tournamentResults.length}명 참가)
-                    </div>
-                  )}
-                </div>
-              )}
-            </CardBody>
-          </Card>
-        )}
+        {/* 대회 결과 모달 */}
+        <TournamentResultsModal
+          isOpen={isModalOpen}
+          onClose={() => {
+            setIsModalOpen(false);
+            setSelectedTournament(null);
+            setTournamentResults([]);
+          }}
+          tournamentName={selectedTournament?.name || ''}
+          results={tournamentResults}
+          isLoading={isLoadingResults}
+        />
       </div>
     </AdminLayout>
   );
