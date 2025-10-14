@@ -25,13 +25,19 @@ export async function GET(request: NextRequest) {
       }, { status: 500 });
     }
 
-    // Gemini API를 통한 대회 정보 조회
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    // Gemini API를 통한 대회 정보 조회 (최대 5번 호출)
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
     
-    const prompt = `
-당신은 한국 골프 대회 전문가입니다. ${year}년 ${association}에서 주최하는 **모든 공식 대회**의 완전한 정보를 제공해주세요.
+    const allTournaments: any[] = [];
+    const maxAttempts = 5;
+    
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      console.log(`=== Gemini API 호출 시도 ${attempt}/${maxAttempts} ===`);
+      
+      const prompt = `
+당신은 한국 골프 대회 전문가입니다. ${year}년 ${association}에서 주최하는 **공식 대회** 정보를 제공해주세요.
 
-**중요**: ${association}의 전체 시즌 대회를 모두 포함해야 합니다. 3월부터 12월까지의 모든 공식 대회를 찾아주세요.
+**호출 번호**: ${attempt}/${maxAttempts}
 
 **응답 형식**: 반드시 아래 JSON 형식으로만 응답하세요. 다른 설명이나 텍스트는 절대 포함하지 마세요.
 
@@ -53,98 +59,86 @@ export async function GET(request: NextRequest) {
   ]
 }
 
-**${association} 전체 대회 목록** (반드시 포함해야 할 대회들):
-
+**${association} 대회 예시** (참고용):
 ${association === 'KLPGA' ? `
-- 한화클래식 (${year}-05월, 스카이72 골프클럽)
-- BMW 레이디스 챔피언십 (${year}-08월, BMW 챔피언십 코스)
-- 롯데 챔피언십 (${year}-11월, 롯데 스카이힐)
-- 신한동해오픈 (${year}-04월, 알펜시아 골프클럽)
-- KLPGA 챔피언십 (${year}-10월, 여주 골프클럽)
-- 하이트진로 챔피언십 (${year}-07월, 인천 골프클럽)
-- 롯데 오픈 (${year}-06월, 제주 골프클럽)
-- KLPGA 시즌 개막전 (${year}-03월, 제주 핀크스 골프클럽)
-- KLPGA 시즌 마감전 (${year}-12월, 스카이72 골프클럽)
+- 한화클래식, BMW 레이디스 챔피언십, 롯데 챔피언십, 신한동해오픈, KLPGA 챔피언십, 하이트진로 챔피언십, 롯데 오픈
 ` : `
-- 제네시스 챔피언십 (${year}-04월, Jack Nicklaus GC Korea)
-- 코리안 오픈 (${year}-06월, 여주 골프클럽)
-- GS칼텍스 매경오픈 (${year}-05월, 나인브릿지)
-- 현대해상 오픈 (${year}-12월, 거제 베이힐스 골프클럽)
-- KPGA 코리안 투어 챔피언십 (${year}-11월, 레이크우드 컨트리클럽)
-- KPGA 시즌 개막전 (${year}-03월, 제주 핀크스 골프클럽)
-- KPGA 시즌 마감전 (${year}-12월, 스카이72 골프클럽)
-- KPGA 챔피언십 (${year}-10월, 용인 골프클럽)
+- 제네시스 챔피언십, 코리안 오픈, GS칼텍스 매경오픈, 현대해상 오픈, KPGA 코리안 투어 챔피언십, KPGA 챔피언십
 `}
 
 **필수 요구사항**:
-1. **전체 대회**: 위에 나열된 모든 대회를 포함해야 합니다 (최소 8-10개)
-2. **날짜**: 각 대회의 정확한 개최일 (${year}-MM-DD 형식)
-3. **골프장**: 구체적인 골프장 이름 (예: "제주 핀크스 골프클럽", "스카이72 골프클럽")
-4. **상금**: 실제 상금 규모 (5억원~25억원 범위)
-5. **참가자**: 현실적인 참가자 수 (120~156명)
-6. **지역**: 골프장이 위치한 시/도
+1. **날짜**: ${year}-MM-DD 형식 (예: ${year}-03-15)
+2. **골프장**: 구체적인 골프장 이름 (예: "제주 핀크스 골프클럽", "스카이72 골프클럽")
+3. **상금**: 실제 상금 규모 (5억원~25억원 범위)
+4. **참가자**: 현실적인 참가자 수 (120~156명)
+5. **지역**: 골프장이 위치한 시/도
+6. **대회 수**: 각 호출마다 2-3개의 서로 다른 대회 정보 제공
 
-**응답 예시**:
-{
-  "tournaments": [
-    {
-      "id": "${year.toLowerCase()}-${association.toLowerCase()}-001",
-      "name": "${year} ${association} 시즌 개막전",
-      "association": "${association}",
-      "start_date": "${year}-03-15",
-      "end_date": "${year}-03-18",
-      "location": "제주",
-      "golf_course": "제주 핀크스 골프클럽",
-      "prize_money": 1000000000,
-      "max_participants": 120,
-      "status": "upcoming",
-      "description": "${association} 투어 ${year}년 시즌 개막전"
-    }
-  ]
-}
+**중복 방지**: 이전에 제공한 대회와 중복되지 않는 새로운 대회 정보를 제공하세요.
 `;
 
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
-    
-    console.log('=== Gemini API 응답 시작 ===');
-    console.log('전체 응답 길이:', text.length);
-    console.log('응답 내용:', text);
-    console.log('=== Gemini API 응답 끝 ===');
+      try {
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        const text = response.text();
+        
+        console.log(`=== Gemini API 응답 ${attempt} 시작 ===`);
+        console.log('응답 길이:', text.length);
+        console.log('응답 내용:', text);
+        console.log(`=== Gemini API 응답 ${attempt} 끝 ===`);
 
-    // JSON 파싱
-    let geminiData;
-    try {
-      // JSON 부분만 추출 (더 정확한 정규식 사용)
-      const jsonMatch = text.match(/\{[\s\S]*"tournaments"[\s\S]*\}/);
-      if (jsonMatch) {
-        console.log('추출된 JSON:', jsonMatch[0]);
-        geminiData = JSON.parse(jsonMatch[0]);
-        console.log('파싱된 데이터:', JSON.stringify(geminiData, null, 2));
-      } else {
-        console.log('JSON 패턴을 찾을 수 없음, 전체 텍스트에서 JSON 추출 시도');
-        // 전체 텍스트에서 JSON 추출 시도
-        const fullJsonMatch = text.match(/\{[\s\S]*\}/);
-        if (fullJsonMatch) {
-          geminiData = JSON.parse(fullJsonMatch[0]);
-          console.log('전체 텍스트에서 파싱된 데이터:', JSON.stringify(geminiData, null, 2));
-        } else {
-          throw new Error('JSON 형식을 찾을 수 없습니다');
+        // JSON 파싱
+        let geminiData;
+        try {
+          const jsonMatch = text.match(/\{[\s\S]*"tournaments"[\s\S]*\}/);
+          if (jsonMatch) {
+            geminiData = JSON.parse(jsonMatch[0]);
+            console.log(`파싱된 데이터 ${attempt}:`, JSON.stringify(geminiData, null, 2));
+          } else {
+            const fullJsonMatch = text.match(/\{[\s\S]*\}/);
+            if (fullJsonMatch) {
+              geminiData = JSON.parse(fullJsonMatch[0]);
+              console.log(`전체 텍스트에서 파싱된 데이터 ${attempt}:`, JSON.stringify(geminiData, null, 2));
+            } else {
+              throw new Error('JSON 형식을 찾을 수 없습니다');
+            }
+          }
+        } catch (parseError) {
+          console.error(`JSON 파싱 오류 ${attempt}:`, parseError);
+          continue; // 다음 시도로 넘어감
         }
+
+        const tournaments = geminiData.tournaments || [];
+        
+        // 중복 제거를 위해 기존 대회와 비교
+        const newTournaments = tournaments.filter((newTournament: any) => {
+          return !allTournaments.some(existing => 
+            existing.name === newTournament.name || 
+            existing.id === newTournament.id
+          );
+        });
+        
+        allTournaments.push(...newTournaments);
+        console.log(`${attempt}번째 호출에서 ${newTournaments.length}개의 새 대회 추가. 총 ${allTournaments.length}개`);
+        
+        // 충분한 대회를 수집했으면 중단
+        if (allTournaments.length >= 8) {
+          console.log('충분한 대회 수집 완료, API 호출 중단');
+          break;
+        }
+        
+        // API 호출 간 간격 (Rate Limiting 방지)
+        if (attempt < maxAttempts) {
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+        
+      } catch (error) {
+        console.error(`Gemini API 호출 오류 ${attempt}:`, error);
+        continue; // 다음 시도로 넘어감
       }
-    } catch (parseError) {
-      console.error('JSON 파싱 오류:', parseError);
-      console.log('파싱 실패한 원본 응답:', text);
-      
-      return NextResponse.json({
-        success: false,
-        error: `Gemini API 응답 파싱 실패: ${parseError instanceof Error ? parseError.message : '알 수 없는 오류'}`,
-        data: []
-      }, { status: 500 });
     }
 
-    const tournaments = geminiData.tournaments || [];
+    const tournaments = allTournaments;
     
     return NextResponse.json({
       success: true,

@@ -332,19 +332,22 @@ export default function TournamentsPage() {
     }
   };
 
-  // 대회 결과 조회
+  // 대회 결과 조회 (Gemini API 사용)
   const handleViewTournamentResults = async (tournament: Tournament) => {
-    if (tournament.status !== 'completed') {
-      alert('완료된 대회만 결과를 조회할 수 있습니다.');
-      return;
-    }
-
     setSelectedTournament(tournament);
     setIsLoadingResults(true);
     setError(null);
 
     try {
-      const res = await fetch(`/api/admin/tournaments/results?tournament_id=${tournament.id}`);
+      // Gemini API를 통해 개별 대회 결과 가져오기
+      const res = await fetch('/api/admin/tournaments/results-individual', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tournamentName: tournament.name,
+          tournamentId: tournament.id
+        })
+      });
       const data = await res.json();
 
       if (data.success) {
@@ -862,16 +865,14 @@ export default function TournamentsPage() {
                       <tr key={tournament.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
                         <td className="px-4 py-3">
                           <div 
-                            className={`${tournament.status === 'completed' ? 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg p-2 -m-2' : ''}`}
-                            onClick={() => tournament.status === 'completed' ? handleViewTournamentResults(tournament) : undefined}
+                            className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg p-2 -m-2"
+                            onClick={() => handleViewTournamentResults(tournament)}
                           >
                             <p className="font-medium text-gray-900 dark:text-white">
                               {tournament.name}
-                              {tournament.status === 'completed' && (
-                                <span className="ml-2 text-xs text-blue-600 dark:text-blue-400">
-                                  (클릭하여 결과 보기)
-                                </span>
-                              )}
+                              <span className="ml-2 text-xs text-blue-600 dark:text-blue-400">
+                                (클릭하여 결과 보기)
+                              </span>
                             </p>
                             <p className="text-sm text-gray-500 dark:text-gray-400">
                               {tournament.description}
