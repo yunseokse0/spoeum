@@ -44,10 +44,18 @@ export default function TournamentsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [filterAssociation, setFilterAssociation] = useState<string>('all');
-  const [activeTab, setActiveTab] = useState<'all' | 'completed' | 'upcoming'>('all');
+  const [activeTab, setActiveTab] = useState<'all' | 'completed' | 'upcoming' | 'input'>('all');
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
   const [selectedAssociation, setSelectedAssociation] = useState<'KLPGA' | 'KPGA'>('KLPGA');
   const [isFetching, setIsFetching] = useState(false);
+  
+  // 데이터 입력 관련 상태
+  const [tournamentName, setTournamentName] = useState('');
+  const [rawResults, setRawResults] = useState('');
+  const [parsedResults, setParsedResults] = useState<any[]>([]);
+  const [isParsing, setIsParsing] = useState(false);
+  const [parseSuccess, setParseSuccess] = useState<string | null>(null);
+  const [parseError, setParseError] = useState<string | null>(null);
   
   // 년도 옵션 생성
   const years = Array.from({ length: 5 }, (_, i) => (new Date().getFullYear() - i).toString());
@@ -191,6 +199,79 @@ export default function TournamentsPage() {
       console.error('대회 가져오기 실패:', err);
     } finally {
       setIsFetching(false);
+    }
+  };
+
+  // Gemini를 통한 데이터 파싱
+  const handleParseResults = async () => {
+    if (!tournamentName.trim() || !rawResults.trim()) {
+      setParseError('대회명과 결과 데이터를 입력해주세요.');
+      return;
+    }
+
+    setIsParsing(true);
+    setParseError(null);
+    setParseSuccess(null);
+
+    try {
+      const res = await fetch('/api/gemini/tournament-results', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tournamentName: tournamentName.trim(),
+          rawResults: rawResults.trim()
+        })
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        setParsedResults(data.results || []);
+        setParseSuccess(`${data.results?.length || 0}개의 결과가 성공적으로 파싱되었습니다!`);
+      } else {
+        setParseError(data.error || '데이터 파싱에 실패했습니다.');
+      }
+    } catch (err) {
+      setParseError('데이터 파싱 중 오류가 발생했습니다.');
+      console.error('데이터 파싱 실패:', err);
+    } finally {
+      setIsParsing(false);
+    }
+  };
+
+  // 데이터베이스에 저장
+  const handleSaveResults = async () => {
+    if (parsedResults.length === 0) {
+      setParseError('저장할 결과가 없습니다.');
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/admin/tournaments/results', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tournament_name: tournamentName.trim(),
+          results: parsedResults
+        })
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        setParseSuccess(`✅ ${data.savedCount}개의 결과가 데이터베이스에 저장되었습니다.`);
+        // 폼 초기화
+        setTournamentName('');
+        setRawResults('');
+        setParsedResults([]);
+        // 대회 목록 새로고침
+        loadTournaments();
+      } else {
+        setParseError(data.error || '데이터 저장에 실패했습니다.');
+      }
+    } catch (err) {
+      setParseError('데이터 저장 중 오류가 발생했습니다.');
+      console.error('데이터 저장 실패:', err);
     }
   };
 
@@ -376,6 +457,16 @@ export default function TournamentsPage() {
               >
                 예정된 대회
               </button>
+              <button
+                onClick={() => setActiveTab('input')}
+                className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                  activeTab === 'input'
+                    ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm'
+                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+                }`}
+              >
+                데이터 입력
+              </button>
             </div>
 
             {/* 년도/협회 선택 (예정된 대회 또는 전체 대회일 때) */}
@@ -455,6 +546,67 @@ export default function TournamentsPage() {
               </div>
             )}
 
+            {/* 데이터 입력 탭 */}
+            {activeTab === 'input' && (
+              <div className="space-y-4 mb-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      대회명 *
+                    </label>
+                    <input
+                      type="text"
+                      value={tournamentName}
+                      onChange={(e) => setTournamentName(e.target.value)}
+                      placeholder="예: 2024 KLPGA 챔피언십"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                      disabled={isParsing}
+                    />
+                  </div>
+                  <div className="flex items-end">
+                    <Button
+                      onClick={handleParseResults}
+                      disabled={isParsing || !tournamentName.trim() || !rawResults.trim()}
+                      className="w-full bg-blue-600 hover:bg-blue-700"
+                    >
+                      {isParsing ? (
+                        <>
+                          <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                          파싱 중...
+                        </>
+                      ) : (
+                        <>
+                          <Trophy className="w-4 h-4 mr-2" />
+                          데이터 검증하기
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    대회 결과 데이터 *
+                  </label>
+                  <textarea
+                    value={rawResults}
+                    onChange={(e) => setRawResults(e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none font-mono text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                    rows={8}
+                    placeholder={`대회 결과를 붙여넣으세요, 예시:
+1위 김효주 - 14언더파 (상금 2억원)
+2위 박민지 - 12언더파 (상금 1억2천만원)
+3위 이정은 - 10언더파 (상금 8천만원)
+...`}
+                    disabled={isParsing}
+                  />
+                  <p className="text-xs text-gray-500 mt-2">
+                    ℹ️ 순위, 선수명, 스코어, 상금 정보가 포함된 텍스트 형식의 데이터를 입력하세요.
+                  </p>
+                </div>
+              </div>
+            )}
+
             {/* 검색 및 필터 */}
             <div className="flex flex-col md:flex-row gap-4">
               <div className="flex-1">
@@ -504,19 +656,80 @@ export default function TournamentsPage() {
         </Card>
 
         {/* 오류 메시지 */}
-        {error && (
+        {(error || parseError) && (
           <Card className="border-red-200 bg-red-50 dark:bg-red-900/20">
             <CardBody className="p-4">
               <div className="flex items-center text-red-600 dark:text-red-400">
                 <AlertCircle className="h-5 w-5 mr-2" />
-                {error}
+                {error || parseError}
+              </div>
+            </CardBody>
+          </Card>
+        )}
+
+        {/* 성공 메시지 */}
+        {parseSuccess && (
+          <Card className="border-green-200 bg-green-50 dark:bg-green-900/20">
+            <CardBody className="p-4">
+              <div className="flex items-center text-green-600 dark:text-green-400">
+                <CheckCircle className="h-5 w-5 mr-2" />
+                {parseSuccess}
+              </div>
+            </CardBody>
+          </Card>
+        )}
+
+        {/* 파싱 결과 테이블 */}
+        {parsedResults.length > 0 && (
+          <Card>
+            <CardBody className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-bold flex items-center">
+                  <Trophy className="h-5 w-5 mr-2 text-blue-500" />
+                  파싱 결과 ({parsedResults.length}개)
+                </h2>
+                <Button
+                  onClick={handleSaveResults}
+                  className="bg-green-600 hover:bg-green-700"
+                >
+                  <CheckCircle className="h-4 w-4 mr-2" />
+                  데이터베이스에 저장
+                </Button>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-100 dark:bg-gray-800">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-sm font-semibold">순위</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold">선수명</th>
+                      <th className="px-4 py-3 text-right text-sm font-semibold">스코어</th>
+                      <th className="px-4 py-3 text-right text-sm font-semibold">상금</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                    {parsedResults.map((result, index) => (
+                      <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+                        <td className="px-4 py-3 text-sm font-medium">{result.rank}위</td>
+                        <td className="px-4 py-3 text-sm">{result.player_name}</td>
+                        <td className="px-4 py-3 text-sm text-right">
+                          {result.score > 0 ? `+${result.score}` : result.score}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-right">
+                          {result.prize_amount.toLocaleString()}원
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </CardBody>
           </Card>
         )}
 
         {/* 대회 목록 */}
-        <Card>
+        {activeTab !== 'input' && (
+          <Card>
           <CardBody className="p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-bold flex items-center">
@@ -631,6 +844,7 @@ export default function TournamentsPage() {
             )}
           </CardBody>
         </Card>
+        )}
       </div>
     </AdminLayout>
   );

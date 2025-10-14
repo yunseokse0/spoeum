@@ -319,11 +319,11 @@ export default function GeminiTournamentPage() {
         )}
 
         {success && (
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-start">
+          <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 flex items-start">
             <CheckCircle className="h-5 w-5 text-green-500 mr-3 flex-shrink-0 mt-0.5" />
             <div>
-              <h3 className="font-semibold text-green-900">성공</h3>
-              <p className="text-green-700 text-sm">{success}</p>
+              <h3 className="font-semibold text-green-900 dark:text-green-100">성공</h3>
+              <p className="text-green-700 dark:text-green-300 text-sm">{success}</p>
             </div>
           </div>
         )}
@@ -432,7 +432,7 @@ export default function GeminiTournamentPage() {
                       setSelectedTournament(e.target.value);
                       fetchTournamentData(e.target.value);
                     }}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     disabled={isLoading}
                   >
                     <option value="">대회를 선택하세요</option>
@@ -479,7 +479,7 @@ export default function GeminiTournamentPage() {
                   value={tournamentName}
                   onChange={(e) => setTournamentName(e.target.value)}
                   placeholder="예: 2024 KLPGA 챔피언십"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                   disabled={isLoading}
                 />
               </div>
@@ -499,7 +499,7 @@ export default function GeminiTournamentPage() {
 3위 이정은 - 10언더파 (상금 8천만원)
 ...`}
                   rows={12}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                   disabled={isLoading}
                 />
                 <p className="text-xs text-gray-500 mt-2">
@@ -622,10 +622,10 @@ export default function GeminiTournamentPage() {
                 </div>
 
                 {savedToDb && (
-                  <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                  <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
                     <div className="flex items-center">
                       <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
-                      <p className="text-sm text-green-700">
+                      <p className="text-sm text-green-700 dark:text-green-300">
                         데이터베이스에 성공적으로 저장되었습니다. 대회 결과 페이지에서 확인할 수 있습니다.
                       </p>
                     </div>
@@ -700,7 +700,7 @@ export default function GeminiTournamentPage() {
                   <select
                     value={selectedYear}
                     onChange={(e) => setSelectedYear(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     disabled={isLoading}
                   >
                     {years.map((year) => (
