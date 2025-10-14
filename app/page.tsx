@@ -105,9 +105,9 @@ export default function HomePage() {
 
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-900">
       {/* 헤더 */}
-      <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+      <header className="bg-gray-900 border-b border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <GolfLogoWithText size="md" />
@@ -129,16 +129,16 @@ export default function HomePage() {
       </header>
 
       {/* 히어로 섹션 */}
-      <section className="bg-gradient-to-br from-primary-50 to-primary-100 dark:from-gray-900 dark:to-gray-800 py-20">
+      <section className="bg-gradient-to-br from-gray-900 to-gray-800 py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
+          <h2 className="text-4xl md:text-6xl font-bold text-white mb-6">
             골프 캐디와 골퍼를
             <br />
-            <span className="text-primary-600 dark:text-primary-400">
+            <span className="text-green-400">
               스마트하게 연결
             </span>
           </h2>
-          <p className="text-xl text-gray-600 dark:text-gray-400 mb-8 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
             전문적인 매칭 시스템으로 최적의 캐디와 골퍼를 찾아보세요.
             안전하고 편리한 골프 경험을 제공합니다.
           </p>

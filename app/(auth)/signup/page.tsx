@@ -107,12 +107,12 @@ export default function SignupPage() {
   };
 
   return (
-    <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900' : 'bg-gradient-to-br from-green-50 via-blue-50 to-purple-50'}`}>
+    <div className="min-h-screen bg-gray-900">
       {/* 배경 장식 */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-green-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-pulse delay-1000"></div>
-        <div className="absolute top-40 left-1/2 w-80 h-80 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-pulse delay-2000"></div>
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-green-900/30 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-pulse"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-900/30 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-pulse delay-1000"></div>
+        <div className="absolute top-40 left-1/2 w-80 h-80 bg-purple-900/30 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-pulse delay-2000"></div>
       </div>
 
       {/* 다크테마 토글 버튼 */}
@@ -127,14 +127,14 @@ export default function SignupPage() {
             <GolfLogoWithText />
             <div className="mt-4 flex items-center justify-center space-x-2">
               <Sparkles className="h-5 w-5 text-yellow-500" />
-              <span className="text-sm text-gray-600 dark:text-gray-400">골프 커뮤니티의 새로운 시작</span>
+              <span className="text-sm text-gray-300">골프 커뮤니티의 새로운 시작</span>
               <Sparkles className="h-5 w-5 text-yellow-500" />
             </div>
           </div>
         </div>
 
         <div className="max-w-6xl mx-auto">
-          <Card className={`${theme === 'dark' ? 'bg-gray-800/90 border-gray-700 backdrop-blur-sm' : 'bg-white/90 backdrop-blur-sm'} shadow-2xl`}>
+          <Card className="bg-gray-800/90 border-gray-700 backdrop-blur-sm shadow-2xl">
             <CardHeader className="text-center pb-8">
               <div className="flex items-center justify-center mb-4">
                 <Shield className="h-8 w-8 text-green-600 mr-3" />
@@ -142,10 +142,10 @@ export default function SignupPage() {
                   회원가입
                 </CardTitle>
               </div>
-              <p className="text-gray-600 dark:text-gray-400 text-xl mb-2">
+              <p className="text-gray-300 text-xl mb-2">
                 스포이음에 오신 것을 환영합니다
               </p>
-              <p className="text-gray-500 dark:text-gray-500 text-base">
+              <p className="text-gray-400 text-base">
                 어떤 역할로 스포이음에 참여하시나요?
               </p>
               <div className="flex items-center justify-center mt-4 space-x-4 text-sm text-gray-500">
