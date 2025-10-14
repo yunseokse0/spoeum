@@ -412,6 +412,27 @@ CREATE TABLE caddy_payouts (
     INDEX idx_paid_status (paid_status)
 );
 
+-- 선수 데이터 테이블 (스크래핑용)
+CREATE TABLE players (
+    id VARCHAR(36) PRIMARY KEY DEFAULT (UUID()),
+    name VARCHAR(100) NOT NULL,
+    member_number VARCHAR(50),
+    birth_date VARCHAR(50),
+    join_year VARCHAR(50),
+    season_records JSON,
+    career_records JSON,
+    tournament_stats JSON,
+    association ENUM('KPGA', 'KLPGA', 'PGA', 'LPGA') NOT NULL,
+    season VARCHAR(10) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    INDEX idx_name (name),
+    INDEX idx_association (association),
+    INDEX idx_season (season),
+    UNIQUE KEY unique_player_season (name, association, season)
+);
+
 -- 기본 정산 규칙 데이터
 INSERT INTO payout_rules (rule_name, min_rank, max_rank, rate_percent) VALUES
 ('우승~10위', 1, 10, 10.00),
